@@ -26,15 +26,7 @@ const PLAYSTYLES_DATA = [
 
 // ========== ПЕРСИСТЕНТНОЕ ХРАНИЛИЩЕ ==========
 const STORAGE_KEY = "buildsDatabase";
-let builds = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [
-    {
-        "hero": "мирана",
-        "mustHave": ["guards", "poison"],
-        "mustNotHave": ["crits", "healing", "dodge"],
-        "talents": "2 1 2",
-        "comment": "Нет леги на лечение стражей"
-    }
-];
+let builds = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
 
 // ========== СОСТОЯНИЕ ==========
 let selectedDisabledStyles = []; // 5 стилей которых нет в игре
@@ -472,3 +464,4 @@ function updateUI() {
     renderDisabledStylesPicker();
     renderSearchResults();
 }
+
