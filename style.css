@@ -792,5 +792,18 @@ body {
     word-break: break-word;
 }
 
+@media (max-width: 600px) {
+    .hero-card {
+        min-width: unset;
+        max-width: 98vw;
+        font-size: 1.01rem;
+    }
+    .heroes-list {
+        padding: 0 2vw;
+    }
+}
+
+
+
 
 
