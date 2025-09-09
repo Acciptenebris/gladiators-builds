@@ -24,486 +24,431 @@ const PLAYSTYLES_DATA = [
     {id: "attack", name: "Атака", description: "Моя бить"}
 ];
 
-/* ========== БАЗОВЫЕ СТИЛИ ========== */
-{ margin: 0; padding: 0; box-sizing: border-box; }
-
-body {
-    font-family: 'Arial', sans-serif;
-    background: linear-gradient(135deg, #1a1a1a 0%, #2d1810 100%);
-    color: #fff;
-    min-height: 100vh;
-}
-
-/* ========== ОСНОВНАЯ ВЕРСТКА ========== */
-.app-layout { display: flex; min-height: 100vh; }
-.main-container { flex: 1; overflow-y: auto; }
-.container { max-width: 1200px; margin: 0 auto; padding: 20px; }
-
-.header { text-align: center; margin-bottom: 40px; }
-.header h1 {
-    font-size: 2.5rem;
-    color: #d4af37;
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
-    margin-bottom: 10px;
-}
-.subtitle { font-size: 1.1rem; color: #ccc; }
-
-.playstyles-section h2, .selection-section h2, .results-section h2 {
-    color: #d4af37;
-    font-size: 1.8rem;
-    margin-bottom: 20px;
-    text-align: center;
-}
-
-/* ========== КНОПКИ ВЫБОРА СТИЛЕЙ ========== */
-.playstyles-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    gap: 16px;
-    margin-bottom: 40px;
-    padding: 10px;
-}
-.playstyle-btn {
-    background: linear-gradient(135deg, #2c3e50 0%, #34495e 50%, #2c3e50 100%);
-    border: 2px solid #34495e;
-    color: #ecf0f1;
-    padding: 16px 20px;
-    border-radius: 12px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    text-align: center;
-    font-size: 1rem;
-    font-weight: 600;
-    position: relative;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-}
-.playstyle-btn:hover {
-    border-color: #3498db;
-    background: linear-gradient(135deg, #3498db 0%, #2980b9 50%, #3498db 100%);
-}
-.playstyle-btn.selected {
-    background: linear-gradient(135deg, #e74c3c 0%, #c0392b 50%, #e74c3c 100%);
-    border-color: #e74c3c;
-    color: #fff;
-    font-weight: 700;
-}
-.playstyle-btn.selected::after {
-    content: '✓';
-    position: absolute;
-    top: 5px;
-    right: 8px;
-    font-size: 14px;
-    color: #fff;
-}
-.playstyle-btn.disabled {
-    opacity: 0.4;
-    cursor: not-allowed;
-    background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%);
-    border-color: #7f8c8d;
-}
-
-.selection-slots {
-    display: flex;
-    justify-content: center;
-    gap: 15px;
-    margin-bottom: 30px;
-    flex-wrap: wrap;
-}
-.slot {
-    width: 150px;
-    height: 80px;
-    border: 2px dashed #666;
-    border-radius: 10px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    background: rgba(255,255,255,0.05);
-    transition: all 0.3s ease;
-}
-.slot.filled {
-    border: 2px solid #d4af37;
-    background: rgba(212, 175, 55, 0.1);
-}
-.slot-number { font-size: 1.2rem; font-weight: bold; color: #d4af37; }
-.slot-text { font-size: 0.9rem; margin-top: 5px; }
-
-.buttons-container, .database-controls {
-    display: flex;
-    gap: 15px;
-    justify-content: center;
-    margin-bottom: 40px;
-    flex-wrap: wrap;
-}
-.database-controls { position: fixed; bottom: 20px; left: 20px; flex-direction: column; z-index: 100; }
-
-/* ========== КРАСИВЫЕ КНОПКИ ========== */
-.add-btn {
-    background: linear-gradient(145deg, #20a14c 15%, #108751 100%);
-    color: #fff;
-    border: none;
-    font-weight: bold;
-    padding: 16px 28px;
-    font-size: 1.13rem;
-    border-radius: 12px;
-    margin-bottom: 7px;
-    box-shadow: 0 2px 8px rgba(16,160,100,0.19);
-    transition: all .15s;
-    letter-spacing: 0.5px;
-    cursor: pointer;
-}
-.add-btn:hover {
-    background: linear-gradient(145deg, #2ecc71, #20b262);
-    color: #ffe;
-}
-.import-btn {
-    background: linear-gradient(145deg, #9b59b6, #8e44ad);
-    color: #fff; border: none; font-weight: bold; padding: 10px 15px; font-size: 0.85rem; border-radius: 8px; cursor: pointer; transition: all 0.3s ease;
-}
-.import-btn:hover {
-    background: linear-gradient(145deg, #a569c7, #9b59b6);
-}
-.export-btn {
-    background: linear-gradient(145deg, #2196F3, #1976D2);
-    color: #fff; border: none; font-weight: bold; padding: 10px 15px; font-size: 0.85rem; border-radius: 8px; cursor: pointer; transition: all 0.3s ease;
-}
-.export-btn:hover {
-    background: linear-gradient(145deg, #42A5F5, #2196F3);
-}
-.reset-btn, .reset-db-btn {
-    background: linear-gradient(145deg, #c41e3a, #a01729);
-    border: none; color: #fff; padding: 12px 30px; border-radius: 25px; cursor: pointer;
-    font-size: 1rem; font-weight: bold; transition: all 0.3s ease;
-}
-.reset-db-btn { padding: 10px 15px; font-size: 0.85rem; border-radius: 8px; }
-.reset-btn:hover, .reset-db-btn:hover {
-    background: linear-gradient(145deg, #d4273e, #b01d30);
-}
-
-.heroes-list {
-    display: flex;
-    flex-direction: column;
-    gap: 22px;
-    width: 100%;
-    max-width: 520px;
-    margin: 0 auto;
-    align-items: stretch;
-}
-.hero-card {
-    background: linear-gradient(145deg, #2a2a2a, #1a1a1a);
-    border: 2px solid #d4af37;
-    border-radius: 10px;
-    padding: 18px 18px 13px 18px;
-    text-align: left;
-    font-size: 1.13rem;
-    color: #ececec;
-    line-height: 1.48;
-    box-shadow: 0 3px 18px rgba(212,175,55,0.07);
-    min-width: 320px;
-    max-width: 450px;
-    margin: 0 auto;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-}
-.hero-card .hero-name {
-    font-size: 1.25rem;
-    font-weight: bold;
-    color: #ffe27d;
-    margin-bottom: 8px;
-    line-height: 1.18;
-}
-.hero-card .style-row {
-    margin: 8px 0 0 0;
-    font-size: 1.09rem;
-    color: #c8e9ff;
-    font-weight: 500;
-    letter-spacing: 0.01em;
-}
-.hero-card .style-row span { font-size: 1.04em; font-weight: 700; }
-.hero-card .build-comment,
-.hero-card .build-desc,
-.hero-card .build-row-comment {
-    margin-top: 10px;
-    color: #fffbe6;
-    font-size: 1.07rem;
-    background: rgba(255,255,238,0.05);
-    padding: 7px 10px;
-    border-radius: 6px;
-    font-weight: 450;
-    white-space: pre-wrap;
-    word-break: break-word;
-}
-.build-actions {
-    display: flex;
-    gap: 10px;
-    justify-content: flex-end;
-    flex-wrap: wrap;
-    margin-top: 15px;
-    margin-bottom: 0;
-}
-.build-actions .edit-btn,
-.build-actions .delete-btn {
-    font-size: 1rem;
-    padding: 6px 15px;
-    border-radius: 8px;
-    min-width: 95px;
-    margin: 0;
-}
-
-/* ========== ТИРЫ ========== */
-.tier-badge {
-    display: inline-block;
-    min-width: 32px;
-    padding: 2px 8px;
-    margin-left: 10px;
-    border-radius: 8px;
-    font-size: 0.98rem;
-    font-weight: bold;
-    color: #fff;
-    background: #555;
-    box-shadow: 0 0 3px #0007;
-    vertical-align: middle;
-}
-.tier-badge-1 { background: linear-gradient(90deg,#ffd400,#ffe395,#ba9647); color: #333; }
-.tier-badge-2 { background: linear-gradient(90deg,#8ef08e,#59cc59); color: #233; }
-.tier-badge-3 { background: linear-gradient(90deg,#6fc3e7,#407b9f); }
-.tier-badge-4 { background: #888; }
-
-/* ========== БОКОВАЯ ПАНЕЛЬ ========== */
-.sidebar {
-    width: 300px;
-    background: linear-gradient(180deg, #1a1a1a 0%, #0d0d0d 100%);
-    border-left: 2px solid #333;
-    padding: 20px;
-    overflow-y: auto;
-    position: sticky;
-    top: 0;
-    height: 100vh;
-}
-
-.sidebar h3 {
-    color: #d4af37;
-    font-size: 1.4rem;
-    margin-bottom: 15px;
-    text-align: center;
-    border-bottom: 2px solid #333;
-    padding-bottom: 10px;
-}
-
-.heroes-count {
-    color: #ccc;
-    font-size: 0.9rem;
-    text-align: center;
-    margin-bottom: 20px;
-    padding: 8px;
-    background: rgba(212, 175, 55, 0.1);
-    border-radius: 5px;
-    border: 1px solid #333;
-}
-
-.all-builds-list {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-.hero-item, .build-item {
-    background: rgba(255, 255, 255, 0.05);
-    padding: 12px 8px;
-    border-radius: 8px;
-    border: 1px solid #333;
-    color: #fff;
-    font-size: 0.95rem;
-    transition: all 0.2s ease;
-    cursor: pointer;
-    margin-bottom: 8px;
-    display: block;
-}
-.hero-item:hover, .build-item:hover {
-    background: rgba(212, 175, 55, 0.1);
-    border-color: #d4af37;
-    color: #d4af37;
-}
-
-/* ========== МОДАЛЬНОЕ ОКНО ========== */
-.modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.8);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 1000;
-}
-.modal-content {
-    background: linear-gradient(145deg, #2a2a2a, #1a1a1a);
-    border: 2px solid #d4af37;
-    border-radius: 15px;
-    padding: 25px;
-    max-width: 600px;
-    width: 90%;
-    max-height: 80vh;
-    overflow-y: auto;
-}
-.modal-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-    border-bottom: 2px solid #333;
-    padding-bottom: 15px;
-}
-.modal-header h3 {
-    color: #d4af37;
-    margin: 0;
-    font-size: 1.3rem;
-}
-.close-btn {
-    background: none;
-    border: none;
-    color: #d4af37;
-    font-size: 2rem;
-    cursor: pointer;
-    padding: 0;
-    width: 30px;
-    height: 30px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-.close-btn:hover { color: #fff; }
-.form-field { margin-bottom: 16px; }
-.row-inputs {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 35px;
-    align-items: flex-end;
-    margin-bottom: 12px;
-}
-#build-hero {
-    min-width: 170px;
-    min-height: 38px;
-    border-radius: 7px;
-    font-size: 1.17rem;
-    font-weight: bold;
-    padding: 7px 13px;
-}
-.edit-styles-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-    gap: 12px;
-    margin-bottom: 15px;
-    padding: 8px;
-    background: rgba(255, 255, 255, 0.02);
-    border-radius: 8px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-}
-.edit-style-btn {
-    background: linear-gradient(135deg, #34495e 0%, #2c3e50 100%);
-    border: 2px solid #4a6741;
-    color: #ecf0f1;
-    padding: 12px 16px;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: all 0.15s ease;
-    text-align: center;
-    font-size: 0.95rem;
-    font-weight: 500;
-    min-height: 45px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-}
-.edit-style-btn:hover {
-    border-color: #27ae60;
-    background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
-    transform: scale(1.05);
-    box-shadow: 0 4px 15px rgba(46, 204, 113, 0.3);
-}
-.edit-style-btn.selected {
-    background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
-    border-color: #f39c12;
-    color: #fff; font-weight: 600;
-    box-shadow: 0 4px 15px rgba(243, 156, 18, 0.4);
-    transform: scale(1.03);
-}
-.edit-style-btn.selected::before {
-    content: '●';
-    position: absolute;
-    top: 3px;
-    right: 6px;
-    font-size: 12px;
-    color: #fff;
-}
-.edit-style-btn.disabled {
-    opacity: 0.3; cursor: not-allowed;
-    background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%);
-    border-color: #95a5a6;
-    transform: none; box-shadow: none;
-}
-.edit-style-btn.disabled:hover {
-    transform: none; box-shadow: none; border-color: #95a5a6;
-    background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%);
-}
-.style-big { font-size: 1.09rem !important; min-width: 105px; min-height: 48px; margin-bottom: 5px;}
-
-.modal-footer {
-    display: flex;
-    gap: 15px;
-    justify-content: center;
-    border-top: 2px solid #333;
-    padding-top: 20px;
-}
-.save-btn, .cancel-btn {
-    padding: 12px 25px;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 1rem;
-    font-weight: bold;
-    transition: all 0.3s ease;
-}
-.save-btn {
-    background: linear-gradient(145deg, #4CAF50, #45a049);
-    color: #fff;
-}
-.save-btn:hover {
-    background: linear-gradient(145deg, #5CBF60, #4CAF50);
-}
-.save-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-.cancel-btn {
-    background: linear-gradient(145deg, #666, #555);
-    color: #fff;
-}
-.cancel-btn:hover { background: linear-gradient(145deg, #777, #666); }
-
-/* ========== АДАПТИВНОСТЬ ========== */
-@media (max-width: 1200px) {
-    .sidebar { width: 250px; }
-}
-@media (max-width: 968px) {
-    .app-layout { flex-direction: column; }
-    .sidebar {
-        width: 100%; height: auto; position: static; border-left: none;
-        border-top: 2px solid #333; order: 2; max-height: 400px;
+// ========== ПЕРСИСТЕНТНОЕ ХРАНИЛИЩЕ ==========
+const STORAGE_KEY = "buildsDatabase";
+let builds = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [
+    {
+        "hero": "мирана",
+        "mustHave": ["guards", "poison"],
+        "mustNotHave": ["crits", "healing", "dodge"],
+        "talents": "2 1 2",
+        "comment": "Нет леги на лечение стражей",
+        "tier": 2
     }
-    .main-container { order: 1; }
-    .database-controls {
-        bottom: 10px; left: 10px; flex-direction: row; flex-wrap: wrap;
+];
+
+// ========== СОСТОЯНИЕ ==========
+let selectedDisabledStyles = [];
+let editingBuildIndex = null;
+
+// ========== UI ИНИЦИАЛИЗАЦИЯ ==========
+document.addEventListener("DOMContentLoaded", () => {
+    renderDisabledStylesPicker();
+    renderBuildsList();
+    setupEventListeners();
+});
+
+// ========== ПОИСК БИЛДОВ ==========
+function searchBuilds(disabledStyles) {
+    const enabledStyles = PLAYSTYLES_DATA.map(x => x.id).filter(id => !disabledStyles.includes(id));
+    return builds.filter(build => {
+        if (!build.mustHave.every(s => enabledStyles.includes(s))) return false;
+        if (build.mustNotHave.some(s => enabledStyles.includes(s))) return false;
+        return true;
+    });
+}
+
+// ========== ОТРИСОВКА ВЫБОРА СТИЛЕЙ ДЛЯ ПОИСКА ==========
+function renderDisabledStylesPicker() {
+    const grid = document.getElementById('playstyles-grid');
+    grid.innerHTML = '';
+    PLAYSTYLES_DATA.forEach(ps => {
+        const btn = document.createElement('button');
+        btn.className = 'playstyle-btn';
+        btn.dataset.id = ps.id;
+        btn.innerHTML = `<div>${ps.name}</div><div style="font-size:0.8em;color:#ccc">${ps.description}</div>`;
+        if (selectedDisabledStyles.includes(ps.id)) btn.classList.add('selected');
+        if (selectedDisabledStyles.length >= 5 && !selectedDisabledStyles.includes(ps.id))
+            btn.classList.add('disabled');
+
+        btn.onclick = () => {
+            toggleDisabledStyle(ps.id);
+        };
+        grid.appendChild(btn);
+    });
+    document.getElementById('selection-count').textContent = selectedDisabledStyles.length;
+}
+
+function toggleDisabledStyle(id) {
+    const i = selectedDisabledStyles.indexOf(id);
+    if (i === -1 && selectedDisabledStyles.length < 5) selectedDisabledStyles.push(id);
+    else if (i !== -1) selectedDisabledStyles.splice(i, 1);
+    renderDisabledStylesPicker();
+    renderSearchResults();
+}
+
+// ========== СЛОТЫ ВЫБОРА ==========
+function renderSelectionSlots() {
+    const slots = document.getElementById('selection-slots');
+    slots.innerHTML = '';
+    for (let i = 0; i < 5; i++) {
+        const slot = document.createElement('div');
+        slot.className = 'slot';
+        slot.dataset.slot = i;
+        if (selectedDisabledStyles[i]) {
+            slot.classList.add('filled');
+            const playstyle = PLAYSTYLES_DATA.find(p => p.id === selectedDisabledStyles[i]);
+            slot.innerHTML = `<span class="slot-number">${i + 1}</span>
+                <span class="slot-text">${playstyle.name}</span>`;
+        } else {
+            slot.classList.add('empty');
+            slot.innerHTML = `<span class="slot-number">${i + 1}</span>
+                <span class="slot-text">Пусто</span>`;
+        }
+        slots.appendChild(slot);
     }
 }
-@media (max-width: 768px) {
-    .header h1 { font-size: 2rem; }
-    .selection-slots { justify-content: center; }
-    .slot { width: 120px; height: 70px; }
-    .playstyles-grid { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; }
-    .edit-styles-grid { grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 8px; }
-    .hero-card { min-width: unset; max-width: 98vw; font-size: 1.01rem; }
-    .heroes-list { padding: 0 2vw; }
+
+// ========== ПОИСКОВЫЕ РЕЗУЛЬТАТЫ ==========
+function renderSearchResults() {
+    renderSelectionSlots();
+    const resultSection = document.getElementById('results-section');
+    const buildList = document.getElementById('heroes-list');
+    buildList.innerHTML = '';
+    if (selectedDisabledStyles.length === 0) {
+        resultSection.style.display = "none";
+        return;
+    }
+    const results = searchBuilds(selectedDisabledStyles);
+    resultSection.style.display = "block";
+    if (results.length === 0) {
+        buildList.innerHTML = `<div class="hero-card"><div class="hero-name">Нет подходящих билдов</div></div>`;
+        return;
+    }
+    results.forEach((build, idx) => {
+        buildList.appendChild(buildCardView(build, idx));
+    });
 }
 
+// ======= ОТРИСОВКА КАРТОЧКИ БИЛДА (РЕКОМЕНДАЦИЯ) =======
+function buildCardView(build, buildIdx) {
+    const realIndex = builds.findIndex(b =>
+        b.hero === build.hero &&
+        JSON.stringify(b.mustHave) === JSON.stringify(build.mustHave) &&
+        JSON.stringify(b.mustNotHave) === JSON.stringify(build.mustNotHave)
+    );
+    const el = document.createElement('div');
+    el.className = 'hero-card';
+    el.innerHTML = `
+        <div class="hero-name">
+            ${build.hero}
+            <span class="tier-badge tier-badge-${build.tier||4}" title="Тир билда">${build.tier||4}</span>
+        </div>
+        <div style="margin:6px 0;color:#d4af37;font-weight:bold;">Таланты: ${build.talents || ''}</div>
+        <div class="style-row"><span style="color:#49d;">+ </span>${build.mustHave.map(st => styleName(st)).join(', ') || '-'}</div>
+        <div class="style-row"><span style="color:#f55;">– </span>${build.mustNotHave.map(st => styleName(st)).join(', ') || '-'}</div>
+        <div class="build-comment">${build.comment || ''}</div>
+        <div class="build-actions">
+            <button class="edit-btn" onclick="editBuild(${realIndex})">✏️ Редактировать</button>
+            <button class="delete-btn" onclick="deleteBuild(${realIndex})">🗑️ Удалить</button>
+        </div>
+    `;
+    return el;
+}
 
+function styleName(id) {
+    let found = PLAYSTYLES_DATA.find(st => st.id === id);
+    return found ? found.name : id;
+}
+
+// ========== ОТРИСОВКА СПИСКА БИЛДОВ ==========
+function renderBuildsList() {
+    const buildsList = document.getElementById('all-builds-list');
+    const totalSpan = document.getElementById('total-heroes');
+    totalSpan.textContent = builds.length;
+    buildsList.innerHTML = '';
+    builds.forEach((build, i) => {
+        const el = document.createElement('div');
+        el.className = 'hero-item build-item';
+        el.innerHTML = `
+            <div class="build-main-info">
+                <div class="build-hero-name">
+                  ${build.hero || '(без имени)'}
+                  <span class="tier-badge tier-badge-${build.tier||4}" title="Тир">${build.tier||4}</span>
+                </div>
+                <div class="build-talents">${build.talents ? `Таланты: ${build.talents}` : ''}</div>
+            </div>
+            <div class="build-styles">
+                <div class="styles-must-have">+ ${build.mustHave.map(styleName).join(', ') || 'нет'}</div>
+                <div class="styles-must-not">– ${build.mustNotHave.map(styleName).join(', ') || 'нет'}</div>
+            </div>
+            <div class="build-comment">${build.comment || ''}</div>
+            <div class="build-actions">
+                <button class="edit-btn" onclick="editBuild(${i})" title="Редактировать">✏️</button>
+                <button class="delete-btn" onclick="deleteBuild(${i})" title="Удалить">🗑️</button>
+            </div>
+        `;
+        buildsList.appendChild(el);
+    });
+}
+
+// ========== ОБРАБОТЧИКИ СОБЫТИЙ ==========
+function setupEventListeners() {
+    document.getElementById('reset-btn').addEventListener('click', function() {
+        selectedDisabledStyles = [];
+        renderDisabledStylesPicker();
+        renderSearchResults();
+    });
+    document.getElementById('add-build-btn').onclick = showAddBuildModal;
+    document.getElementById('export-btn').onclick = exportBuilds;
+    document.getElementById('import-btn').onclick = importBuilds;
+    document.getElementById('reset-db').onclick = function() {
+        if (confirm('Вы уверены, что хотите очистить все билды?')) {
+            builds = [];
+            persist();
+            renderBuildsList();
+            renderSearchResults();
+        }
+    }
+}
+
+function showAddBuildModal() {
+    editingBuildIndex = null;
+    showBuildFormModal({
+        hero: '',
+        mustHave: [],
+        mustNotHave: [],
+        talents: '',
+        comment: '',
+        tier: 4
+    }, 'Создание билда');
+}
+
+window.editBuild = function(idx) {
+    if (!builds[idx]) {
+        alert('Билд не найден!');
+        return;
+    }
+    editingBuildIndex = idx;
+    showBuildFormModal(builds[idx], `Редактирование билда: ${builds[idx].hero}`);
+}
+
+window.deleteBuild = function(idx) {
+    if (!builds[idx]) {
+        alert('Билд не найден!');
+        return;
+    }
+    if (!confirm(`Удалить билд для героя "${builds[idx].hero}"?`)) return;
+    builds.splice(idx, 1);
+    persist();
+    renderBuildsList();
+    renderSearchResults();
+    alert('Билд удален!');
+}
+
+// ========== МОДАЛЬНОЕ ОКНО ==========
+function showBuildFormModal(build, title = "") {
+    let overlay = document.createElement('div');
+    overlay.className = 'modal-overlay';
+    overlay.id = 'build-modal-x';
+    overlay.innerHTML = `
+    <div class="modal-content modal-wide">
+        <div class="modal-header">
+            <h3>${title}</h3>
+            <button class="close-btn" id="close-build-modal">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="row-inputs">
+                <div class="form-field">
+                    <label for="build-hero" style="font-size:1.04rem;font-weight:bold;">Герой:</label>
+                    <select id="build-hero" style="width:210px;font-size:1.17rem;font-weight:bold;padding:7px 13px;">
+                        <option value=""> -- выберите героя -- </option>
+                        ${HEROES_LIST.map(h => `<option value="${h}"${(h === build.hero ? ' selected' : '')}>${h}</option>`).join('')}
+                    </select>
+                </div>
+                <div class="form-field">
+                    <label for="build-tier" style="font-size:1.05rem;">Тир билда:</label>
+                    <select id="build-tier" style="margin-left:10px;font-size:1.05rem;font-weight:bold;border-radius:7px;border:1px solid #aaa;padding:6px;">
+                        <option value="1"${build.tier==1?' selected':''}>1 (S-Tier)</option>
+                        <option value="2"${build.tier==2?' selected':''}>2 (A-Tier)</option>
+                        <option value="3"${build.tier==3?' selected':''}>3 (B-Tier)</option>
+                        <option value="4"${!build.tier || build.tier==4?' selected':''}>4 (fun/meme)</option>
+                    </select>
+                </div>
+                <div class="form-field">
+                    <label for="build-talents" style="font-size:1.0rem;">Таланты:</label>
+                    <input id="build-talents" style="width:110px;font-size:1.08rem;padding:7px;border-radius:7px;border:1.3px solid #aaa" value="${build.talents || ''}" placeholder="10 20 30">
+                </div>
+            </div>
+            <div class="form-field">
+                <label style="font-size:1rem;font-weight:bold;">Стили, которые <b>ДОЛЖНЫ</b> быть:</label>
+                <div class="edit-styles-grid" id="musthave-grid"></div>
+            </div>
+            <div class="form-field">
+                <label style="font-size:1rem;font-weight:bold;">Стили, которых <b>НЕ должно</b> быть:</label>
+                <div class="edit-styles-grid" id="mustnothave-grid"></div>
+            </div>
+            <div class="form-field">
+                <label for="build-comment" style="font-size:1rem;">Комментарий:</label>
+                <textarea id="build-comment" rows="2" style="width:100%;font-size:1.08rem;padding:7px;border-radius:7px;border:1.3px solid #aaa" placeholder="Комментарий">${build.comment || ''}</textarea>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="save-btn" id="save-build" style="font-size:1.1rem;padding:12px 35px;">Сохранить</button>
+            <button class="cancel-btn" id="cancel-build" style="font-size:1.1rem;padding:12px 35px;">Отмена</button>
+        </div>
+    </div>
+    `;
+    document.body.appendChild(overlay);
+
+    let mustHave = [...(build.mustHave || [])];
+    let mustNotHave = [...(build.mustNotHave || [])];
+
+    const gridH = overlay.querySelector('#musthave-grid');
+    const gridN = overlay.querySelector('#mustnothave-grid');
+
+    function renderCheckboxGrids() {
+        // Must Have
+        gridH.innerHTML = '';
+        PLAYSTYLES_DATA.forEach(ps => {
+            if (mustNotHave.includes(ps.id)) return;
+            const btn = document.createElement('button');
+            btn.className = 'edit-style-btn style-big';
+            btn.textContent = ps.name;
+            if (mustHave.includes(ps.id)) btn.classList.add('selected');
+            if (mustHave.length >= 5 && !mustHave.includes(ps.id)) btn.classList.add('disabled');
+            btn.onclick = (e) => {
+                e.preventDefault();
+                if (mustHave.includes(ps.id)) {
+                    mustHave = mustHave.filter(id => id !== ps.id);
+                } else if (mustHave.length < 5) {
+                    mustHave.push(ps.id);
+                }
+                renderCheckboxGrids();
+            };
+            gridH.appendChild(btn);
+        });
+
+        // Must Not Have
+        gridN.innerHTML = '';
+        PLAYSTYLES_DATA.forEach(ps => {
+            if (mustHave.includes(ps.id)) return;
+            const btn = document.createElement('button');
+            btn.className = 'edit-style-btn style-big';
+            btn.textContent = ps.name;
+            if (mustNotHave.includes(ps.id)) btn.classList.add('selected');
+            if (mustNotHave.length >= 5 && !mustNotHave.includes(ps.id)) btn.classList.add('disabled');
+            btn.onclick = (e) => {
+                e.preventDefault();
+                if (mustNotHave.includes(ps.id)) {
+                    mustNotHave = mustNotHave.filter(id => id !== ps.id);
+                } else if (mustNotHave.length < 5) {
+                    mustNotHave.push(ps.id);
+                }
+                renderCheckboxGrids();
+            };
+            gridN.appendChild(btn);
+        });
+    }
+
+    renderCheckboxGrids();
+
+    overlay.querySelector('#close-build-modal').onclick = close;
+    overlay.querySelector('#cancel-build').onclick = close;
+    overlay.querySelector('#save-build').onclick = function () {
+        const hero = overlay.querySelector('#build-hero').value;
+        const talents = overlay.querySelector('#build-talents').value.trim();
+        const comment = overlay.querySelector('#build-comment').value.trim();
+        const tier = parseInt(overlay.querySelector('#build-tier').value);
+        if (!hero) return alert('Выберите героя');
+        if (mustHave.length > 5 || mustNotHave.length > 5) return alert('Максимум 5 стилей в каждом поле!');
+        if (mustHave.some(s => mustNotHave.includes(s)))
+            return alert('В "должны быть" и "не должно быть" совпадают стили!');
+        builds[editingBuildIndex !== null ? editingBuildIndex : builds.length] = {
+            hero, mustHave: [...mustHave], mustNotHave: [...mustNotHave], talents, comment, tier
+        };
+        persist();
+        renderBuildsList();
+        renderSearchResults();
+        close();
+    };
+
+    function close() {
+        document.body.removeChild(overlay);
+    }
+}
+
+// ========== ИМПОРТ/ЭКСПОРТ ==========
+function exportBuilds() {
+    const data = {
+        exported_at: new Date().toLocaleString('ru-RU'),
+        builds_count: builds.length,
+        builds
+    };
+    const blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `glad_builds_${new Date().toISOString().split('T')[0]}.json`;
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(url), 2000);
+    document.body.removeChild(a);
+}
+
+function importBuilds() {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.json';
+    input.onchange = function(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                const data = JSON.parse(e.target.result);
+                let importedBuilds = [];
+                if (Array.isArray(data)) {
+                    importedBuilds = data;
+                } else if (data.builds && Array.isArray(data.builds)) {
+                    importedBuilds = data.builds;
+                } else {
+                    throw new Error('Неверный формат файла');
+                }
+                const validBuilds = importedBuilds.filter(build =>
+                    build.hero &&
+                    Array.isArray(build.mustHave) &&
+                    Array.isArray(build.mustNotHave)
+                );
+                if (validBuilds.length === 0) {
+                    alert('В файле нет корректных билдов!');
+                    return;
+                }
+                const replace = confirm(
+                    `Найдено ${validBuilds.length} билдов.\n\n` +
+                    `OK - ЗАМЕНИТЬ все текущие билды\n` +
+                    `Отмена - ДОБАВИТЬ к текущим`
+                );
+                if (replace) {
+                    builds = validBuilds;
+                } else {
+                    builds = builds.concat(validBuilds);
+                }
+                persist();
+                renderBuildsList();
+                renderSearchResults();
+                alert(`Импортировано ${validBuilds.length} билдов!`);
+            } catch (error) {
+                alert('Ошибка при чтении файла: ' + error.message);
+            }
+        };
+        reader.readAsText(file);
+    };
+    input.click();
+}
+
+// ========== ПЕРСИСТЕНТНОСТЬ ==========
+function persist() {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(builds));
+}
