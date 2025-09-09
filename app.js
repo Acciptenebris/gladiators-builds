@@ -6,7 +6,6 @@ const HEROES_LIST = [
     "WASTELAND GUARD", "TA", "RINGMASTER", "MK", "ES", "LION", "GUITARIST", "KEZ", "WITCH DOCTOR", "FLAMEBORN", "TROLL", "ALCHEMIST", "CLINKZ", "LESHRAC", "PL", "BRIST", "SILENCER",
     "BROOD MOTHER",
 ];
-
 // ========== ДАННЫЕ СТИЛЕЙ ==========
 const PLAYSTYLES_DATA = [
     {id: "guards", name: "Стражи", description: "Гейские шары"},
@@ -23,7 +22,6 @@ const PLAYSTYLES_DATA = [
     {id: "ultimate", name: "Ульта", description: "Опять гитарист в бане"},
     {id: "attack", name: "Атака", description: "Моя бить"}
 ];
-
 // ========== ПЕРСИСТЕНТНОЕ ХРАНИЛИЩЕ ==========
 const STORAGE_KEY = "buildsDatabase";
 let builds = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [
@@ -33,21 +31,19 @@ let builds = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [
         "mustNotHave": ["crits", "healing", "dodge"],
         "talents": "2 1 2",
         "comment": "Нет леги на лечение стражей",
-        "tier": 2
+        "tier": 2,
+        "img": ""
     }
 ];
-
 // ========== СОСТОЯНИЕ ==========
 let selectedDisabledStyles = [];
 let editingBuildIndex = null;
-
 // ========== UI ИНИЦИАЛИЗАЦИЯ ==========
 document.addEventListener("DOMContentLoaded", () => {
     renderDisabledStylesPicker();
     renderBuildsList();
     setupEventListeners();
 });
-
 // ========== ПОИСК БИЛДОВ ==========
 function searchBuilds(disabledStyles) {
     const enabledStyles = PLAYSTYLES_DATA.map(x => x.id).filter(id => !disabledStyles.includes(id));
@@ -57,7 +53,6 @@ function searchBuilds(disabledStyles) {
         return true;
     });
 }
-
 // ========== ОТРИСОВКА ВЫБОРА СТИЛЕЙ ДЛЯ ПОИСКА ==========
 function renderDisabledStylesPicker() {
     const grid = document.getElementById('playstyles-grid');
@@ -70,7 +65,6 @@ function renderDisabledStylesPicker() {
         if (selectedDisabledStyles.includes(ps.id)) btn.classList.add('selected');
         if (selectedDisabledStyles.length >= 5 && !selectedDisabledStyles.includes(ps.id))
             btn.classList.add('disabled');
-
         btn.onclick = () => {
             toggleDisabledStyle(ps.id);
         };
@@ -78,7 +72,6 @@ function renderDisabledStylesPicker() {
     });
     document.getElementById('selection-count').textContent = selectedDisabledStyles.length;
 }
-
 function toggleDisabledStyle(id) {
     const i = selectedDisabledStyles.indexOf(id);
     if (i === -1 && selectedDisabledStyles.length < 5) selectedDisabledStyles.push(id);
@@ -86,7 +79,6 @@ function toggleDisabledStyle(id) {
     renderDisabledStylesPicker();
     renderSearchResults();
 }
-
 // ========== СЛОТЫ ВЫБОРА ==========
 function renderSelectionSlots() {
     const slots = document.getElementById('selection-slots');
@@ -108,7 +100,6 @@ function renderSelectionSlots() {
         slots.appendChild(slot);
     }
 }
-
 // ========== ПОИСКОВЫЕ РЕЗУЛЬТАТЫ ==========
 function renderSearchResults() {
     renderSelectionSlots();
@@ -129,7 +120,6 @@ function renderSearchResults() {
         buildList.appendChild(buildCardView(build, idx));
     });
 }
-
 // ======= ОТРИСОВКА КАРТОЧКИ БИЛДА (РЕКОМЕНДАЦИЯ) =======
 function buildCardView(build, buildIdx) {
     const realIndex = builds.findIndex(b =>
@@ -138,29 +128,38 @@ function buildCardView(build, buildIdx) {
         JSON.stringify(b.mustNotHave) === JSON.stringify(build.mustNotHave)
     );
     const el = document.createElement('div');
-    el.className = 'hero-card';
+    el.className = 'hero-card hero-card-wide';
+
+    let imgHtml = '';
+    if (build.img) {
+        imgHtml = `<div class="build-img"><img src="${build.img}" alt="${build.hero}" loading="lazy"></div>`;
+    } else {
+        imgHtml = `<div class="build-img build-img-empty"><span>Нет фото</span></div>`;
+    }
+
     el.innerHTML = `
-        <div class="hero-name">
-            ${build.hero}
-            <span class="tier-badge tier-badge-${build.tier||4}" title="Тир билда">${build.tier||4}</span>
-        </div>
-        <div style="margin:6px 0;color:#d4af37;font-weight:bold;">Таланты: ${build.talents || ''}</div>
-        <div class="style-row"><span style="color:#49d;">+ </span>${build.mustHave.map(st => styleName(st)).join(', ') || '-'}</div>
-        <div class="style-row"><span style="color:#f55;">– </span>${build.mustNotHave.map(st => styleName(st)).join(', ') || '-'}</div>
-        <div class="build-comment">${build.comment || ''}</div>
-        <div class="build-actions">
-            <button class="edit-btn" onclick="editBuild(${realIndex})">✏️ Редактировать</button>
-            <button class="delete-btn" onclick="deleteBuild(${realIndex})">🗑️ Удалить</button>
+        ${imgHtml}
+        <div class="build-content">
+            <div class="hero-name">
+                ${build.hero}
+                <span class="tier-badge tier-badge-${build.tier||4}" title="Тир билда">${build.tier||4}</span>
+            </div>
+            <div style="margin:6px 0;color:#d4af37;font-weight:bold;">Таланты: ${build.talents || ''}</div>
+            <div class="style-row"><span style="color:#49d;">+ </span>${build.mustHave.map(st => styleName(st)).join(', ') || '-'}</div>
+            <div class="style-row"><span style="color:#f55;">– </span>${build.mustNotHave.map(st => styleName(st)).join(', ') || '-'}</div>
+            <div class="build-comment">${build.comment || ''}</div>
+            <div class="build-actions">
+                <button class="edit-btn" onclick="editBuild(${realIndex})">✏️ Редактировать</button>
+                <button class="delete-btn" onclick="deleteBuild(${realIndex})">🗑️ Удалить</button>
+            </div>
         </div>
     `;
     return el;
 }
-
 function styleName(id) {
     let found = PLAYSTYLES_DATA.find(st => st.id === id);
     return found ? found.name : id;
 }
-
 // ========== ОТРИСОВКА СПИСКА БИЛДОВ ==========
 function renderBuildsList() {
     const buildsList = document.getElementById('all-builds-list');
@@ -170,10 +169,11 @@ function renderBuildsList() {
     builds.forEach((build, i) => {
         const el = document.createElement('div');
         el.className = 'hero-item build-item';
+        let imgHtml = build.img ? `<div class="build-img-mini"><img src="${build.img}" alt="" loading="lazy"></div>` : '';
         el.innerHTML = `
             <div class="build-main-info">
                 <div class="build-hero-name">
-                  ${build.hero || '(без имени)'}
+                  ${imgHtml}${build.hero || '(без имени)'}
                   <span class="tier-badge tier-badge-${build.tier||4}" title="Тир">${build.tier||4}</span>
                 </div>
                 <div class="build-talents">${build.talents ? `Таланты: ${build.talents}` : ''}</div>
@@ -185,13 +185,12 @@ function renderBuildsList() {
             <div class="build-comment">${build.comment || ''}</div>
             <div class="build-actions">
                 <button class="edit-btn" onclick="editBuild(${i})" title="Редактировать">✏️</button>
-                <button class="delete-btn" onclick="deleteBuild(${i})" title="Удалить">🗑️</button>
+                <button class="delete-btn" onclick="deletBuild(${i})" title="Удалить">🗑️</button>
             </div>
         `;
         buildsList.appendChild(el);
     });
 }
-
 // ========== ОБРАБОТЧИКИ СОБЫТИЙ ==========
 function setupEventListeners() {
     document.getElementById('reset-btn').addEventListener('click', function() {
@@ -211,7 +210,6 @@ function setupEventListeners() {
         }
     }
 }
-
 function showAddBuildModal() {
     editingBuildIndex = null;
     showBuildFormModal({
@@ -220,10 +218,10 @@ function showAddBuildModal() {
         mustNotHave: [],
         talents: '',
         comment: '',
-        tier: 4
+        tier: 4,
+        img: ''
     }, 'Создание билда');
 }
-
 window.editBuild = function(idx) {
     if (!builds[idx]) {
         alert('Билд не найден!');
@@ -232,7 +230,6 @@ window.editBuild = function(idx) {
     editingBuildIndex = idx;
     showBuildFormModal(builds[idx], `Редактирование билда: ${builds[idx].hero}`);
 }
-
 window.deleteBuild = function(idx) {
     if (!builds[idx]) {
         alert('Билд не найден!');
@@ -243,9 +240,7 @@ window.deleteBuild = function(idx) {
     persist();
     renderBuildsList();
     renderSearchResults();
-    alert('Билд удален!');
 }
-
 // ========== МОДАЛЬНОЕ ОКНО ==========
 function showBuildFormModal(build, title = "") {
     let overlay = document.createElement('div');
@@ -281,6 +276,16 @@ function showBuildFormModal(build, title = "") {
                 </div>
             </div>
             <div class="form-field">
+                <label for="build-img" style="font-size:1.0rem;font-weight:bold;">Картинка (URL или файл):</label>
+                <div class="img-input-container">
+                    <input id="build-img" type="url" style="width:250px;font-size:1.0rem;padding:7px;border-radius:7px;border:1.3px solid #aaa;margin-right:10px;" placeholder="https://example.com/image.jpg" value="${build.img||''}">
+                    <input id="img-file" type="file" accept="image/*" style="font-size:0.9rem;">
+                </div>
+                <div id="img-preview" style="margin-top:10px;">
+                    ${build.img ? `<img src="${build.img}" style="max-width:120px;max-height:120px;border-radius:10px;border:2px solid #666;">` : ''}
+                </div>
+            </div>
+            <div class="form-field">
                 <label style="font-size:1rem;font-weight:bold;">Стили, которые <b>ДОЛЖНЫ</b> быть:</label>
                 <div class="edit-styles-grid" id="musthave-grid"></div>
             </div>
@@ -300,13 +305,43 @@ function showBuildFormModal(build, title = "") {
     </div>
     `;
     document.body.appendChild(overlay);
-
     let mustHave = [...(build.mustHave || [])];
     let mustNotHave = [...(build.mustNotHave || [])];
+    let imgVal = build.img || '';
+
+    const imgInput = overlay.querySelector('#build-img');
+    const imgFile = overlay.querySelector('#img-file');
+    const imgPreview = overlay.querySelector('#img-preview');
+
+    // Обработка изменения URL
+    imgInput.addEventListener('input', function() {
+        imgVal = imgInput.value;
+        updatePreview();
+    });
+
+    // Обработка загрузки файла
+    imgFile.addEventListener('change', function() {
+        if (imgFile.files && imgFile.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                imgVal = e.target.result;
+                imgInput.value = imgVal;
+                updatePreview();
+            };
+            reader.readAsDataURL(imgFile.files[0]);
+        }
+    });
+
+    function updatePreview() {
+        if (imgVal) {
+            imgPreview.innerHTML = `<img src="${imgVal}" style="max-width:120px;max-height:120px;border-radius:10px;border:2px solid #666;">`;
+        } else {
+            imgPreview.innerHTML = '';
+        }
+    }
 
     const gridH = overlay.querySelector('#musthave-grid');
     const gridN = overlay.querySelector('#mustnothave-grid');
-
     function renderCheckboxGrids() {
         // Must Have
         gridH.innerHTML = '';
@@ -328,7 +363,6 @@ function showBuildFormModal(build, title = "") {
             };
             gridH.appendChild(btn);
         });
-
         // Must Not Have
         gridN.innerHTML = '';
         PLAYSTYLES_DATA.forEach(ps => {
@@ -350,9 +384,7 @@ function showBuildFormModal(build, title = "") {
             gridN.appendChild(btn);
         });
     }
-
     renderCheckboxGrids();
-
     overlay.querySelector('#close-build-modal').onclick = close;
     overlay.querySelector('#cancel-build').onclick = close;
     overlay.querySelector('#save-build').onclick = function () {
@@ -365,19 +397,17 @@ function showBuildFormModal(build, title = "") {
         if (mustHave.some(s => mustNotHave.includes(s)))
             return alert('В "должны быть" и "не должно быть" совпадают стили!');
         builds[editingBuildIndex !== null ? editingBuildIndex : builds.length] = {
-            hero, mustHave: [...mustHave], mustNotHave: [...mustNotHave], talents, comment, tier
+            hero, mustHave: [...mustHave], mustNotHave: [...mustNotHave], talents, comment, tier, img: imgVal
         };
         persist();
         renderBuildsList();
         renderSearchResults();
         close();
     };
-
     function close() {
         document.body.removeChild(overlay);
     }
 }
-
 // ========== ИМПОРТ/ЭКСПОРТ ==========
 function exportBuilds() {
     const data = {
@@ -395,7 +425,6 @@ function exportBuilds() {
     setTimeout(() => URL.revokeObjectURL(url), 2000);
     document.body.removeChild(a);
 }
-
 function importBuilds() {
     const input = document.createElement('input');
     input.type = 'file';
@@ -403,7 +432,6 @@ function importBuilds() {
     input.onchange = function(event) {
         const file = event.target.files[0];
         if (!file) return;
-
         const reader = new FileReader();
         reader.onload = function(e) {
             try {
@@ -447,7 +475,6 @@ function importBuilds() {
     };
     input.click();
 }
-
 // ========== ПЕРСИСТЕНТНОСТЬ ==========
 function persist() {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(builds));
