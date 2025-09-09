@@ -26,10 +26,19 @@ const PLAYSTYLES_DATA = [
 
 // ========== ПЕРСИСТЕНТНОЕ ХРАНИЛИЩЕ ==========
 const STORAGE_KEY = "buildsDatabase";
-let builds = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+let builds = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [
+    {
+        "hero": "мирана",
+        "mustHave": ["guards", "poison"],
+        "mustNotHave": ["crits", "healing", "dodge"],
+        "talents": "2 1 2",
+        "comment": "Нет леги на лечение стражей",
+        "tier": 2
+    }
+];
 
 // ========== СОСТОЯНИЕ ==========
-let selectedDisabledStyles = []; // 5 стилей которых нет в игре
+let selectedDisabledStyles = [];
 let editingBuildIndex = null;
 
 // ========== UI ИНИЦИАЛИЗАЦИЯ ==========
@@ -82,75 +91,64 @@ function toggleDisabledStyle(id) {
 function renderSelectionSlots() {
     const slots = document.getElementById('selection-slots');
     slots.innerHTML = '';
-    
     for (let i = 0; i < 5; i++) {
         const slot = document.createElement('div');
         slot.className = 'slot';
         slot.dataset.slot = i;
-        
         if (selectedDisabledStyles[i]) {
             slot.classList.add('filled');
             const playstyle = PLAYSTYLES_DATA.find(p => p.id === selectedDisabledStyles[i]);
-            slot.innerHTML = `
-                <span class="slot-number">${i + 1}</span>
-                <span class="slot-text">${playstyle.name}</span>
-            `;
+            slot.innerHTML = `<span class="slot-number">${i + 1}</span>
+                <span class="slot-text">${playstyle.name}</span>`;
         } else {
             slot.classList.add('empty');
-            slot.innerHTML = `
-                <span class="slot-number">${i + 1}</span>
-                <span class="slot-text">Пусто</span>
-            `;
+            slot.innerHTML = `<span class="slot-number">${i + 1}</span>
+                <span class="slot-text">Пусто</span>`;
         }
-        
         slots.appendChild(slot);
     }
 }
 
 // ========== ПОИСКОВЫЕ РЕЗУЛЬТАТЫ ==========
 function renderSearchResults() {
-    renderSelectionSlots(); // Обновляем слоты
-    
+    renderSelectionSlots();
     const resultSection = document.getElementById('results-section');
     const buildList = document.getElementById('heroes-list');
     buildList.innerHTML = '';
-    
     if (selectedDisabledStyles.length === 0) {
         resultSection.style.display = "none";
         return;
     }
-    
     const results = searchBuilds(selectedDisabledStyles);
     resultSection.style.display = "block";
-    
     if (results.length === 0) {
         buildList.innerHTML = `<div class="hero-card"><div class="hero-name">Нет подходящих билдов</div></div>`;
         return;
     }
-    
     results.forEach((build, idx) => {
         buildList.appendChild(buildCardView(build, idx));
     });
 }
 
-// ======= ОТРИСОВКА КАРТОЧКИ БИЛДА =======
+// ======= ОТРИСОВКА КАРТОЧКИ БИЛДА (РЕКОМЕНДАЦИЯ) =======
 function buildCardView(build, buildIdx) {
-    // Найдем реальный индекс билда в массиве builds
-    const realIndex = builds.findIndex(b => 
-        b.hero === build.hero && 
+    const realIndex = builds.findIndex(b =>
+        b.hero === build.hero &&
         JSON.stringify(b.mustHave) === JSON.stringify(build.mustHave) &&
         JSON.stringify(b.mustNotHave) === JSON.stringify(build.mustNotHave)
     );
-    
     const el = document.createElement('div');
     el.className = 'hero-card';
     el.innerHTML = `
-        <div class="hero-name">${build.hero}</div>
+        <div class="hero-name">
+            ${build.hero}
+            <span class="tier-badge tier-badge-${build.tier||4}" title="Тир билда">${build.tier||4}</span>
+        </div>
         <div style="margin:6px 0;color:#d4af37;font-weight:bold;">Таланты: ${build.talents || ''}</div>
         <div class="style-row"><span style="color:#49d;">+ </span>${build.mustHave.map(st => styleName(st)).join(', ') || '-'}</div>
         <div class="style-row"><span style="color:#f55;">– </span>${build.mustNotHave.map(st => styleName(st)).join(', ') || '-'}</div>
-        <div style="margin-top:8px; color:#eee; font-size:0.9rem;white-space:pre-wrap;">${build.comment || ''}</div>
-        <div class="build-actions" style="margin-top: 10px;">
+        <div class="build-comment">${build.comment || ''}</div>
+        <div class="build-actions">
             <button class="edit-btn" onclick="editBuild(${realIndex})">✏️ Редактировать</button>
             <button class="delete-btn" onclick="deleteBuild(${realIndex})">🗑️ Удалить</button>
         </div>
@@ -169,19 +167,22 @@ function renderBuildsList() {
     const totalSpan = document.getElementById('total-heroes');
     totalSpan.textContent = builds.length;
     buildsList.innerHTML = '';
-    
     builds.forEach((build, i) => {
         const el = document.createElement('div');
         el.className = 'hero-item build-item';
         el.innerHTML = `
             <div class="build-main-info">
-                <div class="build-hero-name">${build.hero || '(без имени)'}</div>
+                <div class="build-hero-name">
+                  ${build.hero || '(без имени)'}
+                  <span class="tier-badge tier-badge-${build.tier||4}" title="Тир">${build.tier||4}</span>
+                </div>
                 <div class="build-talents">${build.talents ? `Таланты: ${build.talents}` : ''}</div>
             </div>
             <div class="build-styles">
                 <div class="styles-must-have">+ ${build.mustHave.map(styleName).join(', ') || 'нет'}</div>
                 <div class="styles-must-not">– ${build.mustNotHave.map(styleName).join(', ') || 'нет'}</div>
             </div>
+            <div class="build-comment">${build.comment || ''}</div>
             <div class="build-actions">
                 <button class="edit-btn" onclick="editBuild(${i})" title="Редактировать">✏️</button>
                 <button class="delete-btn" onclick="deleteBuild(${i})" title="Удалить">🗑️</button>
@@ -193,23 +194,14 @@ function renderBuildsList() {
 
 // ========== ОБРАБОТЧИКИ СОБЫТИЙ ==========
 function setupEventListeners() {
-    // Кнопка сброса выбора стилей
     document.getElementById('reset-btn').addEventListener('click', function() {
         selectedDisabledStyles = [];
         renderDisabledStylesPicker();
         renderSearchResults();
     });
-    
-    // Кнопка добавления билда
     document.getElementById('add-build-btn').onclick = showAddBuildModal;
-    
-    // Кнопка экспорта
     document.getElementById('export-btn').onclick = exportBuilds;
-    
-    // Кнопка импорта
     document.getElementById('import-btn').onclick = importBuilds;
-    
-    // Кнопка сброса базы данных
     document.getElementById('reset-db').onclick = function() {
         if (confirm('Вы уверены, что хотите очистить все билды?')) {
             builds = [];
@@ -220,7 +212,6 @@ function setupEventListeners() {
     }
 }
 
-// ========== ДОБАВЛЕНИЕ/РЕДАКТИРОВАНИЕ БИЛДОВ ==========
 function showAddBuildModal() {
     editingBuildIndex = null;
     showBuildFormModal({
@@ -228,7 +219,8 @@ function showAddBuildModal() {
         mustHave: [],
         mustNotHave: [],
         talents: '',
-        comment: ''
+        comment: '',
+        tier: 4
     }, 'Создание билда');
 }
 
@@ -272,6 +264,15 @@ function showBuildFormModal(build, title = "") {
                     <select id="build-hero" style="width:210px;font-size:1.17rem;font-weight:bold;padding:7px 13px;">
                         <option value=""> -- выберите героя -- </option>
                         ${HEROES_LIST.map(h => `<option value="${h}"${(h === build.hero ? ' selected' : '')}>${h}</option>`).join('')}
+                    </select>
+                </div>
+                <div class="form-field">
+                    <label for="build-tier" style="font-size:1.05rem;">Тир билда:</label>
+                    <select id="build-tier" style="margin-left:10px;font-size:1.05rem;font-weight:bold;border-radius:7px;border:1px solid #aaa;padding:6px;">
+                        <option value="1"${build.tier==1?' selected':''}>1 (S-Tier)</option>
+                        <option value="2"${build.tier==2?' selected':''}>2 (A-Tier)</option>
+                        <option value="3"${build.tier==3?' selected':''}>3 (B-Tier)</option>
+                        <option value="4"${!build.tier || build.tier==4?' selected':''}>4 (fun/meme)</option>
                     </select>
                 </div>
                 <div class="form-field">
@@ -358,12 +359,13 @@ function showBuildFormModal(build, title = "") {
         const hero = overlay.querySelector('#build-hero').value;
         const talents = overlay.querySelector('#build-talents').value.trim();
         const comment = overlay.querySelector('#build-comment').value.trim();
+        const tier = parseInt(overlay.querySelector('#build-tier').value);
         if (!hero) return alert('Выберите героя');
         if (mustHave.length > 5 || mustNotHave.length > 5) return alert('Максимум 5 стилей в каждом поле!');
         if (mustHave.some(s => mustNotHave.includes(s)))
             return alert('В "должны быть" и "не должно быть" совпадают стили!');
         builds[editingBuildIndex !== null ? editingBuildIndex : builds.length] = {
-            hero, mustHave: [...mustHave], mustNotHave: [...mustNotHave], talents, comment
+            hero, mustHave: [...mustHave], mustNotHave: [...mustNotHave], talents, comment, tier
         };
         persist();
         renderBuildsList();
@@ -401,13 +403,12 @@ function importBuilds() {
     input.onchange = function(event) {
         const file = event.target.files[0];
         if (!file) return;
-        
+
         const reader = new FileReader();
         reader.onload = function(e) {
             try {
                 const data = JSON.parse(e.target.result);
                 let importedBuilds = [];
-                
                 if (Array.isArray(data)) {
                     importedBuilds = data;
                 } else if (data.builds && Array.isArray(data.builds)) {
@@ -415,35 +416,29 @@ function importBuilds() {
                 } else {
                     throw new Error('Неверный формат файла');
                 }
-                
-                const validBuilds = importedBuilds.filter(build => 
-                    build.hero && 
-                    Array.isArray(build.mustHave) && 
+                const validBuilds = importedBuilds.filter(build =>
+                    build.hero &&
+                    Array.isArray(build.mustHave) &&
                     Array.isArray(build.mustNotHave)
                 );
-                
                 if (validBuilds.length === 0) {
                     alert('В файле нет корректных билдов!');
                     return;
                 }
-                
                 const replace = confirm(
                     `Найдено ${validBuilds.length} билдов.\n\n` +
                     `OK - ЗАМЕНИТЬ все текущие билды\n` +
                     `Отмена - ДОБАВИТЬ к текущим`
                 );
-                
                 if (replace) {
                     builds = validBuilds;
                 } else {
                     builds = builds.concat(validBuilds);
                 }
-                
                 persist();
                 renderBuildsList();
                 renderSearchResults();
                 alert(`Импортировано ${validBuilds.length} билдов!`);
-                
             } catch (error) {
                 alert('Ошибка при чтении файла: ' + error.message);
             }
@@ -456,12 +451,5 @@ function importBuilds() {
 // ========== ПЕРСИСТЕНТНОСТЬ ==========
 function persist() {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(builds));
-}
-
-// ========== АВТОМАТИЧЕСКИЙ РЕНДЕР РЕЗУЛЬТАТОВ ==========
-// Рендерим результаты при изменении стилей
-function updateUI() {
-    renderDisabledStylesPicker();
-    renderSearchResults();
 }
 
