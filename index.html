@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Автогладиаторы Селектор</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-layout">
+        <!-- Основное содержимое -->
+        <div class="main-container">
+            <div class="container">
+                <header class="header">
+                    <h1>Автогладиаторы Селектор</h1>
+                    <p class="subtitle">Выберите 5 стилей которых НЕТ в игре для получения рекомендаций билдов</p>
+                </header>
+
+                <main class="main-content">
+                    <section class="playstyles-section">
+                        <h2>Стили боя</h2>
+                        <div class="playstyles-grid" id="playstyles-grid"></div>
+                    </section>
+
+                    <section class="selection-section">
+                        <h2>Отсутствующие стили (<span id="selection-count">0</span>/5)</h2>
+                        <div class="selection-slots" id="selection-slots"></div>
+                        <div class="buttons-container">
+                            <button class="reset-btn" id="reset-btn">Сбросить выбор</button>
+                        </div>
+                    </section>
+
+                    <section class="results-section" id="results-section" style="display: none;">
+                        <h2>Подходящие билды</h2>
+                        <div class="heroes-list" id="heroes-list"></div>
+                    </section>
+                </main>
+            </div>
+        </div>
+
+        <!-- Боковая панель с билдами -->
+        <div class="sidebar">
+            <h3>Все билды в базе</h3>
+            <div class="heroes-count">Всего: <span id="total-heroes">0</span></div>
+            <div class="all-builds-list" id="all-builds-list"></div>
+        </div>
+    </div>
+
+    <!-- Кнопки управления базой данных -->
+    <div class="database-controls">
+        <button class="add-btn" id="add-build-btn">➕ Добавить билд</button>
+        <button class="import-btn" id="import-btn">📥 Импорт</button>
+        <button class="export-btn" id="export-btn">📤 Экспорт</button>
+        <button class="reset-db-btn" id="reset-db">🔄 Сброс</button>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
