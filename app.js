@@ -25,7 +25,7 @@ const PLAYSTYLES_DATA = [
 ];
 
 /* ========== БАЗОВЫЕ СТИЛИ ========== */
-* { margin: 0; padding: 0; box-sizing: border-box; }
+{ margin: 0; padding: 0; box-sizing: border-box; }
 
 body {
     font-family: 'Arial', sans-serif;
@@ -505,4 +505,5 @@ body {
     .hero-card { min-width: unset; max-width: 98vw; font-size: 1.01rem; }
     .heroes-list { padding: 0 2vw; }
 }
+
 
