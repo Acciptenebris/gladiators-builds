@@ -100,6 +100,7 @@ function renderSelectionSlots() {
         slots.appendChild(slot);
     }
 }
+
 // ========== ПОИСКОВЫЕ РЕЗУЛЬТАТЫ ==========
 function renderSearchResults() {
     renderSelectionSlots();
@@ -116,10 +117,19 @@ function renderSearchResults() {
         buildList.innerHTML = `<div class="hero-card"><div class="hero-name">Нет подходящих билдов</div></div>`;
         return;
     }
+    
+    // ========== СОРТИРОВКА ПО ТИРУ (1-4) ==========
+    results.sort((a, b) => {
+        const tierA = a.tier || 4;
+        const tierB = b.tier || 4;
+        return tierA - tierB; // 1, 2, 3, 4
+    });
+    
     results.forEach((build, idx) => {
         buildList.appendChild(buildCardView(build, idx));
     });
 }
+
 // ======= ОТРИСОВКА КАРТОЧКИ БИЛДА (РЕКОМЕНДАЦИЯ) =======
 function buildCardView(build, buildIdx) {
     const realIndex = builds.findIndex(b =>
@@ -479,3 +489,4 @@ function importBuilds() {
 function persist() {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(builds));
 }
+
