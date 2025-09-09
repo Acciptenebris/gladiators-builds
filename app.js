@@ -170,13 +170,28 @@ function styleName(id) {
     let found = PLAYSTYLES_DATA.find(st => st.id === id);
     return found ? found.name : id;
 }
+
 // ========== ОТРИСОВКА СПИСКА БИЛДОВ ==========
 function renderBuildsList() {
     const buildsList = document.getElementById('all-builds-list');
     const totalSpan = document.getElementById('total-heroes');
     totalSpan.textContent = builds.length;
     buildsList.innerHTML = '';
-    builds.forEach((build, i) => {
+    
+    // Создаем массив с индексами для сортировки
+    const indexedBuilds = builds.map((build, index) => ({
+        build: build,
+        originalIndex: index
+    }));
+    
+    // Сортировка по тиру
+    indexedBuilds.sort((a, b) => {
+        const tierA = a.build.tier || 4;
+        const tierB = b.build.tier || 4;
+        return tierA - tierB;
+    });
+    
+    indexedBuilds.forEach(({build, originalIndex}) => {
         const el = document.createElement('div');
         el.className = 'hero-item build-item';
         let imgHtml = build.img ? `<div class="build-img-mini"><img src="${build.img}" alt="" loading="lazy"></div>` : '';
@@ -194,13 +209,14 @@ function renderBuildsList() {
             </div>
             <div class="build-comment">${build.comment || ''}</div>
             <div class="build-actions">
-                <button class="edit-btn" onclick="editBuild(${i})" title="Редактировать">✏️</button>
-                <button class="delete-btn" onclick="deletBuild(${i})" title="Удалить">🗑️</button>
+                <button class="edit-btn" onclick="editBuild(${originalIndex})" title="Редактировать">✏️</button>
+                <button class="delete-btn" onclick="deleteBuild(${originalIndex})" title="Удалить">🗑️</button>
             </div>
         `;
         buildsList.appendChild(el);
     });
 }
+
 // ========== ОБРАБОТЧИКИ СОБЫТИЙ ==========
 function setupEventListeners() {
     document.getElementById('reset-btn').addEventListener('click', function() {
@@ -489,4 +505,5 @@ function importBuilds() {
 function persist() {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(builds));
 }
+
 
