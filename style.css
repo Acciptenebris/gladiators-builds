@@ -266,66 +266,40 @@ body {
 .heroes-list {
     display: flex;
     flex-direction: column;
-    gap: 32px;
+    gap: 22px;
     width: 100%;
-    max-width: 720px;
+    max-width: 520px;
     margin: 0 auto;
     align-items: stretch;
 }
 
-.hero-card,
-.hero-card.hero-card-wide {
-    display: flex;
-    flex-direction: row;
-    align-items: stretch;
-    min-width: 350px;
-    max-width: 700px;
-    margin: 0 auto;
-    padding: 18px 26px 16px 16px;
-    box-sizing: border-box;
-    font-size: 1.15rem;
+.hero-card {
     background: linear-gradient(145deg, #2a2a2a, #1a1a1a);
     border: 2px solid #d4af37;
-    border-radius: 12px;
+    border-radius: 10px;
+    padding: 18px 18px 8px 18px;
+    text-align: left;
+    font-size: 1.13rem;
     color: #ececec;
     line-height: 1.48;
     box-shadow: 0 3px 18px rgba(212,175,55,0.07);
-    margin-bottom: 0;
-}
-
-.build-img {
-    flex: none;
-    margin-right: 30px;
-    width: 105px;
-    display: flex;
-    align-items: flex-start;
-    justify-content: flex-start;
-}
-.build-img img {
-    display: block;
-    max-width: 105px;
-    max-height: 105px;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px #2228;
-    background: #232323;
-}
-.build-img.noimg {
-    min-width: 100px;
-    min-height: 80px;
-}
-.build-main-content {
-    flex: 1;
-    min-width: 0;
+    /* Чтобы карта не была сжата при сужении: */
+    min-width: 320px;
+    max-width: 450px;
+    margin: 0 auto;
     display: flex;
     flex-direction: column;
+    justify-content: space-between;
 }
+
 .hero-card .hero-name {
-    font-size: 1.3rem;
+    font-size: 1.25rem;               /* Еще крупнее */
     font-weight: bold;
-    color: #ffe27d;
+    color: #ffe27d;                   /* Очень контрастно */
     margin-bottom: 8px;
     line-height: 1.18;
 }
+
 .hero-card .style-row {
     margin: 8px 0 0 0;
     font-size: 1.09rem;
@@ -333,30 +307,19 @@ body {
     font-weight: 500;
     letter-spacing: 0.01em;
 }
+
 .hero-card .style-row span {
     font-size: 1.04em;
     font-weight: 700;
     letter-spacing: 0;
 }
-.hero-card .build-comment,
-.hero-card .build-desc,
-.hero-card .build-row-comment {
-    margin-top: 10px;
-    color: #fffbe6;
-    font-size: 1.07rem;
-    background: rgba(255,255,238,0.05);
-    padding: 7px 10px;
-    border-radius: 6px;
-    font-weight: 450;
-    white-space: pre-wrap;
-    word-break: break-word;
-}
-.hero-card .build-actions {
+
+.build-actions {
     display: flex;
     gap: 10px;
     justify-content: flex-end;
     flex-wrap: wrap;
-    margin-top: 24px;
+    margin-top: 15px;
     margin-bottom: 0;
 }
 .build-actions .edit-btn,
@@ -368,27 +331,22 @@ body {
     margin: 0;
 }
 
-
-/* ========== ТИРЫ ========== */
-.tier-badge {
-    display: inline-block;
-    min-width: 32px;
-    padding: 2px 8px;
-    margin-left: 10px;
-    border-radius: 8px;
-    font-size: 0.98rem;
-    font-weight: bold;
-    color: #fff;
-    background: #555;
-    box-shadow: 0 0 3px #0007;
-    vertical-align: middle;
+.hero-card:hover {
+    transform: translateY(-5px);
+    border-color: #fff;
+    box-shadow: 0 10px 20px rgba(212, 175, 55, 0.3);
 }
-.tier-badge-1 { background: linear-gradient(90deg,#ffd400,#ffe395,#ba9647); color: #333; }
-.tier-badge-2 { background: linear-gradient(90deg,#8ef08e,#59cc59); color: #233; }
-.tier-badge-3 { background: linear-gradient(90deg,#6fc3e7,#407b9f); }
-.tier-badge-4 { background: #888; }
 
+.hero-name {
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: #d4af37;
+}
 
+.style-row {
+    margin: 6px 0;
+    font-size: 0.9rem;
+}
 
 /* ========== БОКОВАЯ ПАНЕЛЬ ========== */
 .sidebar {
@@ -427,32 +385,88 @@ body {
     flex-direction: column;
     gap: 8px;
 }
+
 .hero-item, .build-item {
     background: rgba(255, 255, 255, 0.05);
-    padding: 12px 8px;
+    padding: 12px;
     border-radius: 8px;
     border: 1px solid #333;
     color: #fff;
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     transition: all 0.2s ease;
     cursor: pointer;
     margin-bottom: 8px;
-    display: block;
 }
+
 .hero-item:hover, .build-item:hover {
     background: rgba(212, 175, 55, 0.1);
     border-color: #d4af37;
     color: #d4af37;
 }
-.build-img-mini {
-    display: inline-block;
-    vertical-align: middle;
-    margin-right: 8px;
+
+.hero-item.editable::after {
+    content: " ✏️";
+    font-size: 0.8rem;
 }
-.build-img-mini img {
-    max-width: 25px;
-    max-height: 25px;
-    border-radius: 6px;
+
+.build-main-info {
+    margin-bottom: 8px;
+}
+
+.build-hero-name {
+    font-weight: bold;
+    font-size: 1.1rem;
+    color: #d4af37;
+}
+
+.build-talents {
+    font-size: 0.9rem;
+    color: #aaa;
+    margin-top: 2px;
+}
+
+.build-styles {
+    margin-bottom: 8px;
+    font-size: 0.85rem;
+}
+
+.styles-must-have {
+    color: #4a9eff;
+    margin-bottom: 2px;
+}
+
+.styles-must-not {
+    color: #ff6b6b;
+}
+
+.build-actions {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+    margin-top: 10px;
+}
+
+.edit-btn, .delete-btn {
+    background: none;
+    border: 1px solid #666;
+    color: #ccc;
+    padding: 4px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+}
+
+.edit-btn:hover {
+    background: rgba(74, 158, 255, 0.2);
+    border-color: #4a9eff;
+    color: #4a9eff;
+}
+
+.delete-btn:hover {
+    background: rgba(255, 107, 107, 0.2);
+    border-color: #ff6b6b;
+    color: #ff6b6b;
 }
 
 /* ========== МОДАЛЬНОЕ ОКНО ========== */
@@ -474,14 +488,16 @@ body {
     border: 2px solid #d4af37;
     border-radius: 15px;
     padding: 25px;
-    max-width: 700px;
-    width: 98vw;
-    max-height: 85vh;
+    max-width: 600px;
+    width: 90%;
+    max-height: 80vh;
     overflow-y: auto;
 }
+
 .modal-wide {
-    min-width: 430px;
+    min-width: 400px;
 }
+
 .modal-header {
     display: flex;
     justify-content: space-between;
@@ -490,11 +506,13 @@ body {
     border-bottom: 2px solid #333;
     padding-bottom: 15px;
 }
+
 .modal-header h3 {
     color: #d4af37;
     margin: 0;
     font-size: 1.3rem;
 }
+
 .close-btn {
     background: none;
     border: none;
@@ -508,25 +526,18 @@ body {
     align-items: center;
     justify-content: center;
 }
+
 .close-btn:hover {
     color: #fff;
 }
+
+.modal-body p {
+    color: #ccc;
+    margin-bottom: 15px;
+}
+
 .form-field {
     margin-bottom: 16px;
-}
-
-.form-field.form-field-img {
-    min-width: 180px;
-    max-width: 220px;
-    display: flex;
-    flex-direction: column;
-    gap: 7px;
-}
-
-#img-preview img {
-    border-radius: 12px; 
-    background: #222;
-    box-shadow: 0 2px 8px #2228;
 }
 
 .row-inputs {
@@ -536,6 +547,7 @@ body {
     align-items: flex-end;
     margin-bottom: 12px;
 }
+
 #build-hero {
     min-width: 170px;
     min-height: 38px;
@@ -544,6 +556,7 @@ body {
     font-weight: bold;
     padding: 7px 13px;
 }
+
 /* ========== КНОПКИ В МОДАЛЬНОМ ОКНЕ ========== */
 .edit-styles-grid {
     display: grid;
@@ -573,12 +586,14 @@ body {
     justify-content: center;
     position: relative;
 }
+
 .edit-style-btn:hover {
     border-color: #27ae60;
     background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
     transform: scale(1.05);
     box-shadow: 0 4px 15px rgba(46, 204, 113, 0.3);
 }
+
 .edit-style-btn.selected {
     background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
     border-color: #f39c12;
@@ -587,6 +602,7 @@ body {
     box-shadow: 0 4px 15px rgba(243, 156, 18, 0.4);
     transform: scale(1.03);
 }
+
 .edit-style-btn.selected::before {
     content: '●';
     position: absolute;
@@ -595,6 +611,7 @@ body {
     font-size: 12px;
     color: #fff;
 }
+
 .edit-style-btn.disabled {
     opacity: 0.3;
     cursor: not-allowed;
@@ -603,17 +620,26 @@ body {
     transform: none;
     box-shadow: none;
 }
+
 .edit-style-btn.disabled:hover {
     transform: none;
     box-shadow: none;
     border-color: #95a5a6;
     background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%);
 }
+
 .style-big {
     font-size: 1.09rem !important;
     min-width: 105px;
     min-height: 48px;
     margin-bottom: 5px;
+}
+
+.selected-styles-count {
+    text-align: center;
+    color: #d4af37;
+    font-weight: bold;
+    margin-bottom: 20px;
 }
 
 .modal-footer {
@@ -633,21 +659,26 @@ body {
     font-weight: bold;
     transition: all 0.3s ease;
 }
+
 .save-btn {
     background: linear-gradient(145deg, #4CAF50, #45a049);
     color: #fff;
 }
+
 .save-btn:hover {
     background: linear-gradient(145deg, #5CBF60, #4CAF50);
 }
+
 .save-btn:disabled {
     opacity: 0.5;
     cursor: not-allowed;
 }
+
 .cancel-btn {
     background: linear-gradient(145deg, #666, #555);
     color: #fff;
 }
+
 .cancel-btn:hover {
     background: linear-gradient(145deg, #777, #666);
 }
@@ -663,6 +694,7 @@ body {
     .app-layout {
         flex-direction: column;
     }
+    
     .sidebar {
         width: 100%;
         height: auto;
@@ -672,19 +704,23 @@ body {
         order: 2;
         max-height: 400px;
     }
+    
     .main-container {
         order: 1;
     }
+    
     .database-controls {
         bottom: 10px;
         left: 10px;
         flex-direction: row;
         flex-wrap: wrap;
     }
+    
     .add-btn {
         font-size: 1rem;
         padding: 13px 18px;
     }
+    
     .export-btn, .reset-db-btn, .import-btn {
         font-size: 0.75rem;
         padding: 8px 12px;
@@ -692,31 +728,81 @@ body {
     }
 }
 
-@media (max-width: 870px) {
-    .hero-card,
-    .hero-card.hero-card-wide,
-    .heroes-list {
-        max-width: 99vw;
+@media (max-width: 768px) {
+    .header h1 {
+        font-size: 2rem;
     }
-    .build-img { margin-right: 12px; }
+    
+    .selection-slots {
+        justify-content: center;
+    }
+    
+    .slot {
+        width: 120px;
+        height: 70px;
+    }
+    
+    .playstyles-grid {
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 12px;
+    }
+    
+    .edit-styles-grid {
+        grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+        gap: 8px;
+    }
+    
+    .playstyle-btn {
+        padding: 14px 16px;
+        font-size: 0.9rem;
+    }
+    
+    .edit-style-btn {
+        padding: 10px 12px;
+        font-size: 0.85rem;
+        min-height: 40px;
+    }
+    
+    .modal-content {
+        width: 95%;
+        padding: 20px;
+    }
+    
+    .row-inputs {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .modal-footer {
+        flex-direction: column;
+    }
+}
+
+.hero-card .build-comment,
+.hero-card .build-desc,
+.hero-card .build-row-comment {
+    margin-top: 10px;
+    color: #fffbe6;
+    font-size: 1.07rem;
+    background: rgba(255,255,238,0.05);
+    padding: 7px 10px;
+    border-radius: 6px;
+    font-weight: 450;
+    white-space: pre-wrap;
+    word-break: break-word;
 }
 
 @media (max-width: 600px) {
-    .hero-card,
-    .hero-card.hero-card-wide {
-        flex-direction: column;
-        min-width: 95vw;
-        max-width: 100vw;
-        padding: 7vw 2vw 18vw 2vw;
-        font-size: 1rem;
-    }
-    .build-img {
-        margin: 0 auto 14px auto;
-        min-width: 0;
-        max-width: 120px;
-        width: 90vw;
+    .hero-card {
+        min-width: unset;
+        max-width: 98vw;
+        font-size: 1.01rem;
     }
     .heroes-list {
         padding: 0 2vw;
     }
 }
+
+
+
+
