@@ -273,9 +273,47 @@ body {
     background: linear-gradient(145deg, #2a2a2a, #1a1a1a);
     border: 2px solid #d4af37;
     border-radius: 10px;
-    padding: 15px;
-    text-align: center;
+    padding: 18px 18px 16px 18px;
+    text-align: left;
     transition: all 0.3s ease;
+    font-size: 1.13rem;               /* Сделал крупнее */
+    color: #ececec;                   /* Более явный, почти белый */
+    line-height: 1.48;
+    box-shadow: 0 3px 18px rgba(212,175,55,0.07);
+}
+
+.hero-card .hero-name {
+    font-size: 1.25rem;               /* Еще крупнее */
+    font-weight: bold;
+    color: #ffe27d;                   /* Очень контрастно */
+    margin-bottom: 8px;
+    line-height: 1.18;
+}
+
+.hero-card .style-row {
+    margin: 8px 0 0 0;
+    font-size: 1.09rem;
+    color: #c8e9ff;
+    font-weight: 500;
+    letter-spacing: 0.01em;
+}
+
+.hero-card .style-row span {
+    font-size: 1.04em;
+    font-weight: 700;
+    letter-spacing: 0;
+}
+
+.hero-card .build-actions {
+    margin-top: 13px;
+}
+
+.hero-card .build-actions .edit-btn,
+.hero-card .build-actions .delete-btn {
+    font-size: 1.05rem;
+    padding: 6px 16px;
+    border-radius: 7px;
+    margin-right: 8px;
 }
 
 .hero-card:hover {
@@ -724,3 +762,19 @@ body {
         flex-direction: column;
     }
 }
+
+.hero-card .build-comment,
+.hero-card .build-desc,
+.hero-card .build-row-comment {
+    margin-top: 10px;
+    color: #fffbe6;
+    font-size: 1.07rem;
+    background: rgba(255,255,238,0.05);
+    padding: 7px 10px;
+    border-radius: 6px;
+    font-weight: 450;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+
