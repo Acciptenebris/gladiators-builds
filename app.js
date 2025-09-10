@@ -22,6 +22,7 @@ const PLAYSTYLES_DATA = [
     {id: "ultimate", name: "Ульта", description: "Опять гитарист в бане"},
     {id: "attack", name: "Атака", description: "Моя бить"}
 ];
+
 // ========== ПЕРСИСТЕНТНОЕ ХРАНИЛИЩЕ ==========
 const STORAGE_KEY = "buildsDatabase";
 let builds = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [
@@ -35,20 +36,18 @@ let builds = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [
         "img": ""
     }
 ];
+
 // ========== СОСТОЯНИЕ ==========
 let selectedDisabledStyles = [];
 let editingBuildIndex = null;
+let heroSearchFilter = ''; // Переменная для поиска героев
+
 // ========== UI ИНИЦИАЛИЗАЦИЯ ==========
 document.addEventListener("DOMContentLoaded", () => {
     renderDisabledStylesPicker();
     renderBuildsList();
     setupEventListeners();
 });
-
-// ========== СОСТОЯНИЕ ==========
-let selectedDisabledStyles = [];
-let editingBuildIndex = null;
-let heroSearchFilter = ''; // <--- Новая переменная для фильтра
 
 // ========== ПОИСК БИЛДОВ ==========
 function searchBuilds(disabledStyles) {
@@ -541,6 +540,7 @@ function importBuilds() {
 function persist() {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(builds));
 }
+
 
 
 
