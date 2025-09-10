@@ -164,9 +164,11 @@ function buildCardView(build, buildIdx) {
             <div class="style-row"><span style="color:#f55;">– </span>${build.mustNotHave.map(st => styleName(st)).join(', ') || '-'}</div>
             <div class="build-comment">${build.comment || ''}</div>
             <div class="build-actions">
+                <button class="copy-btn" onclick="copyBuild(${realIndex})" title="Копировать билд">📋</button>
                 <button class="edit-btn" onclick="editBuild(${realIndex})">✏️ Редактировать</button>
                 <button class="delete-btn" onclick="deleteBuild(${realIndex})">🗑️ Удалить</button>
             </div>
+
         </div>
     `;
     return el;
@@ -230,9 +232,11 @@ function renderBuildsList() {
             </div>
             <div class="build-comment">${build.comment || ''}</div>
             <div class="build-actions">
+                <button class="copy-btn" onclick="copyBuild(${originalIndex})" title="Копировать билд">📋</button>
                 <button class="edit-btn" onclick="editBuild(${originalIndex})" title="Редактировать">✏️</button>
                 <button class="delete-btn" onclick="deleteBuild(${originalIndex})" title="Удалить">🗑️</button>
             </div>
+
         `;
         buildsList.appendChild(el);
     });
@@ -564,6 +568,7 @@ function importBuilds() {
 function persist() {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(builds));
 }
+
 
 
 
