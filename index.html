@@ -41,6 +41,11 @@
         <!-- Боковая панель с билдами -->
         <div class="sidebar">
             <h3>Все билды в базе</h3>
+            <!-- ========== ПОИСК ГЕРОЕВ ========== -->
+            <div class="hero-search-container">
+                <input type="text" id="hero-search" placeholder="Поиск по героям..." autocomplete="off">
+                <button id="clear-search" title="Очистить поиск">✕</button>
+            </div>
             <div class="heroes-count">Всего: <span id="total-heroes">0</span></div>
             <div class="all-builds-list" id="all-builds-list"></div>
         </div>
@@ -57,3 +62,4 @@
     <script src="app.js"></script>
 </body>
 </html>
+
