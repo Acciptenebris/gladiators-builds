@@ -52,12 +52,16 @@ document.addEventListener("DOMContentLoaded", () => {
 // ========== ПОИСК БИЛДОВ ==========
 function searchBuilds(disabledStyles) {
     const enabledStyles = PLAYSTYLES_DATA.map(x => x.id).filter(id => !disabledStyles.includes(id));
-    return builds.filter(build => {
-        if (!build.mustHave.every(s => enabledStyles.includes(s))) return false;
-        if (build.mustNotHave.some(s => enabledStyles.includes(s))) return false;
-        return true;
-    });
+    
+    return builds.map(build => {
+        const efficiency = calculateBuildEfficiency(build, enabledStyles);
+        return {
+            ...build,
+            efficiency: efficiency
+        };
+    }).filter(build => build.efficiency > 0); // Показываем только с эффективностью > 0
 }
+
 // ========== ОТРИСОВКА ВЫБОРА СТИЛЕЙ ДЛЯ ПОИСКА ==========
 function renderDisabledStylesPicker() {
     const grid = document.getElementById('playstyles-grid');
@@ -123,11 +127,14 @@ function renderSearchResults() {
         return;
     }
     
-    // ========== СОРТИРОВКА ПО ТИРУ (1-4) ==========
+    // Сортировка сначала по эффективности (по убыванию), потом по тиру (по возрастанию)
     results.sort((a, b) => {
+        if (a.efficiency !== b.efficiency) {
+            return b.efficiency - a.efficiency; // По убыванию эффективности
+        }
         const tierA = a.tier || 4;
         const tierB = b.tier || 4;
-        return tierA - tierB; // 1, 2, 3, 4
+        return tierA - tierB; // По возрастанию тира
     });
     
     results.forEach((build, idx) => {
@@ -135,7 +142,7 @@ function renderSearchResults() {
     });
 }
 
-// ======= ОТРИСОВКА КАРТОЧКИ БИЛДА (РЕКОМЕНДАЦИЯ) =======
+// ======= ОТРИСОВКА КАРТОЧКИ БИЛДА =======
 function buildCardView(build, buildIdx) {
     const realIndex = builds.findIndex(b =>
         b.hero === build.hero &&
@@ -152,12 +159,23 @@ function buildCardView(build, buildIdx) {
         imgHtml = `<div class="build-img build-img-empty"><span>Нет фото</span></div>`;
     }
 
+    // Определяем класс эффективности для стилизации
+    let efficiencyClass = 'efficiency-100';
+    if (build.efficiency <= 25) efficiencyClass = 'efficiency-low';
+    else if (build.efficiency <= 50) efficiencyClass = 'efficiency-medium';
+    else if (build.efficiency < 100) efficiencyClass = 'efficiency-high';
+
     el.innerHTML = `
         ${imgHtml}
         <div class="build-content">
-            <div class="hero-name">
-                ${build.hero}
-                <span class="tier-badge tier-badge-${build.tier||4}" title="Тир билда">${build.tier||4}</span>
+            <div class="build-header">
+                <div class="hero-name">
+                    ${build.hero}
+                    <span class="tier-badge tier-badge-${build.tier||4}" title="Тир билда">${build.tier||4}</span>
+                </div>
+                <div class="efficiency-badge ${efficiencyClass}" title="Эффективность билда">
+                    ${build.efficiency}%
+                </div>
             </div>
             <div style="margin:6px 0;color:#d4af37;font-weight:bold;">Таланты: ${build.talents || ''}</div>
             <div class="style-row"><span style="color:#49d;">+ </span>${build.mustHave.map(st => styleName(st)).join(', ') || '-'}</div>
@@ -168,14 +186,9 @@ function buildCardView(build, buildIdx) {
                 <button class="edit-btn" onclick="editBuild(${realIndex})">✏️ Редактировать</button>
                 <button class="delete-btn" onclick="deleteBuild(${realIndex})">🗑️ Удалить</button>
             </div>
-
         </div>
     `;
     return el;
-}
-function styleName(id) {
-    let found = PLAYSTYLES_DATA.find(st => st.id === id);
-    return found ? found.name : id;
 }
 
 // ========== ОТРИСОВКА СПИСКА БИЛДОВ ==========
@@ -568,6 +581,32 @@ function importBuilds() {
 function persist() {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(builds));
 }
+
+// ========== РАСЧЕТ ЭФФЕКТИВНОСТИ БИЛДА ==========
+function calculateBuildEfficiency(build, enabledStyles) {
+    // Проверяем есть ли все необходимые стили
+    if (!build.mustHave.every(s => enabledStyles.includes(s))) {
+        return 0; // Билд невозможен
+    }
+    
+    // Считаем совпадения с запрещенными стилями
+    const conflictsCount = build.mustNotHave.filter(s => enabledStyles.includes(s)).length;
+    
+    // При 3+ совпадениях билд не показываем
+    if (conflictsCount >= 3) {
+        return 0;
+    }
+    
+    // Каждое совпадение уменьшает эффективность в 2 раза
+    let efficiency = 100;
+    for (let i = 0; i < conflictsCount; i++) {
+        efficiency = efficiency / 2;
+    }
+    
+    return Math.round(efficiency);
+}
+
+
 
 
 
