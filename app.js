@@ -44,6 +44,12 @@ document.addEventListener("DOMContentLoaded", () => {
     renderBuildsList();
     setupEventListeners();
 });
+
+// ========== СОСТОЯНИЕ ==========
+let selectedDisabledStyles = [];
+let editingBuildIndex = null;
+let heroSearchFilter = ''; // <--- Новая переменная для фильтра
+
 // ========== ПОИСК БИЛДОВ ==========
 function searchBuilds(disabledStyles) {
     const enabledStyles = PLAYSTYLES_DATA.map(x => x.id).filter(id => !disabledStyles.includes(id));
@@ -175,13 +181,22 @@ function styleName(id) {
 function renderBuildsList() {
     const buildsList = document.getElementById('all-builds-list');
     const totalSpan = document.getElementById('total-heroes');
-    totalSpan.textContent = builds.length;
     buildsList.innerHTML = '';
     
+    // Фильтрация по герою
+    let filteredBuilds = builds;
+    if (heroSearchFilter.trim()) {
+        filteredBuilds = builds.filter(build => 
+            build.hero && build.hero.toLowerCase().includes(heroSearchFilter.toLowerCase())
+        );
+    }
+    
+    totalSpan.textContent = `${filteredBuilds.length}${heroSearchFilter.trim() ? ` из ${builds.length}` : ''}`;
+    
     // Создаем массив с индексами для сортировки
-    const indexedBuilds = builds.map((build, index) => ({
+    const indexedBuilds = filteredBuilds.map((build) => ({
         build: build,
-        originalIndex: index
+        originalIndex: builds.indexOf(build) // Находим оригинальный индекс
     }));
     
     // Сортировка по тиру
@@ -190,6 +205,13 @@ function renderBuildsList() {
         const tierB = b.build.tier || 4;
         return tierA - tierB;
     });
+    
+    if (indexedBuilds.length === 0) {
+        buildsList.innerHTML = `<div style="text-align:center;color:#888;padding:20px;">
+            ${heroSearchFilter.trim() ? 'Нет билдов для этого героя' : 'Нет билдов в базе'}
+        </div>`;
+        return;
+    }
     
     indexedBuilds.forEach(({build, originalIndex}) => {
         const el = document.createElement('div');
@@ -235,7 +257,21 @@ function setupEventListeners() {
             renderSearchResults();
         }
     }
+    
+    // ========== ОБРАБОТЧИК ПОИСКА ГЕРОЕВ ==========
+    document.getElementById('hero-search').addEventListener('input', function() {
+        heroSearchFilter = this.value;
+        renderBuildsList();
+    });
+    
+    // Кнопка очистки поиска
+    document.getElementById('clear-search').addEventListener('click', function() {
+        heroSearchFilter = '';
+        document.getElementById('hero-search').value = '';
+        renderBuildsList();
+    });
 }
+
 function showAddBuildModal() {
     editingBuildIndex = null;
     showBuildFormModal({
@@ -505,5 +541,6 @@ function importBuilds() {
 function persist() {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(builds));
 }
+
 
 
