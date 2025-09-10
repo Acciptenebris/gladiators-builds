@@ -302,6 +302,30 @@ window.deleteBuild = function(idx) {
     renderBuildsList();
     renderSearchResults();
 }
+
+// ========== КОПИРОВАНИЕ БИЛДА ==========
+window.copyBuild = function(idx) {
+    if (!builds[idx]) {
+        alert('Билд не найден!');
+        return;
+    }
+    
+    const originalBuild = builds[idx];
+    const copiedBuild = {
+        hero: originalBuild.hero,
+        mustHave: [...originalBuild.mustHave],
+        mustNotHave: [...originalBuild.mustNotHave],
+        talents: originalBuild.talents,
+        comment: originalBuild.comment ? `${originalBuild.comment} (копия)` : '(копия)',
+        tier: originalBuild.tier,
+        img: originalBuild.img
+    };
+    
+    // Открываем модальное окно с копией
+    editingBuildIndex = null; // Это новый билд, не редактирование
+    showBuildFormModal(copiedBuild, `Копирование билда: ${originalBuild.hero}`);
+}
+
 // ========== МОДАЛЬНОЕ ОКНО ==========
 function showBuildFormModal(build, title = "") {
     let overlay = document.createElement('div');
@@ -540,6 +564,7 @@ function importBuilds() {
 function persist() {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(builds));
 }
+
 
 
 
