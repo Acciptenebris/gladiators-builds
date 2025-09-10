@@ -49,17 +49,18 @@ document.addEventListener("DOMContentLoaded", () => {
     setupEventListeners();
 });
 
+function styleName(id) {
+    let found = PLAYSTYLES_DATA.find(st => st.id === id);
+    return found ? found.name : id;
+}
+
 // ========== ПОИСК БИЛДОВ ==========
 function searchBuilds(disabledStyles) {
     const enabledStyles = PLAYSTYLES_DATA.map(x => x.id).filter(id => !disabledStyles.includes(id));
-    
     return builds.map(build => {
         const efficiency = calculateBuildEfficiency(build, enabledStyles);
-        return {
-            ...build,
-            efficiency: efficiency
-        };
-    }).filter(build => build.efficiency > 0); // Показываем только с эффективностью > 0
+        return { ...build, efficiency: efficiency };
+    }).filter(build => build.efficiency > 0);
 }
 
 // ========== ОТРИСОВКА ВЫБОРА СТИЛЕЙ ДЛЯ ПОИСКА ==========
@@ -126,17 +127,12 @@ function renderSearchResults() {
         buildList.innerHTML = `<div class="hero-card"><div class="hero-name">Нет подходящих билдов</div></div>`;
         return;
     }
-    
-    // Сортировка сначала по эффективности (по убыванию), потом по тиру (по возрастанию)
     results.sort((a, b) => {
-        if (a.efficiency !== b.efficiency) {
-            return b.efficiency - a.efficiency; // По убыванию эффективности
-        }
+        if (a.efficiency !== b.efficiency) return b.efficiency - a.efficiency;
         const tierA = a.tier || 4;
         const tierB = b.tier || 4;
-        return tierA - tierB; // По возрастанию тира
+        return tierA - tierB;
     });
-    
     results.forEach((build, idx) => {
         buildList.appendChild(buildCardView(build, idx));
     });
@@ -582,29 +578,19 @@ function persist() {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(builds));
 }
 
-// ========== РАСЧЕТ ЭФФЕКТИВНОСТИ БИЛДА ==========
 function calculateBuildEfficiency(build, enabledStyles) {
-    // Проверяем есть ли все необходимые стили
     if (!build.mustHave.every(s => enabledStyles.includes(s))) {
-        return 0; // Билд невозможен
-    }
-    
-    // Считаем совпадения с запрещенными стилями
-    const conflictsCount = build.mustNotHave.filter(s => enabledStyles.includes(s)).length;
-    
-    // При 3+ совпадениях билд не показываем
-    if (conflictsCount >= 3) {
         return 0;
     }
-    
-    // Каждое совпадение уменьшает эффективность в 2 раза
+    const conflictsCount = build.mustNotHave.filter(s => enabledStyles.includes(s)).length;
+    if (conflictsCount >= 3) return 0;
     let efficiency = 100;
     for (let i = 0; i < conflictsCount; i++) {
         efficiency = efficiency / 2;
     }
-    
     return Math.round(efficiency);
 }
+
 
 
 
