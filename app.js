@@ -1134,12 +1134,9 @@ const STORAGE_KEY = "buildsDatabase";
 // Функция для загрузки билдов (базовые + пользовательские)
 function loadBuilds() {
     const savedBuilds = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
-    
-    // Если нет сохраненных билдов, загружаем базовые
     if (savedBuilds.length === 0) {
-        return [...DEFAULT_BUILDS]; // Копия базовых билдов
+        return [...DEFAULT_BUILDS];
     }
-    
     return savedBuilds;
 }
 
@@ -1247,7 +1244,6 @@ function renderSearchResults() {
         return;
     }
     
-    // Сортировка сначала по эффективности (по убыванию), потом по тиру (по возрастанию)
     results.sort((a, b) => {
         if (a.efficiency !== b.efficiency) {
             return b.efficiency - a.efficiency;
@@ -1279,7 +1275,6 @@ function buildCardView(build, buildIdx) {
         imgHtml = `<div class="build-img build-img-empty"><span>Нет фото</span></div>`;
     }
 
-    // Определяем класс эффективности для стилизации
     let efficiencyClass = 'efficiency-100';
     if (build.efficiency <= 25) efficiencyClass = 'efficiency-low';
     else if (build.efficiency <= 50) efficiencyClass = 'efficiency-medium';
@@ -1322,7 +1317,6 @@ function renderBuildsList() {
     const totalSpan = document.getElementById('total-heroes');
     buildsList.innerHTML = '';
     
-    // Фильтрация по герою
     let filteredBuilds = builds;
     if (heroSearchFilter.trim()) {
         filteredBuilds = builds.filter(build => 
@@ -1332,13 +1326,11 @@ function renderBuildsList() {
     
     totalSpan.textContent = `${filteredBuilds.length}${heroSearchFilter.trim() ? ` из ${builds.length}` : ''}`;
     
-    // Создаем массив с индексами для сортировки
     const indexedBuilds = filteredBuilds.map((build) => ({
         build: build,
         originalIndex: builds.indexOf(build)
     }));
     
-    // Сортировка по тиру
     indexedBuilds.sort((a, b) => {
         const tierA = a.build.tier || 4;
         const tierB = b.build.tier || 4;
@@ -1379,192 +1371,14 @@ function renderBuildsList() {
     });
 }
 
-// ========== ОБРАБОТЧИКИ СОБЫТИЙ ==========
-function setupEventListeners() {
-    document.getElementById('reset-btn').addEventListener('click', function() {
-        selectedDisabledStyles = [];
-        renderDisabledStylesPicker();
-        renderSearchResults();
-    });
-    document.getElementById('add-build-btn').onclick = showAddBuildModal;
-    document.getElementById('export-btn').onclick = exportBuilds;
-    document.getElementById('import-btn').onclick = importBuilds;
-    
-    // Кнопка восстановления базовых билдов
-    document.getElementById('restore-defaults-btn').onclick = function() {
-        if (confirm('Восстановить базовые билды? Они добавятся к существующим.')) {
-            // Проверяем какие базовые билды уже есть
-            const missingDefaults = DEFAULT_BUILDS.filter(defaultBuild => 
-                !builds.some(build => 
-                    build.hero === defaultBuild.hero &&
-                    JSON.stringify(build.mustHave) === JSON.stringify(defaultBuild.mustHave) &&
-                    JSON.stringify(build.mustNotHave) === JSON.stringify(defaultBuild.mustNotHave)
-                )
-            );
-            
-            if (missingDefaults.length > 0) {
-                builds = builds.concat(missingDefaults);
-                persist();
-                renderBuildsList();
-                renderSearchResults();
-                alert(`Добавлено ${missingDefaults.length} базовых билдов!`);
-            } else {
-                alert('Все базовые билды уже есть в базе!');
-            }
-        }
-    }
-    
-    // Упрощенная кнопка полного сброса
-    document.getElementById('reset-db').onclick = function() {
-        if (confirm('Вы уверены, что хотите удалить ВСЕ билды? Это действие необратимо!')) {
-            builds = [];
-            persist();
-            renderBuildsList();
-            renderSearchResults();
-            alert('Все билды удалены!');
-        }
-    }
-    
-    // Остальные обработчики...
-    document.getElementById('hero-search').addEventListener('input', function() {
-        heroSearchFilter = this.value;
-        renderBuildsList();
-    });
-    
-    document.getElementById('clear-search').addEventListener('click', function() {
-        heroSearchFilter = '';
-        document.getElementById('hero-search').value = '';
-        renderBuildsList();
-    });
-}
-
-// ========== КОПИРОВАНИЕ БИЛДА ==========
-window.copyBuild = function(idx) {
-    if (!builds[idx]) {
-        alert('Билд не найден!');
-        return;
-    }
-    
-    const originalBuild = builds[idx];
-    const copiedBuild = {
-        hero: originalBuild.hero,
-        mustHave: [...originalBuild.mustHave],
-        mustNotHave: [...originalBuild.mustNotHave],
-        talents: originalBuild.talents,
-        comment: originalBuild.comment ? `${originalBuild.comment} (копия)` : '(копия)',
-        tier: originalBuild.tier,
-        img: originalBuild.img
-    };
-    
-    // Открываем модальное окно с копией
-    editingBuildIndex = null; // Это новый билд, не редактирование
-    showBuildFormModal(copiedBuild, `Копирование билда: ${originalBuild.hero}`);
-}
-
-function showAddBuildModal() {
-    editingBuildIndex = null;
-    showBuildFormModal({
-        hero: '',
-        mustHave: [],
-        mustNotHave: [],
-        talents: '',
-        comment: '',
-        tier: 4,
-        img: ''
-    }, 'Создание нового билда');
-}
-
+// ========== МОДАЛЬНОЕ ОКНО ==========
 function showBuildFormModal(build, title) {
-    document.querySelector('.modal-overlay').style.display = 'flex';
-    document.querySelector('.modal-header h3').textContent = title;
+    console.log('Opening modal for:', build);
     
-    document.getElementById('build-hero').value = build.hero;
-    document.getElementById('build-talents').value = build.talents;
-    document.getElementById('build-comment').value = build.comment;
-    document.getElementById('build-tier').value = build.tier || 4;
-    document.getElementById('build-img').value = build.img || '';
-
-    PLAYSTYLES_DATA.forEach(st => {
-        const element = document.querySelector(`[data-style-id="${st.id}"]`);
-        if (element) {
-            element.classList.remove('selected');
-            if (build.mustHave.includes(st.id)) {
-                element.classList.add('selected');
-                element.dataset.requirement = 'must';
-            } else if (build.mustNotHave.includes(st.id)) {
-                element.classList.add('selected');
-                element.dataset.requirement = 'not';
-            }
-        }
-    });
-}
-
-window.editBuild = function(idx) {
-    if (!builds[idx]) return;
-    editingBuildIndex = idx;
-    showBuildFormModal(builds[idx], `Редактирование билда: ${builds[idx].hero}`);
-}
-
-window.deleteBuild = function(idx) {
-    if (!builds[idx]) return;
-    if (confirm(`Удалить билд для ${builds[idx].hero}?`)) {
-        builds.splice(idx, 1);
-        persist();
-        renderBuildsList();
-        renderSearchResults();
-    }
-}
-
-function persist() {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(builds));
-}
-
-function exportBuilds() {
-    const data = JSON.stringify(builds, null, 2);
-    const blob = new Blob([data], {type: 'application/json'});
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'builds.json';
-    a.click();
-    URL.revokeObjectURL(url);
-}
-
-function importBuilds() {
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.accept = '.json';
-    input.onchange = function(e) {
-        const file = e.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    const importedBuilds = JSON.parse(e.target.result);
-                    if (Array.isArray(importedBuilds)) {
-                        builds = importedBuilds;
-                        persist();
-                        renderBuildsList();
-                        renderSearchResults();
-                        alert('Билды импортированы!');
-                    }
-                } catch (error) {
-                    alert('Ошибка импорта!');
-                }
-            };
-            reader.readAsText(file);
-        }
-    };
-    input.click();
-
-    // ========== МОДАЛЬНОЕ ОКНО БИЛДА ==========
-function showBuildFormModal(build, title) {
-    // Создаем модальное окно если его нет
     let modal = document.querySelector('.modal-overlay');
     if (!modal) {
         modal = document.createElement('div');
         modal.className = 'modal-overlay';
-        modal.style.display = 'none';
         modal.innerHTML = `
             <div class="modal-content">
                 <div class="modal-header">
@@ -1572,26 +1386,29 @@ function showBuildFormModal(build, title) {
                     <button class="close-btn" onclick="closeModal()">&times;</button>
                 </div>
                 <form id="build-form">
-                    <div class="form-field">
-                        <label>Герой:</label>
-                        <select id="build-hero" required>
-                            <option value="">Выберите героя</option>
-                            ${HEROES_LIST.map(hero => `<option value="${hero}">${hero}</option>`).join('')}
-                        </select>
+                    <div class="row-inputs">
+                        <div class="form-field">
+                            <label>Герой:</label>
+                            <select id="build-hero" required>
+                                <option value="">Выберите героя</option>
+                                ${HEROES_LIST.map(hero => `<option value="${hero}">${hero}</option>`).join('')}
+                            </select>
+                        </div>
+                        <div class="form-field">
+                            <label>Таланты:</label>
+                            <input type="text" id="build-talents" placeholder="1 2 1">
+                        </div>
+                        <div class="form-field">
+                            <label>Тир:</label>
+                            <select id="build-tier">
+                                <option value="1">1 - Имба</option>
+                                <option value="2">2 - Хорошо</option>
+                                <option value="3">3 - Норм</option>
+                                <option value="4">4 - Так себе</option>
+                            </select>
+                        </div>
                     </div>
-                    <div class="form-field">
-                        <label>Таланты:</label>
-                        <input type="text" id="build-talents" placeholder="1 2 1">
-                    </div>
-                    <div class="form-field">
-                        <label>Тир:</label>
-                        <select id="build-tier">
-                            <option value="1">1 - Имба</option>
-                            <option value="2">2 - Хорошо</option>
-                            <option value="3">3 - Норм</option>
-                            <option value="4" selected>4 - Так себе</option>
-                        </select>
-                    </div>
+                    
                     <div class="form-field">
                         <label>Стили (клик = обязательно, двойной клик = запрещено):</label>
                         <div class="edit-styles-grid">
@@ -1602,14 +1419,17 @@ function showBuildFormModal(build, title) {
                             `).join('')}
                         </div>
                     </div>
+                    
                     <div class="form-field">
                         <label>Комментарий:</label>
                         <textarea id="build-comment" rows="3"></textarea>
                     </div>
+                    
                     <div class="form-field">
                         <label>Картинка (URL):</label>
                         <input type="url" id="build-img" placeholder="https://...">
                     </div>
+                    
                     <div class="modal-footer">
                         <button type="submit" class="save-btn">Сохранить</button>
                         <button type="button" class="cancel-btn" onclick="closeModal()">Отмена</button>
@@ -1619,36 +1439,40 @@ function showBuildFormModal(build, title) {
         `;
         document.body.appendChild(modal);
         
-        // Обработчики для стилей
         modal.querySelectorAll('.edit-style-btn').forEach(btn => {
             btn.onclick = function() {
-                if (this.dataset.requirement === 'must') {
-                    // must -> not
-                    this.dataset.requirement = 'not';
-                    this.style.background = '#e74c3c';
-                    this.style.color = '#fff';
-                } else if (this.dataset.requirement === 'not') {
-                    // not -> none
-                    delete this.dataset.requirement;
-                    this.style.background = '';
-                    this.style.color = '';
+                if (this.classList.contains('selected')) {
+                    if (this.dataset.requirement === 'must') {
+                        this.dataset.requirement = 'not';
+                        this.style.background = '#e74c3c';
+                        this.style.borderColor = '#e74c3c';
+                    } else {
+                        this.classList.remove('selected');
+                        delete this.dataset.requirement;
+                        this.style.background = '';
+                        this.style.borderColor = '';
+                        this.style.color = '';
+                    }
                 } else {
-                    // none -> must
+                    this.classList.add('selected');
                     this.dataset.requirement = 'must';
                     this.style.background = '#27ae60';
+                    this.style.borderColor = '#27ae60';
                     this.style.color = '#fff';
                 }
             };
         });
         
-        // Обработчик формы
         modal.querySelector('#build-form').onsubmit = function(e) {
             e.preventDefault();
             saveBuild();
         };
+        
+        modal.onclick = function(e) {
+            if (e.target === modal) closeModal();
+        };
     }
     
-    // Заполняем форму
     modal.querySelector('.modal-header h3').textContent = title;
     modal.querySelector('#build-hero').value = build.hero || '';
     modal.querySelector('#build-talents').value = build.talents || '';
@@ -1656,20 +1480,25 @@ function showBuildFormModal(build, title) {
     modal.querySelector('#build-tier').value = build.tier || 4;
     modal.querySelector('#build-img').value = build.img || '';
     
-    // Сбрасываем стили
     modal.querySelectorAll('.edit-style-btn').forEach(btn => {
+        btn.classList.remove('selected');
         delete btn.dataset.requirement;
         btn.style.background = '';
+        btn.style.borderColor = '';
         btn.style.color = '';
         
         const styleId = btn.dataset.styleId;
         if (build.mustHave && build.mustHave.includes(styleId)) {
+            btn.classList.add('selected');
             btn.dataset.requirement = 'must';
             btn.style.background = '#27ae60';
+            btn.style.borderColor = '#27ae60';
             btn.style.color = '#fff';
         } else if (build.mustNotHave && build.mustNotHave.includes(styleId)) {
+            btn.classList.add('selected');
             btn.dataset.requirement = 'not';
             btn.style.background = '#e74c3c';
+            btn.style.borderColor = '#e74c3c';
             btn.style.color = '#fff';
         }
     });
@@ -1683,11 +1512,16 @@ function closeModal() {
 }
 
 function saveBuild() {
-    const hero = document.getElementById('build-hero').value;
-    const talents = document.getElementById('build-talents').value;
-    const comment = document.getElementById('build-comment').value;
+    const hero = document.getElementById('build-hero').value.trim();
+    const talents = document.getElementById('build-talents').value.trim();
+    const comment = document.getElementById('build-comment').value.trim();
     const tier = parseInt(document.getElementById('build-tier').value);
-    const img = document.getElementById('build-img').value;
+    const img = document.getElementById('build-img').value.trim();
+    
+    if (!hero) {
+        alert('Выберите героя!');
+        return;
+    }
     
     const mustHave = [];
     const mustNotHave = [];
@@ -1701,12 +1535,19 @@ function saveBuild() {
         }
     });
     
+    if (mustHave.length === 0) {
+        alert('Выберите хотя бы один обязательный стиль!');
+        return;
+    }
+    
     const newBuild = { hero, mustHave, mustNotHave, talents, comment, tier, img };
     
     if (editingBuildIndex !== null) {
         builds[editingBuildIndex] = newBuild;
+        alert('Билд обновлен!');
     } else {
         builds.push(newBuild);
+        alert('Билд добавлен!');
     }
     
     persist();
@@ -1730,7 +1571,7 @@ function showAddBuildModal() {
     }, 'Создание нового билда');
 }
 
-// ========== КОПИРОВАНИЕ БИЛДА ==========
+// ========== ГЛОБАЛЬНЫЕ ФУНКЦИИ ==========
 window.copyBuild = function(idx) {
     if (!builds[idx]) {
         alert('Билд не найден!');
@@ -1752,14 +1593,12 @@ window.copyBuild = function(idx) {
     showBuildFormModal(copiedBuild, `Копирование билда: ${originalBuild.hero}`);
 }
 
-// ========== РЕДАКТИРОВАНИЕ БИЛДА ==========
 window.editBuild = function(idx) {
     if (!builds[idx]) return;
     editingBuildIndex = idx;
     showBuildFormModal(builds[idx], `Редактирование билда: ${builds[idx].hero}`);
 }
 
-// ========== УДАЛЕНИЕ БИЛДА ==========
 window.deleteBuild = function(idx) {
     if (!builds[idx]) return;
     if (confirm(`Удалить билд для ${builds[idx].hero}?`)) {
@@ -1770,21 +1609,25 @@ window.deleteBuild = function(idx) {
     }
 }
 
-// ========== ПЕРСИСТЕНЦИЯ ==========
 function persist() {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(builds));
 }
 
-// ========== ЭКСПОРТ/ИМПОРТ ==========
 function exportBuilds() {
-    const data = JSON.stringify(builds, null, 2);
-    const blob = new Blob([data], {type: 'application/json'});
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'builds.json';
-    a.click();
-    URL.revokeObjectURL(url);
+    try {
+        const data = JSON.stringify(builds, null, 2);
+        const blob = new Blob([data], {type: 'application/json'});
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'builds.json';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    } catch (error) {
+        alert('Ошибка экспорта!');
+    }
 }
 
 function importBuilds() {
@@ -1804,6 +1647,8 @@ function importBuilds() {
                         renderBuildsList();
                         renderSearchResults();
                         alert('Билды импортированы!');
+                    } else {
+                        alert('Неверный формат файла!');
                     }
                 } catch (error) {
                     alert('Ошибка импорта!');
@@ -1815,7 +1660,82 @@ function importBuilds() {
     input.click();
 }
 
+// ========== ОБРАБОТЧИКИ СОБЫТИЙ ==========
+function setupEventListeners() {
+    document.getElementById('reset-btn').addEventListener('click', function() {
+        selectedDisabledStyles = [];
+        renderDisabledStylesPicker();
+        renderSearchResults();
+    });
+    
+    const addBtn = document.getElementById('add-build-btn');
+    if (addBtn) {
+        addBtn.onclick = showAddBuildModal;
+    }
+    
+    const exportBtn = document.getElementById('export-btn');
+    if (exportBtn) {
+        exportBtn.onclick = exportBuilds;
+    }
+    
+    const importBtn = document.getElementById('import-btn');
+    if (importBtn) {
+        importBtn.onclick = importBuilds;
+    }
+    
+    const restoreBtn = document.getElementById('restore-defaults-btn');
+    if (restoreBtn) {
+        restoreBtn.onclick = function() {
+            if (confirm('Восстановить базовые билды? Они добавятся к существующим.')) {
+                const missingDefaults = DEFAULT_BUILDS.filter(defaultBuild => 
+                    !builds.some(build => 
+                        build.hero === defaultBuild.hero &&
+                        JSON.stringify(build.mustHave) === JSON.stringify(defaultBuild.mustHave) &&
+                        JSON.stringify(build.mustNotHave) === JSON.stringify(defaultBuild.mustNotHave)
+                    )
+                );
+                
+                if (missingDefaults.length > 0) {
+                    builds = builds.concat(missingDefaults);
+                    persist();
+                    renderBuildsList();
+                    renderSearchResults();
+                    alert(`Добавлено ${missingDefaults.length} базовых билдов!`);
+                } else {
+                    alert('Все базовые билды уже есть в базе!');
+                }
+            }
+        }
+    }
+    
+    const resetDbBtn = document.getElementById('reset-db');
+    if (resetDbBtn) {
+        resetDbBtn.onclick = function() {
+            if (confirm('Вы уверены, что хотите удалить ВСЕ билды? Это действие необратимо!')) {
+                builds = [];
+                persist();
+                renderBuildsList();
+                renderSearchResults();
+                alert('Все билды удалены!');
+            }
+        }
+    }
+    
+    const heroSearch = document.getElementById('hero-search');
+    if (heroSearch) {
+        heroSearch.addEventListener('input', function() {
+            heroSearchFilter = this.value;
+            renderBuildsList();
+        });
+    }
+    
+    const clearSearch = document.getElementById('clear-search');
+    if (clearSearch) {
+        clearSearch.addEventListener('click', function() {
+            heroSearchFilter = '';
+            const searchInput = document.getElementById('hero-search');
+            if (searchInput) searchInput.value = '';
+            renderBuildsList();
+        });
+    }
 }
-
-
-
