@@ -352,46 +352,47 @@ function setupEventListeners() {
     document.getElementById('export-btn').onclick = exportBuilds;
     document.getElementById('import-btn').onclick = importBuilds;
     
-    // Обновленная функция сброса с выбором
+    // Кнопка восстановления базовых билдов
+    document.getElementById('restore-defaults-btn').onclick = function() {
+        if (confirm('Восстановить базовые билды? Они добавятся к существующим.')) {
+            // Проверяем какие базовые билды уже есть
+            const missingDefaults = DEFAULT_BUILDS.filter(defaultBuild => 
+                !builds.some(build => 
+                    build.hero === defaultBuild.hero &&
+                    JSON.stringify(build.mustHave) === JSON.stringify(defaultBuild.mustHave) &&
+                    JSON.stringify(build.mustNotHave) === JSON.stringify(defaultBuild.mustNotHave)
+                )
+            );
+            
+            if (missingDefaults.length > 0) {
+                builds = builds.concat(missingDefaults);
+                persist();
+                renderBuildsList();
+                renderSearchResults();
+                alert(`Добавлено ${missingDefaults.length} базовых билдов!`);
+            } else {
+                alert('Все базовые билды уже есть в базе!');
+            }
+        }
+    }
+    
+    // Упрощенная кнопка полного сброса
     document.getElementById('reset-db').onclick = function() {
-        const choice = confirm(
-            'Что вы хотите сделать?\n\n' +
-            'OK - ПОЛНЫЙ СБРОС (удалить все билды)\n' +
-            'Отмена - ВОССТАНОВИТЬ БАЗОВЫЕ (базовые + ваши билды)'
-        );
-        
-        if (choice) {
-            // Полный сброс
+        if (confirm('Вы уверены, что хотите удалить ВСЕ билды? Это действие необратимо!')) {
             builds = [];
             persist();
             renderBuildsList();
             renderSearchResults();
             alert('Все билды удалены!');
-        } else {
-            // Восстановление базовых
-            const userBuilds = builds.filter(build => 
-                !DEFAULT_BUILDS.some(defaultBuild => 
-                    defaultBuild.hero === build.hero &&
-                    JSON.stringify(defaultBuild.mustHave) === JSON.stringify(build.mustHave) &&
-                    JSON.stringify(defaultBuild.mustNotHave) === JSON.stringify(build.mustNotHave)
-                )
-            );
-            
-            builds = [...DEFAULT_BUILDS, ...userBuilds];
-            persist();
-            renderBuildsList();
-            renderSearchResults();
-            alert(`Восстановлено ${DEFAULT_BUILDS.length} базовых билдов!`);
         }
     }
     
-    // Обработчик поиска героев
+    // Остальные обработчики...
     document.getElementById('hero-search').addEventListener('input', function() {
         heroSearchFilter = this.value;
         renderBuildsList();
     });
     
-    // Кнопка очистки поиска
     document.getElementById('clear-search').addEventListener('click', function() {
         heroSearchFilter = '';
         document.getElementById('hero-search').value = '';
@@ -518,3 +519,4 @@ function importBuilds() {
     };
     input.click();
 }
+
