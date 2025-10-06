@@ -27,6 +27,23 @@ const PLAYSTYLES_DATA = [
 // ========== БАЗОВАЯ БАЗА ДАННЫХ БИЛДОВ ==========
 const DEFAULT_BUILDS = [
     {
+    "hero": "DRAGON KNIGHT",
+    "mustHave": [
+      "poison",
+      "freeze"
+    ],
+    "mustNotHave": [
+      "healing",
+      "rage",
+      "chaos",
+      "ultimate"
+    ],
+    "talents": "1 2 2",
+    "comment": "Обязательно купить шард и взять лечение с фриза. Формы качать сначала яд, в 2, потом фриз в 3 и быть в форме яда.",
+    "tier": 2,
+    "img": "https://d2u1z1lopyfwlx.cloudfront.net/thumbnails/852ef2f6-bbcd-504a-9354-42c89434e6da/42676f4e-0d01-5d42-89bd-1c7ad0050717.jpg"
+  },
+    {
       "hero": "AXE",
       "mustHave": [
         "shields",
@@ -1740,4 +1757,5 @@ function setupEventListeners() {
         });
     }
 }
+
 
