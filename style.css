@@ -365,3 +365,21 @@ body {
     .build-img { width: 90px; height: 90px;}
     .modal-content { width: 97vw;}
 }
+
+.restore-btn {
+    background: linear-gradient(145deg, #17a2b8, #138496);
+    color: #fff;
+    border: none;
+    font-weight: bold;
+    padding: 10px 15px;
+    font-size: 0.85rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+.restore-btn:hover {
+    background: linear-gradient(145deg, #1cc7e0, #17a2b8);
+    transform: translateY(-1px);
+}
+
+
