@@ -680,3 +680,223 @@ body {
 
 
 
+
+
+/* ========== НОВАЯ СИСТЕМА СТИЛЕЙ ========== */
+
+.styles-info {
+    font-size: 0.85em;
+    color: #ccc;
+    margin-bottom: 10px;
+    font-style: italic;
+    text-align: center;
+}
+
+.required-styles-section, .desired-styles-section {
+    margin-bottom: 20px;
+    position: relative;
+    padding: 15px;
+    border-radius: 8px;
+}
+
+.required-styles-section {
+    border: 2px solid #3498db;
+    background: rgba(52, 152, 219, 0.1);
+}
+
+.required-styles-section::before {
+    content: "ОБЯЗАТЕЛЬНЫЕ";
+    position: absolute;
+    top: -12px;
+    left: 15px;
+    background: #1a1a1a;
+    padding: 0 10px;
+    color: #3498db;
+    font-weight: bold;
+    font-size: 0.8em;
+    letter-spacing: 1px;
+}
+
+.desired-styles-section {
+    border: 2px solid #f39c12;
+    background: rgba(243, 156, 18, 0.1);
+}
+
+.desired-styles-section::before {
+    content: "ЖЕЛАТЕЛЬНЫЕ";
+    position: absolute;
+    top: -12px;
+    left: 15px;
+    background: #1a1a1a;
+    padding: 0 10px;
+    color: #f39c12;
+    font-weight: bold;
+    font-size: 0.8em;
+    letter-spacing: 1px;
+}
+
+/* Состояния кнопок стилей */
+.edit-style-btn.new-must-have {
+    background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%) !important;
+    border-color: #27ae60 !important;
+    color: #fff !important;
+    font-weight: bold;
+    box-shadow: 0 2px 4px rgba(39, 174, 96, 0.3);
+}
+
+.edit-style-btn.new-must-not-have {
+    background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%) !important;
+    border-color: #e74c3c !important;
+    color: #fff !important;
+    font-weight: bold;
+    box-shadow: 0 2px 4px rgba(231, 76, 60, 0.3);
+}
+
+.edit-style-btn.hero-required {
+    position: relative;
+    cursor: default !important;
+}
+
+.edit-style-btn.hero-required::after {
+    content: '★';
+    position: absolute;
+    top: 2px;
+    right: 4px;
+    font-size: 10px;
+    color: #fff;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+}
+
+.edit-style-btn.hero-required:hover {
+    transform: none !important;
+}
+
+/* Улучшенные стили для модального окна */
+.modal-content {
+    max-height: 90vh;
+    overflow-y: auto;
+    width: 100%;
+    max-width: 800px;
+}
+
+.edit-styles-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.edit-style-btn {
+    padding: 8px 12px;
+    border: 2px solid #555;
+    border-radius: 6px;
+    background: #2c2c2c;
+    color: #ccc;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 0.9em;
+    text-align: center;
+}
+
+.edit-style-btn:hover:not(.hero-required) {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+    background: #3c3c3c;
+    border-color: #666;
+}
+
+.edit-style-btn:not(.new-must-have):not(.new-must-not-have):not(.hero-required) {
+    background: #2c2c2c;
+    border-color: #555;
+    color: #ccc;
+}
+
+/* Анимации для плавных переходов */
+.edit-style-btn {
+    transition: all 0.3s ease;
+}
+
+.edit-style-btn.new-must-have {
+    animation: mustHaveGlow 0.3s ease;
+}
+
+.edit-style-btn.new-must-not-have {
+    animation: mustNotHaveGlow 0.3s ease;
+}
+
+@keyframes mustHaveGlow {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+@keyframes mustNotHaveGlow {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+/* Дополнительные стили для читаемости */
+.form-field {
+    margin-bottom: 20px;
+}
+
+.form-field label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+    color: #fff;
+}
+
+/* Адаптивность для мобильных устройств */
+@media (max-width: 768px) {
+    .edit-styles-grid {
+        grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+        gap: 6px;
+    }
+
+    .edit-style-btn {
+        padding: 6px 8px;
+        font-size: 0.8em;
+    }
+
+    .required-styles-section, .desired-styles-section {
+        padding: 10px;
+    }
+
+    .modal-content {
+        max-width: 95vw;
+        margin: 10px;
+    }
+}
+
+/* Улучшения для accessibility */
+.edit-style-btn:focus {
+    outline: 2px solid #fff;
+    outline-offset: 2px;
+}
+
+.edit-style-btn[disabled] {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Дополнительные стили для лучшего UX */
+.hero-required {
+    border-style: dashed !important;
+}
+
+.styles-info {
+    padding: 8px 12px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 4px;
+    border-left: 4px solid #666;
+}
+
+.required-styles-section .styles-info {
+    border-left-color: #3498db;
+}
+
+.desired-styles-section .styles-info {
+    border-left-color: #f39c12;
+}
