@@ -7,6 +7,88 @@ const HEROES_LIST = [
     "DRAGON KNIGHT"
 ];
 
+// ========== ДАННЫЕ ГЕРОЕВ ==========
+const HERO_REQUIRED_STYLES = {
+    "DROW RANGER": ["crits", "freeze"],
+    "NYX": ["vulnerability", "dodge"],
+    "TIMBERSAW": ["health", "attack"],
+    "UNDDYING": ["healing", "health"],
+    "PA": ["attack", "crits"],
+    "PUGNA": ["ultimate", "vulnerability"],
+    "MIRANA": ["attack", "dodge"],
+    "LC": ["attack", "health"],
+    "PANGO": ["attack", "vulnerability"],
+    "LIFESTEALER": ["attack", "healing"],
+    "HUSKAR": ["health", "attack"],
+    "MAGNUS": ["ultimate", "attack"],
+    "ZEUS": ["ultimate", "vulnerability"],
+    "JUGGER": ["attack", "crits"],
+    "CK": ["crits", "healing"],
+    "NECR": ["healing", "poison"],
+    "TINY": ["attack", "health"],
+    "YAMASHITA": ["attack", "crits"],
+    "VOID": ["attack", "ultimate"],
+    "AA": ["health", "freeze"],
+    "DARK WILLOW": ["guards", "poison"],
+    "MUERTA": ["attack", "vulnerability"],
+    "HOODWINK": ["attack", "dodge"],
+    "VIPER": ["poison", "attack"],
+    "TINKER": ["ultimate", "attack"],
+    "DOOM": ["health", "attack"],
+    "GRIMSTROKE": ["ultimate", "vulnerability"],
+    "AXE": ["shields", "attack"],
+    "QOP": ["attack", "ultimate"],
+    "MARCI": ["attack", "health"],
+    "WINDRANDGER": ["attack", "dodge"],
+    "TREANT": ["healing", "health"],
+    "LICH": ["freeze", "ultimate"],
+    "LYCAN": ["guards", "ultimate"],
+    "OMNIK": ["freeze", "shields"],
+    "URSA": ["attack", "health"],
+    "SF": ["attack", "crits"],
+    "SKY": ["ultimate", "vulnerability"],
+    "ABADDON": ["shields", "healing"],
+    "RAZOR": ["attack", "vulnerability"],
+    "SPECTRE": ["attack", "health"],
+    "SNIPER": ["attack", "crits"],
+    "EMBER SPIRIT": ["attack", "rage"],
+    "VOID SPIRIT": ["shields", "vulnerability"],
+    "RIKI": ["attack", "dodge"],
+    "LUNA": ["attack", "ultimate"],
+    "OGRE MAGI": ["healing", "shields"],
+    "CM": ["freeze", "ultimate"],
+    "PUDGE": ["health", "shields"],
+    "ASH": ["attack", "freeze"],
+    "LINA": ["ultimate", "vulnerability"],
+    "KUNKKA": ["attack", "shields"],
+    "DAZZLE": ["healing", "shields"],
+    "AWAKENED": ["ultimate", "health"],
+    "WASTELAND GUARD": ["guards", "shields"],
+    "TA": ["attack", "crits"],
+    "RINGMASTER": ["ultimate", "vulnerability"],
+    "MK": ["attack", "dodge"],
+    "ES": ["ultimate", "attack"],
+    "LION": ["ultimate", "vulnerability"],
+    "GUITARIST": ["ultimate", "attack"],
+    "KEZ": ["attack", "dodge"],
+    "WITCH DOCTOR": ["healing", "poison"],
+    "FLAMEBORN": ["attack", "rage"],
+    "TROLL": ["attack", "rage"],
+    "ALCHEMIST": ["health", "poison"],
+    "CLINKZ": ["attack", "crits"],
+    "LESHRAC": ["ultimate", "vulnerability"],
+    "PL": ["attack", "dodge"],
+    "BRIST": ["poison", "health"],
+    "SILENCER": ["ultimate", "vulnerability"],
+    "BROOD MOTHER": ["poison", "attack"],
+    "DRAGON KNIGHT": ["poison", "freeze"],
+};
+
+function getHeroRequiredStyles(heroName) {
+    return HERO_REQUIRED_STYLES[heroName] || [];
+}
+
+
 // ========== ДАННЫЕ СТИЛЕЙ ==========
 const PLAYSTYLES_DATA = [
     {id: "guards", name: "Стражи", description: "Гейские шары"},
@@ -1151,12 +1233,92 @@ const STORAGE_KEY = "buildsDatabase";
 
 // Функция для загрузки билдов (базовые + пользовательские)
 function loadBuilds() {
-    const savedBuilds = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
-    if (savedBuilds.length === 0) {
+    console.log('🔍 Проверяем сохраненные данные...');
+
+    try {
+        const savedData = localStorage.getItem('builds');
+
+        if (!savedData) {
+            console.log('📦 Первый запуск - загружаем базовые билды');
+            return [...DEFAULT_BUILDS];
+        }
+
+        const savedBuilds = JSON.parse(savedData);
+
+        if (!Array.isArray(savedBuilds)) {
+            console.log('🔧 Данные не массив - сбрасываем');
+            localStorage.removeItem('builds');
+            return [...DEFAULT_BUILDS];
+        }
+
+        // Фильтруем и исправляем билды
+        const repairedBuilds = [];
+        let removedCount = 0;
+        let repairedCount = 0;
+
+        for (const build of savedBuilds) {
+            // Удаляем билды в новом формате (которые ломают сайт)
+            if (build && (
+                build.requiredMustHave !== undefined || 
+                build.desiredMustHave !== undefined ||
+                build.requiredMustNotHave !== undefined || 
+                build.desiredMustNotHave !== undefined
+            )) {
+                console.log('🗑️ Удален билд в новом формате:', build.hero || 'неизвестный');
+                removedCount++;
+                continue;
+            }
+
+            // Проверяем базовую структуру
+            if (!build || !build.hero || typeof build.hero !== 'string') {
+                console.log('🗑️ Удален некорректный билд');
+                removedCount++;
+                continue;
+            }
+
+            // Исправляем поля билда если нужно
+            const originalBuild = JSON.stringify(build);
+            const repairedBuild = {
+                hero: build.hero,
+                mustHave: Array.isArray(build.mustHave) ? build.mustHave : [],
+                mustNotHave: Array.isArray(build.mustNotHave) ? build.mustNotHave : [],
+                talents: typeof build.talents === 'string' ? build.talents : '',
+                comment: typeof build.comment === 'string' ? build.comment : '',
+                tier: typeof build.tier === 'number' ? build.tier : 4,
+                img: typeof build.img === 'string' ? build.img : ''
+            };
+
+            if (originalBuild !== JSON.stringify(repairedBuild)) {
+                repairedCount++;
+                console.log('🔧 Исправлен билд:', build.hero);
+            }
+
+            repairedBuilds.push(repairedBuild);
+        }
+
+        // Сохраняем исправленные данные если были изменения
+        if (removedCount > 0 || repairedCount > 0) {
+            localStorage.setItem('builds', JSON.stringify(repairedBuilds));
+            console.log(`✅ Автоисправление: удалено ${removedCount}, исправлено ${repairedCount}, сохранено ${repairedBuilds.length} билдов`);
+        }
+
+        // Если билдов не осталось - загружаем базовые
+        if (repairedBuilds.length === 0) {
+            console.log('📦 Все билды были проблемными - загружаем базовые');
+            return [...DEFAULT_BUILDS];
+        }
+
+        return repairedBuilds;
+
+    } catch (error) {
+        console.error('❌ Критическая ошибка данных:', error);
+        console.log('🔄 Полная очистка и перезагрузка...');
+        localStorage.removeItem('builds');
         return [...DEFAULT_BUILDS];
     }
-    return savedBuilds;
 }
+
+
 
 let builds = loadBuilds();
 
@@ -1166,25 +1328,80 @@ let editingBuildIndex = null;
 let heroSearchFilter = '';
 
 // ========== UI ИНИЦИАЛИЗАЦИЯ ==========
+
+// ========== АВТОМАТИЧЕСКАЯ ОЧИСТКА ПРИ ЗАПУСКЕ ==========
+function performStartupCleanup() {
+    console.log('🚀 Запуск системы автоочистки...');
+
+    try {
+        // Проверяем все ключи localStorage на валидность
+        const keysToRemove = [];
+
+        for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i);
+
+            if (!key) continue;
+
+            try {
+                const value = localStorage.getItem(key);
+                if (value) {
+                    JSON.parse(value); // Проверяем валидность JSON
+                }
+            } catch (e) {
+                keysToRemove.push(key);
+            }
+        }
+
+        // Удаляем поврежденные ключи
+        keysToRemove.forEach(key => {
+            localStorage.removeItem(key);
+            console.log('🗑️ Удален поврежденный ключ:', key);
+        });
+
+        console.log('✅ Автоочистка завершена');
+
+    } catch (error) {
+        console.error('❌ Ошибка автоочистки:', error);
+        console.log('🔄 Экстренная полная очистка...');
+        localStorage.clear();
+    }
+}
+
 document.addEventListener("DOMContentLoaded", () => {
+    // Выполняем автоочистку перед загрузкой
+    performStartupCleanup();
+
+    // Обычная инициализация
     renderDisabledStylesPicker();
     renderBuildsList();
     setupEventListeners();
+
+    console.log('🎉 Сайт загружен! Все проблемы автоматически исправлены.');
 });
+
+
 
 // ========== РАСЧЕТ ЭФФЕКТИВНОСТИ БИЛДА ==========
 function calculateBuildEfficiency(build, enabledStyles) {
-    if (!build.mustHave.every(s => enabledStyles.includes(s))) {
+    const heroStyles = getHeroRequiredStyles(build.hero);
+    const allMustHave = [...new Set([...heroStyles, ...(build.mustHave || [])])];
+
+    if (!allMustHave.every(s => enabledStyles.includes(s))) {
         return 0;
     }
-    const conflictsCount = build.mustNotHave.filter(s => enabledStyles.includes(s)).length;
+
+    const conflictsCount = (build.mustNotHave || []).filter(s => enabledStyles.includes(s)).length;
     if (conflictsCount >= 3) return 0;
+
     let efficiency = 100;
     for (let i = 0; i < conflictsCount; i++) {
         efficiency = efficiency / 2;
     }
+
     return Math.round(efficiency);
 }
+
+
 
 // ========== ПОИСК БИЛДОВ ==========
 function searchBuilds(disabledStyles) {
@@ -1757,5 +1974,6 @@ function setupEventListeners() {
         });
     }
 }
+
 
 
