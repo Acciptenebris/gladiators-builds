@@ -250,12 +250,12 @@ function showBuildFormModal(build, title) {
                 <div style="color:#d4af37;font-weight:bold;margin-bottom:8px;">🔒 Обязательные стили героя:</div>
                 <div id="hero-required-list" style="color:#fff;font-size:1.1rem;"></div></div>
             <div class="form-field"><label>Обязательные стили:</label>
-                <div class="styles-instruction">Клик = обязательно ✓ | Двойной клик = запрещено ✗ | Тройной клик = нейтрально</div>
+                <div class="styles-instruction">Клик = обязательно ✓✓ | Двойной клик = желательно ✓ | Тройной клик = нейтрально</div>
                 <div class="edit-styles-grid" id="required-styles-grid">
                     ${PLAYSTYLES_DATA.map(style => `<button type="button" class="edit-style-btn required-style-btn" data-style-id="${style.id}">${style.name}</button>`).join('')}
                 </div></div>
             <div class="form-field"><label>Желательные стили:</label>
-                <div class="styles-instruction">Клик = желательно ✓ | Двойной клик = нежелательно ✗ | Тройной клик = нейтрально</div>
+                <div class="styles-instruction">Клик = Запрещено ✗✗ | Двойной клик = нежелательно ✗ | Тройной клик = нейтрально</div>
                 <div class="edit-styles-grid" id="desired-styles-grid">
                     ${PLAYSTYLES_DATA.map(style => `<button type="button" class="edit-style-btn desired-style-btn" data-style-id="${style.id}">${style.name}</button>`).join('')}
                 </div></div>
@@ -276,8 +276,8 @@ function showBuildFormModal(build, title) {
                     this.classList.add('selected'); this.dataset.requirement = 'must';
                     this.style.background = '#27ae60'; this.style.borderColor = '#27ae60'; this.style.color = '#fff';
                 } else if (this.dataset.requirement === 'must') {
-                    this.dataset.requirement = 'not';
-                    this.style.background = '#e74c3c'; this.style.borderColor = '#e74c3c';
+                    this.dataset.requirement = 'desired';
+                    this.style.background = '#3498db'; this.style.borderColor = '#3498db';
                 } else {
                     this.classList.remove('selected'); delete this.dataset.requirement;
                     this.style.background = ''; this.style.borderColor = ''; this.style.color = '';
@@ -288,10 +288,10 @@ function showBuildFormModal(build, title) {
         modal.querySelectorAll('.desired-style-btn').forEach(btn => {
             btn.onclick = function() {
                 if (!this.classList.contains('selected')) {
-                    this.classList.add('selected'); this.dataset.requirement = 'must';
-                    this.style.background = '#3498db'; this.style.borderColor = '#3498db'; this.style.color = '#fff';
-                } else if (this.dataset.requirement === 'must') {
-                    this.dataset.requirement = 'not';
+                    this.classList.add('selected'); this.dataset.requirement = 'not';
+                    this.style.background = '#e74c3c'; this.style.borderColor = '#e74c3c'; this.style.color = '#fff';
+                } else if (this.dataset.requirement === 'not') {
+                    this.dataset.requirement = 'undesired';
                     this.style.background = '#e67e22'; this.style.borderColor = '#e67e22';
                 } else {
                     this.classList.remove('selected'); delete this.dataset.requirement;
@@ -416,13 +416,13 @@ function saveBuild() {
         if (heroStyles.includes(styleId)) return;
         
         if (btn.dataset.requirement === 'must') requiredMustHave.push(styleId);
-        else if (btn.dataset.requirement === 'not') requiredMustNotHave.push(styleId);
+        else if (btn.dataset.requirement === 'desired') desiredMustHave.push(styleId);
     });
     
     document.querySelectorAll('.desired-style-btn').forEach(btn => {
         const styleId = btn.dataset.styleId;
-        if (btn.dataset.requirement === 'must') desiredMustHave.push(styleId);
-        else if (btn.dataset.requirement === 'not') desiredMustNotHave.push(styleId);
+        if (btn.dataset.requirement === 'not') requiredMustNotHave.push(styleId);
+        else if (btn.dataset.requirement === 'undesired') desiredMustNotHave.push(styleId);
     });
     
     const newBuild = { hero, requiredMustHave, desiredMustHave, requiredMustNotHave, desiredMustNotHave, talents, comment, tier, img };
@@ -556,4 +556,5 @@ function setupEventListeners() {
         });
     }
 }
+
 
