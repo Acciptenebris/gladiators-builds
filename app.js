@@ -85,6 +85,23 @@ function getHeroRequiredStyles(heroName) {
     return heroData ? heroData.requiredStyles : [];
 }
 
+// ========== ДАННЫЕ СТИЛЕЙ ==========
+const PLAYSTYLES_DATA = [
+    {id: "guards", name: "Стражи", description: "Гейские шары"},
+    {id: "crits", name: "Криты", description: "Сраные проки"},
+    {id: "dodge", name: "Увороты", description: "Всегда качай меня"},
+    {id: "poison", name: "Яды", description: "В начале тащу, в конце ГХ"},
+    {id: "shields", name: "Щиты", description: "Без проков бесполезен"},
+    {id: "healing", name: "Лечение", description: "Сильнее калечу чем лечу"},
+    {id: "health", name: "Здоровье", description: "Я имба"},
+    {id: "vulnerability", name: "Уязвимость", description: "Файт две секунды"},
+    {id: "rage", name: "Ярость", description: "Не ясно зачем я нужен"},
+    {id: "freeze", name: "Заморозка", description: "Удачи кастануть ульту"},
+    {id: "chaos", name: "Хаос", description: "Непонятная тема вообще"},
+    {id: "ultimate", name: "Ульта", description: "Опять гитарист в бане"},
+    {id: "attack", name: "Атака", description: "Моя бить"}
+];
+
 
 // ========== ФУНКЦИИ ДЛЯ РАБОТЫ С НОВОЙ СИСТЕМОЙ СТИЛЕЙ ==========
 
@@ -209,22 +226,6 @@ function setStylesInModal(build) {
     });
 }
 
-// ========== ДАННЫЕ СТИЛЕЙ ==========
-const PLAYSTYLES_DATA = [
-    {id: "guards", name: "Стражи", description: "Гейские шары"},
-    {id: "crits", name: "Криты", description: "Сраные проки"},
-    {id: "dodge", name: "Увороты", description: "Всегда качай меня"},
-    {id: "poison", name: "Яды", description: "В начале тащу, в конце ГХ"},
-    {id: "shields", name: "Щиты", description: "Без проков бесполезен"},
-    {id: "healing", name: "Лечение", description: "Сильнее калечу чем лечу"},
-    {id: "health", name: "Здоровье", description: "Я имба"},
-    {id: "vulnerability", name: "Уязвимость", description: "Файт две секунды"},
-    {id: "rage", name: "Ярость", description: "Не ясно зачем я нужен"},
-    {id: "freeze", name: "Заморозка", description: "Удачи кастануть ульту"},
-    {id: "chaos", name: "Хаос", description: "Непонятная тема вообще"},
-    {id: "ultimate", name: "Ульта", description: "Опять гитарист в бане"},
-    {id: "attack", name: "Атака", description: "Моя бить"}
-];
 
 // ========== БАЗОВАЯ БАЗА ДАННЫХ БИЛДОВ ==========
 const DEFAULT_BUILDS = [
@@ -232,8 +233,8 @@ const DEFAULT_BUILDS = [
         "hero": "DRAGON KNIGHT",
         "requiredMustHave": ["poison", "freeze"],
         "desiredMustHave": [],
-        "requiredMustNotHave": ["chaos"],
-        "desiredMustNotHave": ["healing", "rage", "ultimate"],
+        "requiredMustNotHave": [],
+        "desiredMustNotHave": ["healing", "rage", "chaos", "ultimate"],
         "talents": "1 2 2",
         "comment": "Фриз + яд. Обязательно купить шард и взять лечение с фриза. Формы качать сначала яд, в 2, потом фриз в 3 и быть в форме яда.",
         "tier": 2,
@@ -248,7 +249,7 @@ const DEFAULT_BUILDS = [
         "talents": "1 2 3",
         "comment": "Классический танк с щитами и атакой. Криты желательны для урона.",
         "tier": 1,
-        "img": "https://example.com/axe.jpg"
+        "img": ""
     },
     {
         "hero": "PA",
@@ -259,7 +260,7 @@ const DEFAULT_BUILDS = [
         "talents": "2 2 2",
         "comment": "Чистый дамагер с обязательными атакой и критами. Уклонение желательно.",
         "tier": 1,
-        "img": "https://example.com/pa.jpg"
+        "img": ""
     }
 ];
 
@@ -316,10 +317,11 @@ function convertOldBuildsToNewFormat() {
 
     saveBuildsToStorage();
     renderBuildsList();
+    renderSearchResults();
     console.log('Old builds converted successfully!');
 }
 
-// Вызовем конвертацию при загрузке, если нужно
+
 document.addEventListener("DOMContentLoaded", () => {
     renderDisabledStylesPicker();
     renderBuildsList();
@@ -331,9 +333,6 @@ document.addEventListener("DOMContentLoaded", () => {
         convertOldBuildsToNewFormat();
     }
 });
-
-
-
 
 // ========== РАСЧЕТ ЭФФЕКТИВНОСТИ БИЛДА ==========
 // ========== РАСЧЕТ ЭФФЕКТИВНОСТИ БИЛДА ==========
@@ -692,15 +691,15 @@ function showBuildFormModal(build, title) {
     }
 
     // Заполнение данными при редактировании
-    if (build.hero) {
-        modal.querySelector('#build-hero').value = build.hero;
+    if (build && build.hero) {
+        modal.querySelector('#build-hero').value = build.hero || '';
         modal.querySelector('#build-talents').value = build.talents || '';
         modal.querySelector('#build-comment').value = build.comment || '';
         modal.querySelector('#build-img').value = build.img || '';
         modal.querySelector('#build-tier').value = build.tier || '';
 
         // Установить стили
-        setStylesInModal(build);
+        setTimeout(() => setStylesInModal(build), 100);
     }
 
     modal.style.display = 'flex';
@@ -763,14 +762,18 @@ function showAddBuildModal() {
     editingBuildIndex = null;
     showBuildFormModal({
         hero: '',
-        mustHave: [],
-        mustNotHave: [],
+        requiredMustHave: [],
+        desiredMustHave: [],
+        requiredMustNotHave: [],
+        desiredMustNotHave: [],
         talents: '',
         comment: '',
         tier: 4,
         img: ''
     }, 'Создание нового билда');
 }
+
+
 
 // ========== ГЛОБАЛЬНЫЕ ФУНКЦИИ ==========
 window.copyBuild = function(idx) {
