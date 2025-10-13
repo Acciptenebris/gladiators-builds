@@ -30,40 +30,91 @@ body {
     text-align: center;
 }
 
-/* ========== КНОПКИ ВЫБОРА СТИЛЕЙ ========== */
+/* ========== КНОПКИ ВЫБОРА СТИЛЕЙ С ИКОНКАМИ ========== */
 .playstyles-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 16px;
     margin-bottom: 40px;
     padding: 10px;
 }
+
 .playstyle-btn {
     background: linear-gradient(135deg, #2c3e50 0%, #34495e 50%, #2c3e50 100%);
     border: 2px solid #34495e;
     color: #ecf0f1;
-    padding: 16px 20px;
+    padding: 12px 16px;
     border-radius: 12px;
     cursor: pointer;
     transition: all 0.2s ease;
-    text-align: center;
+    text-align: left;
     font-size: 1rem;
     font-weight: 600;
     position: relative;
+    min-height: 70px;
 }
-.playstyle-btn:hover { border-color: #3498db; background: linear-gradient(135deg, #3498db 0%, #2980b9 50%, #3498db 100%);}
+
+.playstyle-content {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.playstyle-icon {
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
+    flex-shrink: 0;
+}
+
+.playstyle-text {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.playstyle-name {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #ecf0f1;
+}
+
+.playstyle-desc {
+    font-size: 0.85rem;
+    color: #ccc;
+    font-weight: 400;
+}
+
+.playstyle-btn:hover { 
+    border-color: #3498db; 
+    background: linear-gradient(135deg, #3498db 0%, #2980b9 50%, #3498db 100%);
+}
+
 .playstyle-btn.selected {
     background: linear-gradient(135deg, #e74c3c 0%, #c0392b 50%, #e74c3c 100%);
     border-color: #e74c3c;
     color: #fff;
     font-weight: 700;
 }
+
+.playstyle-btn.selected .playstyle-name,
+.playstyle-btn.selected .playstyle-desc {
+    color: #fff;
+}
+
 .playstyle-btn.selected::after {
     content: '✔';
-    position: absolute; top: 5px; right: 8px; font-size: 14px; color: #fff;
+    position: absolute; 
+    top: 5px; 
+    right: 8px; 
+    font-size: 14px; 
+    color: #fff;
 }
+
 .playstyle-btn.disabled {
-    opacity: 0.4; cursor: not-allowed;
+    opacity: 0.4; 
+    cursor: not-allowed;
     background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%);
     border-color: #7f8c8d;
 }
@@ -156,9 +207,73 @@ body {
     max-width: 100%;
     margin: 0;
     display: flex;
-    flex-direction: column;
-    justify-content: space-between;
+    flex-direction: row;
+    gap: 18px;
+    align-items: flex-start;
 }
+
+/* ========== СЕКЦИЯ ИЗОБРАЖЕНИЯ И ШАРДА ========== */
+.build-image-section {
+    flex: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.build-img { 
+    width: 120px; 
+    height: 120px; 
+    border-radius: 12px; 
+    overflow: hidden; 
+    border: 2px solid #444; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center;
+}
+.build-img img { width: 100%; height: 100%; object-fit: cover;}
+.build-img-empty { background: linear-gradient(135deg, #333, #2a2a2a); color: #888; font-size: 0.85rem; text-align: center;}
+
+/* ========== ИНДИКАТОР ШАРДА ========== */
+.shard-indicator {
+    width: 50px;
+    height: 50px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.05);
+    border: 2px solid #444;
+    opacity: 0.3;
+    transition: all 0.3s ease;
+}
+
+.shard-indicator img {
+    width: 32px;
+    height: 32px;
+    object-fit: contain;
+    filter: grayscale(100%);
+}
+
+.shard-indicator.active {
+    opacity: 1;
+    background: linear-gradient(135deg, #9b59b6, #8e44ad);
+    border-color: #9b59b6;
+    box-shadow: 0 0 15px rgba(155, 89, 182, 0.5);
+}
+
+.shard-indicator.active img {
+    filter: none;
+}
+
+/* ========== БЕЙДЖ ШАРДА В СПИСКЕ ========== */
+.shard-badge {
+    display: inline-block;
+    margin-left: 8px;
+    font-size: 1rem;
+    vertical-align: middle;
+}
+
 .build-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2px; }
 .hero-card .hero-name { font-size: 1.25rem; font-weight: bold; color: #ffe27d; margin-bottom: 0;}
 .talents-line { margin-top: 2px; color:#ffd047;font-weight:bold; font-size:1.05em;}
@@ -181,6 +296,13 @@ body {
     font-weight: 450;
     white-space: pre-wrap;
     word-break: break-word;
+}
+.build-content { 
+    flex: 1; 
+    min-width: 0; 
+    display: flex; 
+    flex-direction: column;
+    justify-content: space-between;
 }
 .build-actions {
     display: flex;
@@ -246,10 +368,6 @@ body {
 .efficiency-low { background: linear-gradient(135deg, #95a5a6, #7f8c8d); color: #fff; border-color: #95a5a6; box-shadow: 0 0 4px rgba(149,165,166,0.2);}
 
 /* Картинки */
-.build-img { flex: none; width: 120px; height: 120px; margin-right: 20px; border-radius: 12px; overflow: hidden; border: 2px solid #444; display: flex; align-items: center; justify-content: center;}
-.build-img img { width: 100%; height: 100%; object-fit: cover;}
-.build-img-empty { background: linear-gradient(135deg, #333, #2a2a2a); color: #888; font-size: 0.85rem; text-align: center;}
-.build-content { flex: 1; min-width: 0; display: flex; flex-direction: column;}
 .build-img-mini { display: inline-block; vertical-align: middle; margin-right: 8px;}
 .build-img-mini img { max-width: 28px; max-height: 28px; border-radius: 6px;}
 
@@ -461,6 +579,49 @@ body {
     background: linear-gradient(145deg, #e74c3c, #c0392b);
 }
 
+/* ========== КНОПКА ШАРДА ========== */
+.shard-toggle-btn {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 20px;
+    border: 2px solid #555;
+    border-radius: 8px;
+    background: linear-gradient(145deg, #2c2c2c, #1a1a1a);
+    color: #888;
+    font-size: 1.2rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    min-height: 45px;
+}
+
+.shard-toggle-btn img {
+    width: 28px;
+    height: 28px;
+    object-fit: contain;
+    filter: grayscale(100%);
+    opacity: 0.5;
+    transition: all 0.3s ease;
+}
+
+.shard-toggle-btn:hover {
+    border-color: #9b59b6;
+    background: linear-gradient(145deg, #3c3c3c, #2a2a2a);
+}
+
+.shard-toggle-btn.active {
+    border-color: #9b59b6;
+    background: linear-gradient(145deg, #9b59b6, #8e44ad);
+    color: #fff;
+    box-shadow: 0 0 20px rgba(155, 89, 182, 0.5);
+}
+
+.shard-toggle-btn.active img {
+    filter: none;
+    opacity: 1;
+}
+
 /* ========== УЛУЧШЕННОЕ ПОЛЕ КОММЕНТАРИЯ ========== */
 #build-comment {
     min-height: 100px;
@@ -594,12 +755,6 @@ body {
     background: #333 !important;
 }
 
-
-
-
-
-
-
 /* ========== НОВАЯ СИСТЕМА СТИЛЕЙ ========== */
 
 .styles-info {
@@ -607,6 +762,16 @@ body {
     color: #ccc;
     margin-bottom: 10px;
     font-style: italic;
+}
+
+.styles-instruction {
+    font-size: 0.9em;
+    color: #aaa;
+    margin-bottom: 12px;
+    padding: 8px 12px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 6px;
+    border-left: 3px solid #d4af37;
 }
 
 .required-styles-grid, .desired-styles-grid {
@@ -649,7 +814,7 @@ body {
 }
 
 .edit-style-btn.hero-required::after {
-    content: '★';
+    content: '☆';
     position: absolute;
     top: 2px;
     right: 4px;
@@ -729,72 +894,4 @@ body {
 .edit-style-btn:not(.must-have):not(.must-not-have):not(.hero-required):hover {
     background: #3c3c3c;
     border-color: #666;
-}
-
-/* ШАРД ИНДИКАТОР */
-.shard-indicator {
-    position: absolute;
-    top: 4px;
-    right: 4px;
-    width: 28px;
-    height: 28px;
-    background: linear-gradient(135deg, #9b59b6, #8e44ad);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 16px;
-    box-shadow: 0 0 12px rgba(155, 89, 182, 0.8);
-    animation: shardPulse 2s infinite;
-}
-
-@keyframes shardPulse {
-    0%, 100% { box-shadow: 0 0 12px rgba(155, 89, 182, 0.8); }
-    50% { box-shadow: 0 0 20px rgba(155, 89, 182, 1); }
-}
-
-/* КНОПКА ШАРДА */
-.shard-toggle {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 10px 20px;
-    background: linear-gradient(145deg, #333, #2a2a2a);
-    border: 2px solid #555;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    user-select: none;
-}
-
-.shard-toggle.active {
-    background: linear-gradient(145deg, #9b59b6, #8e44ad);
-    border-color: #9b59b6;
-    box-shadow: 0 0 15px rgba(155, 89, 182, 0.6);
-}
-
-.shard-toggle input[type="checkbox"] {
-    display: none;
-}
-
-.shard-toggle label {
-    cursor: pointer;
-    font-size: 1.1rem;
-    font-weight: bold;
-    color: #fff;
-    margin: 0;
-}
-
-/* ИКОНКИ СТИЛЕЙ */
-.playstyle-icon {
-    width: 40px;
-    height: 40px;
-    flex-shrink: 0;
-}
-
-.playstyle-btn {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    text-align: left;
 }
