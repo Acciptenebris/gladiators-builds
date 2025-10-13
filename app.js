@@ -461,138 +461,255 @@ function renderBuildsList() {
 
 // ========== МОДАЛЬНОЕ ОКНО ==========
 function showBuildFormModal(build, title) {
-    console.log('Opening modal for:', build);
-    
+    console.log('Opening modal for build:', build);
+
     let modal = document.querySelector('.modal-overlay');
-    if (!modal) {
-        modal = document.createElement('div');
-        modal.className = 'modal-overlay';
-        modal.innerHTML = `
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h3>Создание билда</h3>
-                    <button class="close-btn" onclick="closeModal()">&times;</button>
-                </div>
-                <form id="build-form">
-                    <div class="row-inputs">
-                        <div class="form-field">
-                            <label>Герой:</label>
-                            <select id="build-hero" required>
-                                <option value="">Выберите героя</option>
-                                ${HEROES_LIST.map(hero => `<option value="${hero}">${hero}</option>`).join('')}
-                            </select>
-                        </div>
-                        <div class="form-field">
-                            <label>Таланты:</label>
-                            <input type="text" id="build-talents" placeholder="1 2 1">
-                        </div>
-                        <div class="form-field">
-                            <label>Тир:</label>
-                            <select id="build-tier">
-                                <option value="1">1 - Имба</option>
-                                <option value="2">2 - Хорошо</option>
-                                <option value="3">3 - Норм</option>
-                                <option value="4">4 - Так себе</option>
-                            </select>
-                        </div>
-                    </div>
-                    
-                    <div class="form-field">
-                        <label>Стили (клик = обязательно, двойной клик = запрещено):</label>
-                        <div class="edit-styles-grid">
-                            ${PLAYSTYLES_DATA.map(style => `
-                                <button type="button" class="edit-style-btn" data-style-id="${style.id}">
-                                    ${style.name}
-                                </button>
-                            `).join('')}
-                        </div>
-                    </div>
-                    
-                    <div class="form-field">
-                        <label>Комментарий:</label>
-                        <textarea id="build-comment" rows="3"></textarea>
-                    </div>
-                    
-                    <div class="form-field">
-                        <label>Картинка (URL):</label>
-                        <input type="url" id="build-img" placeholder="https://...">
-                    </div>
-                    
-                    <div class="modal-footer">
-                        <button type="submit" class="save-btn">Сохранить</button>
-                        <button type="button" class="cancel-btn" onclick="closeModal()">Отмена</button>
-                    </div>
-                </form>
+    if (modal) modal.remove();
+
+    modal = document.createElement('div');
+    modal.className = 'modal-overlay';
+    modal.innerHTML = `
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>${title || 'Создание билда'}</h3>
+                <button class="close-btn" onclick="closeModal()">&times;</button>
             </div>
-        `;
-        document.body.appendChild(modal);
-        
-        modal.querySelectorAll('.edit-style-btn').forEach(btn => {
-            btn.onclick = function() {
-                if (this.classList.contains('selected')) {
-                    if (this.dataset.requirement === 'must') {
-                        this.dataset.requirement = 'not';
-                        this.style.background = '#e74c3c';
-                        this.style.borderColor = '#e74c3c';
-                    } else {
-                        this.classList.remove('selected');
-                        delete this.dataset.requirement;
-                        this.style.background = '';
-                        this.style.borderColor = '';
-                        this.style.color = '';
-                    }
-                } else {
-                    this.classList.add('selected');
-                    this.dataset.requirement = 'must';
-                    this.style.background = '#27ae60';
-                    this.style.borderColor = '#27ae60';
-                    this.style.color = '#fff';
-                }
-            };
-        });
-        
-        modal.querySelector('#build-form').onsubmit = function(e) {
-            e.preventDefault();
-            saveBuild();
-        };
-        
-        modal.onclick = function(e) {
-            if (e.target === modal) closeModal();
-        };
-    }
-    
-    modal.querySelector('.modal-header h3').textContent = title;
-    modal.querySelector('#build-hero').value = build.hero || '';
-    modal.querySelector('#build-talents').value = build.talents || '';
-    modal.querySelector('#build-comment').value = build.comment || '';
-    modal.querySelector('#build-tier').value = build.tier || 4;
-    modal.querySelector('#build-img').value = build.img || '';
-    
+            <form id="build-form">
+                <div class="row-inputs">
+                    <div class="form-field">
+                        <label>Герой:</label>
+                        <select id="build-hero" required>
+                            <option value="">Выберите героя</option>
+                            ${HEROES_LIST.map(hero => `<option value="${hero}">${hero}</option>`).join('')}
+                        </select>
+                    </div>
+                    <div class="form-field">
+                        <label>Таланты:</label>
+                        <input type="text" id="build-talents" placeholder="1 2 2" required>
+                    </div>
+                    <div class="form-field">
+                        <label>Тир:</label>
+                        <select id="build-tier" required>
+                            <option value="">Выберите тир</option>
+                            <option value="1">1 - Имба</option>
+                            <option value="2">2 - Хорошо</option>
+                            <option value="3">3 - Норм</option>
+                            <option value="4">4 - Так себе</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-field">
+                    <label>Обязательные стили:</label>
+                    <div class="styles-info">Критичны для работы билда. Если отсутствуют - билд не появится в поиске.</div>
+                    <div class="edit-styles-grid required-styles-section">
+                        ${PLAYSTYLES_DATA.map(style => `
+                            <button type="button" class="edit-style-btn required-style-btn" data-style-id="${style.id}">
+                                ${style.name}
+                            </button>
+                        `).join('')}
+                    </div>
+                </div>
+
+                <div class="form-field">
+                    <label>Желательные стили:</label>
+                    <div class="styles-info">За каждое несовпадение -30% эффективности. При 4+ несовпадениях билд не появится.</div>
+                    <div class="edit-styles-grid desired-styles-section">
+                        ${PLAYSTYLES_DATA.map(style => `
+                            <button type="button" class="edit-style-btn desired-style-btn" data-style-id="${style.id}">
+                                ${style.name}
+                            </button>
+                        `).join('')}
+                    </div>
+                </div>
+
+                <div class="form-field">
+                    <label>Комментарий:</label>
+                    <textarea id="build-comment" rows="3"></textarea>
+                </div>
+
+                <div class="form-field">
+                    <label>Картинка (URL):</label>
+                    <input type="url" id="build-img" placeholder="https://...">
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="save-btn">Сохранить</button>
+                    <button type="button" class="cancel-btn" onclick="closeModal()">Отмена</button>
+                </div>
+            </form>
+        </div>
+    `;
+    document.body.appendChild(modal);
+
+    // Настройка обработчиков
     modal.querySelectorAll('.edit-style-btn').forEach(btn => {
-        btn.classList.remove('selected');
-        delete btn.dataset.requirement;
-        btn.style.background = '';
-        btn.style.borderColor = '';
-        btn.style.color = '';
-        
-        const styleId = btn.dataset.styleId;
-        if (build.mustHave && build.mustHave.includes(styleId)) {
-            btn.classList.add('selected');
-            btn.dataset.requirement = 'must';
-            btn.style.background = '#27ae60';
-            btn.style.borderColor = '#27ae60';
-            btn.style.color = '#fff';
-        } else if (build.mustNotHave && build.mustNotHave.includes(styleId)) {
-            btn.classList.add('selected');
-            btn.dataset.requirement = 'not';
-            btn.style.background = '#e74c3c';
-            btn.style.borderColor = '#e74c3c';
-            btn.style.color = '#fff';
+        btn.onclick = () => handleStyleClick(btn);
+    });
+
+    // Обработчик выбора героя
+    const heroSelect = modal.querySelector('#build-hero');
+    heroSelect.addEventListener('change', function() {
+        if (this.value) {
+            applyHeroStyles(this.value);
         }
     });
-    
+
+    const form = modal.querySelector('#build-form');
+    form.onsubmit = function(e) {
+        e.preventDefault();
+        saveModernBuild();
+    };
+
+    // Заполнение при редактировании
+    if (build && build.hero) {
+        modal.querySelector('#build-hero').value = build.hero;
+        modal.querySelector('#build-talents').value = build.talents || '';
+        modal.querySelector('#build-comment').value = build.comment || '';
+        modal.querySelector('#build-img').value = build.img || '';
+        modal.querySelector('#build-tier').value = build.tier || '';
+
+        setTimeout(() => {
+            populateBuildStyles(build);
+        }, 100);
+    }
+
     modal.style.display = 'flex';
 }
+
+
+// ========== ФУНКЦИИ ДЛЯ РАБОТЫ С НОВЫМ ИНТЕРФЕЙСОМ ==========
+
+function handleStyleClick(btn) {
+    const isHeroRequired = btn.classList.contains('hero-required');
+    if (isHeroRequired) return; // Стили героя нельзя менять
+
+    // Цикл: нейтральный → зеленый (должен быть) → красный (не должен быть) → нейтральный
+    if (btn.classList.contains('style-must-have')) {
+        btn.classList.remove('style-must-have');
+        btn.classList.add('style-must-not-have');
+    } else if (btn.classList.contains('style-must-not-have')) {
+        btn.classList.remove('style-must-not-have');
+    } else {
+        btn.classList.add('style-must-have');
+    }
+}
+
+function applyHeroStyles(heroName) {
+    const requiredStyles = getHeroRequiredStyles(heroName);
+
+    // Сброс всех hero-required меток
+    document.querySelectorAll('.edit-style-btn').forEach(btn => {
+        btn.classList.remove('hero-required');
+    });
+
+    // Применяем стили героя как обязательные
+    document.querySelectorAll('.required-style-btn').forEach(btn => {
+        const styleId = btn.getAttribute('data-style-id');
+        if (requiredStyles.includes(styleId)) {
+            btn.classList.add('style-must-have', 'hero-required');
+        }
+    });
+}
+
+function populateBuildStyles(build) {
+    // Очищаем все состояния
+    document.querySelectorAll('.edit-style-btn').forEach(btn => {
+        btn.classList.remove('style-must-have', 'style-must-not-have', 'hero-required');
+    });
+
+    // Применяем стили героя
+    if (build.hero) {
+        applyHeroStyles(build.hero);
+    }
+
+    // Заполняем стили из билда
+    (build.requiredMustHave || []).forEach(styleId => {
+        const btn = document.querySelector(`.required-style-btn[data-style-id="${styleId}"]`);
+        if (btn) btn.classList.add('style-must-have');
+    });
+
+    (build.requiredMustNotHave || []).forEach(styleId => {
+        const btn = document.querySelector(`.required-style-btn[data-style-id="${styleId}"]`);
+        if (btn) btn.classList.add('style-must-not-have');
+    });
+
+    (build.desiredMustHave || []).forEach(styleId => {
+        const btn = document.querySelector(`.desired-style-btn[data-style-id="${styleId}"]`);
+        if (btn) btn.classList.add('style-must-have');
+    });
+
+    (build.desiredMustNotHave || []).forEach(styleId => {
+        const btn = document.querySelector(`.desired-style-btn[data-style-id="${styleId}"]`);
+        if (btn) btn.classList.add('style-must-not-have');
+    });
+}
+
+function saveModernBuild() {
+    const hero = document.getElementById('build-hero').value.trim();
+    const talents = document.getElementById('build-talents').value.trim();
+    const comment = document.getElementById('build-comment').value.trim();
+    const img = document.getElementById('build-img').value.trim();
+    const tier = parseInt(document.getElementById('build-tier').value);
+
+    if (!hero || !talents || !tier) {
+        alert('Заполните все обязательные поля!');
+        return;
+    }
+
+    // Собираем стили
+    const requiredMustHave = [];
+    const desiredMustHave = [];
+    const requiredMustNotHave = [];
+    const desiredMustNotHave = [];
+
+    document.querySelectorAll('.required-style-btn').forEach(btn => {
+        const styleId = btn.getAttribute('data-style-id');
+        if (btn.classList.contains('style-must-have')) {
+            requiredMustHave.push(styleId);
+        } else if (btn.classList.contains('style-must-not-have')) {
+            requiredMustNotHave.push(styleId);
+        }
+    });
+
+    document.querySelectorAll('.desired-style-btn').forEach(btn => {
+        const styleId = btn.getAttribute('data-style-id');
+        if (btn.classList.contains('style-must-have')) {
+            desiredMustHave.push(styleId);
+        } else if (btn.classList.contains('style-must-not-have')) {
+            desiredMustNotHave.push(styleId);
+        }
+    });
+
+    const modernBuild = {
+        hero,
+        requiredMustHave,
+        desiredMustHave,
+        requiredMustNotHave,
+        desiredMustNotHave,
+        talents,
+        comment,
+        tier,
+        img: img || ''
+    };
+
+    if (editingBuildIndex !== null) {
+        builds[editingBuildIndex] = modernBuild;
+        console.log('Build updated:', modernBuild.hero);
+    } else {
+        builds.push(modernBuild);
+        console.log('Build created:', modernBuild.hero);
+    }
+
+    persist();
+    renderBuildsList();
+    renderSearchResults();
+    closeModal();
+    editingBuildIndex = null;
+}
+
+
+
 
 function closeModal() {
     const modal = document.querySelector('.modal-overlay');
