@@ -863,20 +863,21 @@ body {
 
 .edit-styles-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-    gap: 8px;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 12px;
     margin-top: 10px;
 }
 
 .edit-style-btn {
-    padding: 8px 12px;
+    padding: 12px 16px;
     border: 2px solid #555;
     border-radius: 6px;
     background: #2c2c2c;
     color: #fff;
     cursor: pointer;
     transition: all 0.2s ease;
-    font-size: 0.9em;
+    font-size: 1.05em;
+    min-height: 45px;
 }
 
 .edit-style-btn:hover:not(.hero-required) {
@@ -895,3 +896,4 @@ body {
     background: #3c3c3c;
     border-color: #666;
 }
+
