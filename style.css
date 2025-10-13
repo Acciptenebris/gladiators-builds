@@ -710,7 +710,6 @@ body {
     background: rgba(243, 156, 18, 0.1);
 }
 
-/* Состояния кнопок стилей */
 .edit-style-btn.must-have {
     background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%) !important;
     border-color: #27ae60 !important;
@@ -743,7 +742,6 @@ body {
     transform: none !important;
 }
 
-/* Заголовки секций */
 .required-styles-grid::before {
     content: "ОБЯЗАТЕЛЬНЫЕ";
     position: absolute;
@@ -768,11 +766,6 @@ body {
     font-size: 0.8em;
 }
 
-.form-field {
-    position: relative;
-}
-
-/* Исправления для модального окна */
 .modal-content {
     max-height: 90vh;
     overflow-y: auto;
@@ -799,16 +792,4 @@ body {
 .edit-style-btn:hover:not(.hero-required) {
     transform: translateY(-2px);
     box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-}
-
-/* Дополнительная стилизация для обычных состояний */
-.edit-style-btn:not(.must-have):not(.must-not-have):not(.hero-required) {
-    background: #2c2c2c;
-    border-color: #555;
-    color: #ccc;
-}
-
-.edit-style-btn:not(.must-have):not(.must-not-have):not(.hero-required):hover {
-    background: #3c3c3c;
-    border-color: #666;
 }
