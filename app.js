@@ -28,19 +28,19 @@ function getHeroRequiredStyles(heroName) { return HERO_REQUIRED_STYLES[heroName]
 
 // ========== ДАННЫЕ СТИЛЕЙ С ИКОНКАМИ ==========
 const PLAYSTYLES_DATA = [
-    {id: "guards", name: "Стражи", description: "Гейские шары", icon: "icons/guards.png"},
-    {id: "crits", name: "Криты", description: "Сраные проки", icon: "icons/crits.png"},
-    {id: "dodge", name: "Увороты", description: "Всегда качай меня", icon: "icons/dodge.png"},
-    {id: "poison", name: "Яды", description: "В начале тащу, в конце ГХ", icon: "icons/poison.png"},
-    {id: "shields", name: "Щиты", description: "Без проков бесполезен", icon: "icons/shields.png"},
-    {id: "healing", name: "Лечение", description: "Сильнее калечу чем лечу", icon: "icons/healing.png"},
-    {id: "health", name: "Здоровье", description: "Я имба", icon: "icons/health.png"},
-    {id: "vulnerability", name: "Уязвимость", description: "Файт две секунды", icon: "icons/vulnerability.png"},
-    {id: "rage", name: "Ярость", description: "Не ясно зачем я нужен", icon: "icons/rage.png"},
-    {id: "freeze", name: "Заморозка", description: "Удачи кастануть ульту", icon: "icons/freeze.png"},
-    {id: "chaos", name: "Хаос", description: "Непонятная тема вообще", icon: "icons/chaos.png"},
-    {id: "ultimate", name: "Ульта", description: "Опять гитарист в бане", icon: "icons/ultimate.png"},
-    {id: "attack", name: "Атака", description: "Моя бить", icon: "icons/attack.png"}
+    {id: "guards", name: "Стражи", description: "Гейские шары", icon: "guards.webp"},
+    {id: "crits", name: "Криты", description: "Сраные проки", icon: "crits.webp"},
+    {id: "dodge", name: "Увороты", description: "Всегда качай меня", icon: "dodge.webp"},
+    {id: "poison", name: "Яды", description: "В начале тащу, в конце ГХ", icon: "poison.webp"},
+    {id: "shields", name: "Щиты", description: "Без проков бесполезен", icon: "shields.webp"},
+    {id: "healing", name: "Лечение", description: "Сильнее калечу чем лечу", icon: "healing.webp"},
+    {id: "health", name: "Здоровье", description: "Я имба", icon: "health.webp"},
+    {id: "vulnerability", name: "Уязвимость", description: "Файт две секунды", icon: "vulnerability.webp"},
+    {id: "rage", name: "Ярость", description: "Не ясно зачем я нужен", icon: "rage.webp"},
+    {id: "freeze", name: "Заморозка", description: "Удачи кастануть ульту", icon: "freeze.webp"},
+    {id: "chaos", name: "Хаос", description: "Непонятная тема вообще", icon: "chaos.webp"},
+    {id: "ultimate", name: "Ульта", description: "Опять гитарист в бане", icon: "ultimate.webp"},
+    {id: "attack", name: "Атака", description: "Моя бить", icon: "attack.webp"}
 ];
 
 // ========== БАЗОВАЯ БАЗА ДАННЫХ БИЛДОВ ==========
@@ -631,4 +631,5 @@ function setupEventListeners() {
         });
     }
 }
+
 
