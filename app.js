@@ -7,7 +7,7 @@ const HEROES_LIST = [
     "DRAGON KNIGHT"
 ];
 
-// ========== ДАННЫЕ ГЕРОЕВ (ДОБАВЛЕНО) ==========
+// ========== ДАННЫЕ ГЕРОЕВ ==========
 const HERO_REQUIRED_STYLES = {
     "DROW RANGER": ["crits", "freeze"],
     "NYX": ["vulnerability", "dodge"],
@@ -84,7 +84,6 @@ const HERO_REQUIRED_STYLES = {
     "DRAGON KNIGHT": ["poison", "freeze"],
 };
 
-// Функция для получения обязательных стилей героя
 function getHeroRequiredStyles(heroName) {
     return HERO_REQUIRED_STYLES[heroName] || [];
 }
@@ -1234,12 +1233,92 @@ const STORAGE_KEY = "buildsDatabase";
 
 // Функция для загрузки билдов (базовые + пользовательские)
 function loadBuilds() {
-    const savedBuilds = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
-    if (savedBuilds.length === 0) {
+    console.log('🔍 Проверяем сохраненные данные...');
+
+    try {
+        const savedData = localStorage.getItem('builds');
+
+        if (!savedData) {
+            console.log('📦 Первый запуск - загружаем базовые билды');
+            return [...DEFAULT_BUILDS];
+        }
+
+        const savedBuilds = JSON.parse(savedData);
+
+        if (!Array.isArray(savedBuilds)) {
+            console.log('🔧 Данные не массив - сбрасываем');
+            localStorage.removeItem('builds');
+            return [...DEFAULT_BUILDS];
+        }
+
+        // Фильтруем и исправляем билды
+        const repairedBuilds = [];
+        let removedCount = 0;
+        let repairedCount = 0;
+
+        for (const build of savedBuilds) {
+            // Удаляем билды в новом формате (которые ломают сайт)
+            if (build && (
+                build.requiredMustHave !== undefined || 
+                build.desiredMustHave !== undefined ||
+                build.requiredMustNotHave !== undefined || 
+                build.desiredMustNotHave !== undefined
+            )) {
+                console.log('🗑️ Удален билд в новом формате:', build.hero || 'неизвестный');
+                removedCount++;
+                continue;
+            }
+
+            // Проверяем базовую структуру
+            if (!build || !build.hero || typeof build.hero !== 'string') {
+                console.log('🗑️ Удален некорректный билд');
+                removedCount++;
+                continue;
+            }
+
+            // Исправляем поля билда если нужно
+            const originalBuild = JSON.stringify(build);
+            const repairedBuild = {
+                hero: build.hero,
+                mustHave: Array.isArray(build.mustHave) ? build.mustHave : [],
+                mustNotHave: Array.isArray(build.mustNotHave) ? build.mustNotHave : [],
+                talents: typeof build.talents === 'string' ? build.talents : '',
+                comment: typeof build.comment === 'string' ? build.comment : '',
+                tier: typeof build.tier === 'number' ? build.tier : 4,
+                img: typeof build.img === 'string' ? build.img : ''
+            };
+
+            if (originalBuild !== JSON.stringify(repairedBuild)) {
+                repairedCount++;
+                console.log('🔧 Исправлен билд:', build.hero);
+            }
+
+            repairedBuilds.push(repairedBuild);
+        }
+
+        // Сохраняем исправленные данные если были изменения
+        if (removedCount > 0 || repairedCount > 0) {
+            localStorage.setItem('builds', JSON.stringify(repairedBuilds));
+            console.log(`✅ Автоисправление: удалено ${removedCount}, исправлено ${repairedCount}, сохранено ${repairedBuilds.length} билдов`);
+        }
+
+        // Если билдов не осталось - загружаем базовые
+        if (repairedBuilds.length === 0) {
+            console.log('📦 Все билды были проблемными - загружаем базовые');
+            return [...DEFAULT_BUILDS];
+        }
+
+        return repairedBuilds;
+
+    } catch (error) {
+        console.error('❌ Критическая ошибка данных:', error);
+        console.log('🔄 Полная очистка и перезагрузка...');
+        localStorage.removeItem('builds');
         return [...DEFAULT_BUILDS];
     }
-    return savedBuilds;
 }
+
+
 
 let builds = loadBuilds();
 
@@ -1249,26 +1328,68 @@ let editingBuildIndex = null;
 let heroSearchFilter = '';
 
 // ========== UI ИНИЦИАЛИЗАЦИЯ ==========
+
+// ========== АВТОМАТИЧЕСКАЯ ОЧИСТКА ПРИ ЗАПУСКЕ ==========
+function performStartupCleanup() {
+    console.log('🚀 Запуск системы автоочистки...');
+
+    try {
+        // Проверяем все ключи localStorage на валидность
+        const keysToRemove = [];
+
+        for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i);
+
+            if (!key) continue;
+
+            try {
+                const value = localStorage.getItem(key);
+                if (value) {
+                    JSON.parse(value); // Проверяем валидность JSON
+                }
+            } catch (e) {
+                keysToRemove.push(key);
+            }
+        }
+
+        // Удаляем поврежденные ключи
+        keysToRemove.forEach(key => {
+            localStorage.removeItem(key);
+            console.log('🗑️ Удален поврежденный ключ:', key);
+        });
+
+        console.log('✅ Автоочистка завершена');
+
+    } catch (error) {
+        console.error('❌ Ошибка автоочистки:', error);
+        console.log('🔄 Экстренная полная очистка...');
+        localStorage.clear();
+    }
+}
+
 document.addEventListener("DOMContentLoaded", () => {
+    // Выполняем автоочистку перед загрузкой
+    performStartupCleanup();
+
+    // Обычная инициализация
     renderDisabledStylesPicker();
     renderBuildsList();
     setupEventListeners();
+
+    console.log('🎉 Сайт загружен! Все проблемы автоматически исправлены.');
 });
+
+
 
 // ========== РАСЧЕТ ЭФФЕКТИВНОСТИ БИЛДА ==========
 function calculateBuildEfficiency(build, enabledStyles) {
-    // Получаем обязательные стили героя
     const heroStyles = getHeroRequiredStyles(build.hero);
-
-    // Объединяем стили героя с mustHave билда
     const allMustHave = [...new Set([...heroStyles, ...(build.mustHave || [])])];
 
-    // Если не выполнены все обязательные стили - билд не показывается
     if (!allMustHave.every(s => enabledStyles.includes(s))) {
         return 0;
     }
 
-    // Оригинальная логика для mustNotHave - БЕЗ ИЗМЕНЕНИЙ
     const conflictsCount = (build.mustNotHave || []).filter(s => enabledStyles.includes(s)).length;
     if (conflictsCount >= 3) return 0;
 
