@@ -1,4 +1,12 @@
 // ========== ГЕРОИ ДЛЯ ВЫПАДАЮЩЕГО СПИСКА ==========
+const HEROES_LIST = [
+    "DROW RANGER", "NYX", "TIMBERSAW", "UNDDYING", "PA", "PUGNA", "MIRANA", "LC", "PANGO", "LIFESTEALER", "HUSKAR", "MAGNUS", "ZEUS", "JUGGER", "CK", "NECR", "TINY", "YAMASHITA",
+    "VOID", "AA", "DARK WILLOW", "MUERTA", "HOODWINK", "VIPER", "TINKER", "DOOM", "GRIMSTROKE", "AXE", "QOP", "MARCI", "WINDRANDGER", "TREANT", "LICH", "LYCAN", "OMNIK", "URSA",
+    "SF", "SKY", "ABADDON", "RAZOR", "SPECTRE", "SNIPER", "EMBER SPIRIT", "VOID SPIRIT", "RIKI", "LUNA", "OGRE MAGI", "CM", "PUDGE", "ASH", "LINA", "KUNKKA", "DAZZLE", "AWAKENED",
+    "WASTELAND GUARD", "TA", "RINGMASTER", "MK", "ES", "LION", "GUITARIST", "KEZ", "WITCH DOCTOR", "FLAMEBORN", "TROLL", "ALCHEMIST", "CLINKZ", "LESHRAC", "PL", "BRIST", "SILENCER", "BROOD MOTHER",
+    "DRAGON KNIGHT"
+];
+
 // ========== ДАННЫЕ ГЕРОЕВ С ОБЯЗАТЕЛЬНЫМИ СТИЛЯМИ ==========
 const HEROES_DATA = [
     {name: "DROW RANGER", requiredStyles: ["crits", "freeze"]},
@@ -76,14 +84,12 @@ const HEROES_DATA = [
     {name: "DRAGON KNIGHT", requiredStyles: ["poison", "freeze"]},
 ];
 
-// ========== СПИСОК ГЕРОЕВ (ОБРАТНАЯ СОВМЕСТИМОСТЬ) ==========
-const HEROES_LIST = HEROES_DATA.map(hero => hero.name);
-
 // ========== ФУНКЦИЯ ДЛЯ ПОЛУЧЕНИЯ ОБЯЗАТЕЛЬНЫХ СТИЛЕЙ ГЕРОЯ ==========
 function getHeroRequiredStyles(heroName) {
     const heroData = HEROES_DATA.find(hero => hero.name === heroName);
     return heroData ? heroData.requiredStyles : [];
 }
+
 
 // ========== ДАННЫЕ СТИЛЕЙ ==========
 const PLAYSTYLES_DATA = [
@@ -1250,249 +1256,30 @@ document.addEventListener("DOMContentLoaded", () => {
     setupEventListeners();
 });
 
-
-// ========== ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ДЛЯ НОВОЙ СИСТЕМЫ СТИЛЕЙ ==========
-
-// Обработка кликов по кнопкам стилей (3 состояния)
-function handleStyleButtonClick(btn) {
-    const isHeroRequired = btn.hasAttribute('data-hero-required');
-
-    // Обязательные стили героя нельзя менять
-    if (isHeroRequired) {
-        return;
-    }
-
-    // Цикл: нейтральный -> должен быть (зеленый) -> не должен быть (красный) -> нейтральный
-    if (btn.classList.contains('must-have')) {
-        btn.classList.remove('must-have');
-        btn.classList.add('must-not-have');
-    } else if (btn.classList.contains('must-not-have')) {
-        btn.classList.remove('must-not-have');
-    } else {
-        btn.classList.add('must-have');
-    }
-}
-
-// Автоматический выбор обязательных стилей героя
-function selectHeroRequiredStyles(heroName) {
-    const requiredStyles = getHeroRequiredStyles(heroName);
-
-    // Сбрасываем все hero-required пометки
-    document.querySelectorAll('.edit-style-btn[data-hero-required]').forEach(btn => {
-        btn.classList.remove('hero-required');
-        btn.removeAttribute('data-hero-required');
-    });
-
-    // Помечаем новые обязательные стили героя только в секции "обязательные"
-    document.querySelectorAll('.required-style-btn').forEach(btn => {
-        const styleId = btn.getAttribute('data-style-id');
-
-        if (requiredStyles.includes(styleId)) {
-            btn.classList.add('must-have', 'hero-required');
-            btn.setAttribute('data-hero-required', 'true');
-        }
-    });
-}
-
-// Установка стилей для нового формата
-function setStylesInModal(build) {
-    // Сбрасываем все состояния
-    document.querySelectorAll('.edit-style-btn').forEach(btn => {
-        btn.classList.remove('must-have', 'must-not-have', 'hero-required');
-        btn.removeAttribute('data-hero-required');
-    });
-
-    // Устанавливаем обязательные стили героя
-    if (build.hero) {
-        selectHeroRequiredStyles(build.hero);
-    }
-
-    // Устанавливаем стили из билда
-    (build.requiredMustHave || []).forEach(styleId => {
-        const btn = document.querySelector(`.required-style-btn[data-style-id="${styleId}"]`);
-        if (btn) btn.classList.add('must-have');
-    });
-
-    (build.requiredMustNotHave || []).forEach(styleId => {
-        const btn = document.querySelector(`.required-style-btn[data-style-id="${styleId}"]`);
-        if (btn) btn.classList.add('must-not-have');
-    });
-
-    (build.desiredMustHave || []).forEach(styleId => {
-        const btn = document.querySelector(`.desired-style-btn[data-style-id="${styleId}"]`);
-        if (btn) btn.classList.add('must-have');
-    });
-
-    (build.desiredMustNotHave || []).forEach(styleId => {
-        const btn = document.querySelector(`.desired-style-btn[data-style-id="${styleId}"]`);
-        if (btn) btn.classList.add('must-not-have');
-    });
-}
-
-// Установка стилей для старого формата
-function setOldFormatStylesInModal(build) {
-    // Сбрасываем все состояния
-    document.querySelectorAll('.edit-style-btn').forEach(btn => {
-        btn.classList.remove('must-have', 'must-not-have', 'hero-required');
-        btn.removeAttribute('data-hero-required');
-    });
-
-    // Устанавливаем обязательные стили героя
-    if (build.hero) {
-        selectHeroRequiredStyles(build.hero);
-    }
-
-    // Конвертируем старый формат: mustHave -> обязательные должны быть
-    (build.mustHave || []).forEach(styleId => {
-        const btn = document.querySelector(`.required-style-btn[data-style-id="${styleId}"]`);
-        if (btn && !btn.hasAttribute('data-hero-required')) {
-            btn.classList.add('must-have');
-        }
-    });
-
-    // mustNotHave -> желательные не должны быть
-    (build.mustNotHave || []).forEach(styleId => {
-        const btn = document.querySelector(`.desired-style-btn[data-style-id="${styleId}"]`);
-        if (btn) btn.classList.add('must-not-have');
-    });
-}
-
-// Сбор данных стилей для сохранения
-function collectStylesData() {
-    const requiredMustHave = [];
-    const desiredMustHave = [];
-    const requiredMustNotHave = [];
-    const desiredMustNotHave = [];
-
-    // Собираем из обязательной секции
-    document.querySelectorAll('.required-style-btn').forEach(btn => {
-        const styleId = btn.getAttribute('data-style-id');
-
-        if (btn.classList.contains('must-have')) {
-            requiredMustHave.push(styleId);
-        } else if (btn.classList.contains('must-not-have')) {
-            requiredMustNotHave.push(styleId);
-        }
-    });
-
-    // Собираем из желательной секции
-    document.querySelectorAll('.desired-style-btn').forEach(btn => {
-        const styleId = btn.getAttribute('data-style-id');
-
-        if (btn.classList.contains('must-have')) {
-            desiredMustHave.push(styleId);
-        } else if (btn.classList.contains('must-not-have')) {
-            desiredMustNotHave.push(styleId);
-        }
-    });
-
-    return {
-        requiredMustHave,
-        desiredMustHave,
-        requiredMustNotHave,
-        desiredMustNotHave
-    };
-}
-
-// Улучшенная функция сохранения билда
-function saveEnhancedBuild() {
-    const hero = document.getElementById('build-hero').value.trim();
-    const talents = document.getElementById('build-talents').value.trim();
-    const comment = document.getElementById('build-comment').value.trim();
-    const img = document.getElementById('build-img').value.trim();
-    const tier = parseInt(document.getElementById('build-tier').value);
-
-    if (!hero || !talents || !tier) {
-        alert('Заполните все обязательные поля!');
-        return;
-    }
-
-    // Собираем данные о стилях
-    const stylesData = collectStylesData();
-
-    const newBuild = {
-        hero,
-        requiredMustHave: stylesData.requiredMustHave,
-        desiredMustHave: stylesData.desiredMustHave,
-        requiredMustNotHave: stylesData.requiredMustNotHave,
-        desiredMustNotHave: stylesData.desiredMustNotHave,
-        talents,
-        comment,
-        tier,
-        img: img || ''
-    };
-
-    if (editingBuildIndex !== null) {
-        builds[editingBuildIndex] = newBuild;
-    } else {
-        builds.push(newBuild);
-    }
-
-    persist();
-    renderBuildsList();
-    renderSearchResults();
-    closeModal();
-    editingBuildIndex = null;
-}
-
-
 // ========== РАСЧЕТ ЭФФЕКТИВНОСТИ БИЛДА ==========
 // ========== РАСЧЕТ ЭФФЕКТИВНОСТИ БИЛДА ==========
 function calculateBuildEfficiency(build, enabledStyles) {
-    // Новая система: проверяем requiredMustHave/desiredMustHave если они есть
-    if (build.requiredMustHave !== undefined) {
-        // Новый формат билда
-        const requiredMustHave = build.requiredMustHave || [];
-        const desiredMustHave = build.desiredMustHave || [];
-        const requiredMustNotHave = build.requiredMustNotHave || [];
-        const desiredMustNotHave = build.desiredMustNotHave || [];
+    // Получаем обязательные стили героя
+    const heroRequiredStyles = getHeroRequiredStyles(build.hero);
 
-        // Если не выполнены обязательные требования - билд не показывается
-        if (!requiredMustHave.every(s => enabledStyles.includes(s))) {
-            return 0;
-        }
+    // Объединяем стили героя с mustHave (без дублирования)
+    const allMustHave = [...new Set([...heroRequiredStyles, ...(build.mustHave || [])])];
 
-        // Если есть обязательные запрещенные стили - билд не показывается
-        if (requiredMustNotHave.some(s => enabledStyles.includes(s))) {
-            return 0;
-        }
-
-        // Считаем штрафы за несовпадения с желательными стилями
-        let mismatches = 0;
-        mismatches += desiredMustHave.filter(s => !enabledStyles.includes(s)).length;
-        mismatches += desiredMustNotHave.filter(s => enabledStyles.includes(s)).length;
-
-        // При 4+ несовпадениях билд не показывается
-        if (mismatches >= 4) {
-            return 0;
-        }
-
-        // Каждое несовпадение снижает эффективность на 30%
-        let efficiency = 100;
-        for (let i = 0; i < mismatches; i++) {
-            efficiency = efficiency - 30;
-        }
-
-        return Math.max(0, Math.round(efficiency));
-    } else {
-        // Старый формат билда - используем оригинальную логику с добавлением обязательных стилей героя
-        const heroRequiredStyles = getHeroRequiredStyles(build.hero);
-        const allMustHave = [...new Set([...heroRequiredStyles, ...(build.mustHave || [])])];
-
-        if (!allMustHave.every(s => enabledStyles.includes(s))) {
-            return 0;
-        }
-
-        const conflictsCount = (build.mustNotHave || []).filter(s => enabledStyles.includes(s)).length;
-        if (conflictsCount >= 3) return 0;
-
-        let efficiency = 100;
-        for (let i = 0; i < conflictsCount; i++) {
-            efficiency = efficiency / 2;
-        }
-
-        return Math.round(efficiency);
+    // Если не выполнены все обязательные стили - билд не показывается
+    if (!allMustHave.every(s => enabledStyles.includes(s))) {
+        return 0;
     }
+
+    // Оригинальная логика для mustNotHave
+    const conflictsCount = (build.mustNotHave || []).filter(s => enabledStyles.includes(s)).length;
+    if (conflictsCount >= 3) return 0;
+
+    let efficiency = 100;
+    for (let i = 0; i < conflictsCount; i++) {
+        efficiency = efficiency / 2;
+    }
+
+    return Math.round(efficiency);
 }
 
 
@@ -1703,7 +1490,7 @@ function renderBuildsList() {
 // ========== МОДАЛЬНОЕ ОКНО ==========
 function showBuildFormModal(build, title) {
     console.log('Opening modal for:', build);
-
+    
     let modal = document.querySelector('.modal-overlay');
     if (!modal) {
         modal = document.createElement('div');
@@ -1711,7 +1498,7 @@ function showBuildFormModal(build, title) {
         modal.innerHTML = `
             <div class="modal-content">
                 <div class="modal-header">
-                    <h3>${title || 'Создание билда'}</h3>
+                    <h3>Создание билда</h3>
                     <button class="close-btn" onclick="closeModal()">&times;</button>
                 </div>
                 <form id="build-form">
@@ -1725,12 +1512,11 @@ function showBuildFormModal(build, title) {
                         </div>
                         <div class="form-field">
                             <label>Таланты:</label>
-                            <input type="text" id="build-talents" placeholder="1 2 2" required>
+                            <input type="text" id="build-talents" placeholder="1 2 1">
                         </div>
                         <div class="form-field">
                             <label>Тир:</label>
-                            <select id="build-tier" required>
-                                <option value="">Выберите тир</option>
+                            <select id="build-tier">
                                 <option value="1">1 - Имба</option>
                                 <option value="2">2 - Хорошо</option>
                                 <option value="3">3 - Норм</option>
@@ -1738,41 +1524,28 @@ function showBuildFormModal(build, title) {
                             </select>
                         </div>
                     </div>
-
+                    
                     <div class="form-field">
-                        <label>Обязательные стили:</label>
-                        <div class="styles-info">Если стиль отсутствует или запрещенный стиль присутствует - билд не появится в поиске</div>
-                        <div class="edit-styles-grid required-styles-grid">
+                        <label>Стили (клик = обязательно, двойной клик = запрещено):</label>
+                        <div class="edit-styles-grid">
                             ${PLAYSTYLES_DATA.map(style => `
-                                <button type="button" class="edit-style-btn required-style-btn" data-style-id="${style.id}" data-section="required">
+                                <button type="button" class="edit-style-btn" data-style-id="${style.id}">
                                     ${style.name}
                                 </button>
                             `).join('')}
                         </div>
                     </div>
-
-                    <div class="form-field">
-                        <label>Желательные стили:</label>
-                        <div class="styles-info">За каждое несовпадение -30% эффективности, при 4+ несовпадениях билд не появится</div>
-                        <div class="edit-styles-grid desired-styles-grid">
-                            ${PLAYSTYLES_DATA.map(style => `
-                                <button type="button" class="edit-style-btn desired-style-btn" data-style-id="${style.id}" data-section="desired">
-                                    ${style.name}
-                                </button>
-                            `).join('')}
-                        </div>
-                    </div>
-
+                    
                     <div class="form-field">
                         <label>Комментарий:</label>
                         <textarea id="build-comment" rows="3"></textarea>
                     </div>
-
+                    
                     <div class="form-field">
                         <label>Картинка (URL):</label>
                         <input type="url" id="build-img" placeholder="https://...">
                     </div>
-
+                    
                     <div class="modal-footer">
                         <button type="submit" class="save-btn">Сохранить</button>
                         <button type="button" class="cancel-btn" onclick="closeModal()">Отмена</button>
@@ -1781,56 +1554,73 @@ function showBuildFormModal(build, title) {
             </div>
         `;
         document.body.appendChild(modal);
-
-        // Настройка обработчиков для кнопок стилей
+        
         modal.querySelectorAll('.edit-style-btn').forEach(btn => {
             btn.onclick = function() {
-                handleStyleButtonClick(this);
+                if (this.classList.contains('selected')) {
+                    if (this.dataset.requirement === 'must') {
+                        this.dataset.requirement = 'not';
+                        this.style.background = '#e74c3c';
+                        this.style.borderColor = '#e74c3c';
+                    } else {
+                        this.classList.remove('selected');
+                        delete this.dataset.requirement;
+                        this.style.background = '';
+                        this.style.borderColor = '';
+                        this.style.color = '';
+                    }
+                } else {
+                    this.classList.add('selected');
+                    this.dataset.requirement = 'must';
+                    this.style.background = '#27ae60';
+                    this.style.borderColor = '#27ae60';
+                    this.style.color = '#fff';
+                }
             };
         });
-
-        // Обработчик изменения героя для автоматического выбора обязательных стилей
-        const heroSelect = modal.querySelector('#build-hero');
-        if (heroSelect) {
-            heroSelect.addEventListener('change', function() {
-                const selectedHero = this.value;
-                if (selectedHero) {
-                    selectHeroRequiredStyles(selectedHero);
-                }
-            });
-        }
-
-        const form = modal.querySelector('#build-form');
-        form.onsubmit = function(e) {
+        
+        modal.querySelector('#build-form').onsubmit = function(e) {
             e.preventDefault();
-            saveEnhancedBuild();
+            saveBuild();
+        };
+        
+        modal.onclick = function(e) {
+            if (e.target === modal) closeModal();
         };
     }
-
-    // Заполнение данными при редактировании
-    if (build && build.hero) {
-        modal.querySelector('#build-hero').value = build.hero || '';
-        modal.querySelector('#build-talents').value = build.talents || '';
-        modal.querySelector('#build-comment').value = build.comment || '';
-        modal.querySelector('#build-img').value = build.img || '';
-        modal.querySelector('#build-tier').value = build.tier || '';
-
-        // Установить стили в зависимости от формата билда
-        setTimeout(() => {
-            if (build.requiredMustHave !== undefined) {
-                // Новый формат
-                setStylesInModal(build);
-            } else {
-                // Старый формат - конвертируем на лету
-                setOldFormatStylesInModal(build);
-            }
-        }, 100);
-    }
-
+    
+    modal.querySelector('.modal-header h3').textContent = title;
+    modal.querySelector('#build-hero').value = build.hero || '';
+    modal.querySelector('#build-talents').value = build.talents || '';
+    modal.querySelector('#build-comment').value = build.comment || '';
+    modal.querySelector('#build-tier').value = build.tier || 4;
+    modal.querySelector('#build-img').value = build.img || '';
+    
+    modal.querySelectorAll('.edit-style-btn').forEach(btn => {
+        btn.classList.remove('selected');
+        delete btn.dataset.requirement;
+        btn.style.background = '';
+        btn.style.borderColor = '';
+        btn.style.color = '';
+        
+        const styleId = btn.dataset.styleId;
+        if (build.mustHave && build.mustHave.includes(styleId)) {
+            btn.classList.add('selected');
+            btn.dataset.requirement = 'must';
+            btn.style.background = '#27ae60';
+            btn.style.borderColor = '#27ae60';
+            btn.style.color = '#fff';
+        } else if (build.mustNotHave && build.mustNotHave.includes(styleId)) {
+            btn.classList.add('selected');
+            btn.dataset.requirement = 'not';
+            btn.style.background = '#e74c3c';
+            btn.style.borderColor = '#e74c3c';
+            btn.style.color = '#fff';
+        }
+    });
+    
     modal.style.display = 'flex';
 }
-
-
 
 function closeModal() {
     const modal = document.querySelector('.modal-overlay');
