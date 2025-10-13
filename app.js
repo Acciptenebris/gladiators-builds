@@ -1034,12 +1034,12 @@ function showBuildFormModal(build, title) {
             <div class="hero-required-info" id="hero-required-info" style="display:none;margin-bottom:20px;padding:15px;background:rgba(212,175,55,0.1);border:2px solid #d4af37;border-radius:10px;">
                 <div style="color:#d4af37;font-weight:bold;margin-bottom:8px;">🔒 Обязательные стили героя:</div>
                 <div id="hero-required-list" style="color:#fff;font-size:1.1rem;"></div></div>
-            <div class="form-field"><label>Обязательные стили:</label>
+            <div class="form-field"><label>Нужные стили:</label>
                 <div class="styles-instruction">Клик = обязательно(зеленый) ✓✓ | Двойной клик = желательно(синий) ✓ | Тройной клик = нейтрально</div>
                 <div class="edit-styles-grid" id="required-styles-grid">
                     ${PLAYSTYLES_DATA.map(style => `<button type="button" class="edit-style-btn required-style-btn" data-style-id="${style.id}">${style.name}</button>`).join('')}
                 </div></div>
-            <div class="form-field"><label>Желательные стили:</label>
+            <div class="form-field"><label>Не нужные стили:</label>
                 <div class="styles-instruction">Клик = Запрещено(красный) ✗✗ | Двойной клик = нежелательно(оранжевый) ✗ | Тройной клик = нейтрально</div>
                 <div class="edit-styles-grid" id="desired-styles-grid">
                     ${PLAYSTYLES_DATA.map(style => `<button type="button" class="edit-style-btn desired-style-btn" data-style-id="${style.id}">${style.name}</button>`).join('')}
@@ -1342,6 +1342,7 @@ function setupEventListeners() {
         });
     }
 }
+
 
 
 
