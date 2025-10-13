@@ -681,6 +681,7 @@ body {
 
 
 
+
 /* ========== НОВАЯ СИСТЕМА СТИЛЕЙ ========== */
 
 .styles-info {
@@ -692,6 +693,7 @@ body {
 
 .required-styles-grid, .desired-styles-grid {
     margin-bottom: 20px;
+    position: relative;
 }
 
 .required-styles-grid {
@@ -768,4 +770,45 @@ body {
 
 .form-field {
     position: relative;
+}
+
+/* Исправления для модального окна */
+.modal-content {
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.edit-styles-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.edit-style-btn {
+    padding: 8px 12px;
+    border: 2px solid #555;
+    border-radius: 6px;
+    background: #2c2c2c;
+    color: #fff;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 0.9em;
+}
+
+.edit-style-btn:hover:not(.hero-required) {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+}
+
+/* Дополнительная стилизация для обычных состояний */
+.edit-style-btn:not(.must-have):not(.must-not-have):not(.hero-required) {
+    background: #2c2c2c;
+    border-color: #555;
+    color: #ccc;
+}
+
+.edit-style-btn:not(.must-have):not(.must-not-have):not(.hero-required):hover {
+    background: #3c3c3c;
+    border-color: #666;
 }
