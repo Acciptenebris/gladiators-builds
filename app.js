@@ -9,21 +9,19 @@ const HEROES_LIST = [
 
 // ========== ДАННЫЕ ГЕРОЕВ (ОБЯЗАТЕЛЬНЫЕ СТИЛИ) ==========
 const HERO_REQUIRED_STYLES = {
-    "DROW RANGER": ["crits", "freeze"], "NYX": ["vulnerability", "dodge"], "TIMBERSAW": ["health", "attack"], "UNDDYING": ["healing", "health"], "PA": ["attack", "crits"],
-    "PUGNA": ["ultimate", "vulnerability"], "MIRANA": ["attack", "dodge"], "LC": ["attack", "health"], "PANGO": ["attack", "vulnerability"], "LIFESTEALER": ["attack", "healing"],
-    "HUSKAR": ["health", "attack"], "MAGNUS": ["ultimate", "attack"], "ZEUS": ["ultimate", "vulnerability"], "JUGGER": ["attack", "crits"], "CK": ["crits", "healing"],
-    "NECR": ["healing", "poison"], "TINY": ["attack", "health"], "YAMASHITA": ["attack", "crits"], "VOID": ["attack", "ultimate"], "AA": ["health", "freeze"],
-    "DARK WILLOW": ["guards", "poison"], "MUERTA": ["attack", "vulnerability"], "HOODWINK": ["attack", "dodge"], "VIPER": ["poison", "attack"], "TINKER": ["ultimate", "attack"],
-    "DOOM": ["health", "attack"], "GRIMSTROKE": ["ultimate", "vulnerability"], "AXE": ["shields", "attack"], "QOP": ["attack", "ultimate"], "MARCI": ["attack", "health"],
-    "WINDRANDGER": ["attack", "dodge"], "TREANT": ["healing", "health"], "LICH": ["freeze", "ultimate"], "LYCAN": ["guards", "ultimate"], "OMNIK": ["freeze", "shields"],
-    "URSA": ["attack", "health"], "SF": ["attack", "crits"], "SKY": ["ultimate", "vulnerability"], "ABADDON": ["shields", "healing"], "RAZOR": ["attack", "vulnerability"],
-    "SPECTRE": ["attack", "health"], "SNIPER": ["attack", "crits"], "EMBER SPIRIT": ["attack", "rage"], "VOID SPIRIT": ["shields", "vulnerability"], "RIKI": ["attack", "dodge"],
-    "LUNA": ["attack", "ultimate"], "OGRE MAGI": ["healing", "shields"], "CM": ["freeze", "ultimate"], "PUDGE": ["health", "shields"], "ASH": ["attack", "freeze"],
-    "LINA": ["ultimate", "vulnerability"], "KUNKKA": ["attack", "shields"], "DAZZLE": ["healing", "shields"], "AWAKENED": ["ultimate", "health"], "WASTELAND GUARD": ["guards", "shields"],
-    "TA": ["attack", "crits"], "RINGMASTER": ["ultimate", "vulnerability"], "MK": ["attack", "dodge"], "ES": ["ultimate", "attack"], "LION": ["ultimate", "vulnerability"],
-    "GUITARIST": ["ultimate", "attack"], "KEZ": ["attack", "dodge"], "WITCH DOCTOR": ["healing", "poison"], "FLAMEBORN": ["attack", "rage"], "TROLL": ["attack", "rage"],
-    "ALCHEMIST": ["health", "poison"], "CLINKZ": ["attack", "crits"], "LESHRAC": ["ultimate", "vulnerability"], "PL": ["attack", "dodge"], "BRIST": ["poison", "health"],
-    "SILENCER": ["ultimate", "vulnerability"], "BROOD MOTHER": ["poison", "attack"], "DRAGON KNIGHT": ["poison", "freeze"],
+    "AA": ["freeze"], "ABADDON": ["shields", "healing"], "ALCHEMIST": [], "ASH": ["rage"], "AWAKENED": ["attack"], "AXE": ["shields"], "BRIST": [], 
+    "BROOD MOTHER": ["poison", "attack"], "CK": ["crits", "healing"], "CLINKZ": ["rage", "guards"], "CM": ["freeze"], "DARK WILLOW": ["guards"], 
+    "DAZZLE": ["vulnerability", "poison"], "DOOM": ["chaos"], "DRAGON KNIGHT(poison)": ["poison"], "DRAGON KNIGHT(freeze)": ["freeze"], "DRAGON KNIGHT(rage)": ["rage"],
+    "DROW RANGER": ["freeze"], "EMBER SPIRIT": ["rage"], "ES": ["crits"], "FLAMEBORN": ["chaos"], "GRIMSTROKE": ["dodge"], "GUITARIST": [], "HOODWINK": [], 
+    "HUSKAR": ["rage"], "JUGGER": ["attack", "crits"], "KEZ": ["attack"], "KUNKKA": ["health"], "LC": ["shields"], "LESHRAC": ["ultimate", "health"], "LICH": ["freeze"], 
+    "LIFESTEALER": ["healing"], "LINA": ["rage"], "LION": ["chaos"], "LUNA": ["attack", "ultimate"], "LYCAN": ["guards"], "MAGNUS": ["health"], "MARCI": ["attack"], 
+    "MIRANA": ["guards"], "MK": [], "MUERTA": ["attack", "ultimate"], "NECR": ["healing"], "NYX": ["vulnerability"], "OGRE MAGI": ["crits", "ultimate"], "OMNIK": ["healing"], 
+    "PA": ["attack", "crits"], "PANGO": ["attack", "vulnerability"], "PL": ["attack"], "PUDGE": ["health", "poison"], "PUGNA": ["guards", "healing"], "QOP": ["poison"], 
+    "RAZOR": ["vulnerability"], "RIKI": ["vulnerability", "dodge"], "RINGMASTER": ["poison"], "SF": ["attack", "ultimate"], "SILENCER": ["ultimate"], "SKY": ["healing"],
+    "SNIPER": ["crits"], "SPECTRE": ["dodge"], "TA": ["attack", "shields"], "TIMBERSAW": ["healing", "chaos"], "TINKER": [], "TINY": ["health"], "TREANT": ["guards"], 
+    "TROLL": ["rage", "freeze"], "UNDDYING": ["healing", "health"], "URSA": ["vulnerability"], "VIPER": ["poison"], "VOID": ["attack"], 
+    "VOID SPIRIT": ["shields", "vulnerability"], "WASTELAND GUARD": ["shields"], "WINDRANDGER": ["dodge"], "WITCH DOCTOR": ["healing", "vulnerability"], "YAMASHITA": ["rage"], 
+    "ZEUS": ["ultimate"]
 };
 
 function getHeroRequiredStyles(heroName) { return HERO_REQUIRED_STYLES[heroName] || []; }
@@ -558,3 +556,4 @@ function setupEventListeners() {
         });
     }
 }
+
