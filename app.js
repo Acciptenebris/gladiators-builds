@@ -1,11 +1,160 @@
-// ========== ГЕРОИ ДЛЯ ВЫПАДАЮЩЕГО СПИСКА ==========
-const HEROES_LIST = [
-    "DROW RANGER", "NYX", "TIMBERSAW", "UNDDYING", "PA", "PUGNA", "MIRANA", "LC", "PANGO", "LIFESTEALER", "HUSKAR", "MAGNUS", "ZEUS", "JUGGER", "CK", "NECR", "TINY", "YAMASHITA",
-    "VOID", "AA", "DARK WILLOW", "MUERTA", "HOODWINK", "VIPER", "TINKER", "DOOM", "GRIMSTROKE", "AXE", "QOP", "MARCI", "WINDRANDGER", "TREANT", "LICH", "LYCAN", "OMNIK", "URSA",
-    "SF", "SKY", "ABADDON", "RAZOR", "SPECTRE", "SNIPER", "EMBER SPIRIT", "VOID SPIRIT", "RIKI", "LUNA", "OGRE MAGI", "CM", "PUDGE", "ASH", "LINA", "KUNKKA", "DAZZLE", "AWAKENED",
-    "WASTELAND GUARD", "TA", "RINGMASTER", "MK", "ES", "LION", "GUITARIST", "KEZ", "WITCH DOCTOR", "FLAMEBORN", "TROLL", "ALCHEMIST", "CLINKZ", "LESHRAC", "PL", "BRIST", "SILENCER", "BROOD MOTHER",
-    "DRAGON KNIGHT"
+// ========== ДАННЫЕ ГЕРОЕВ С ОБЯЗАТЕЛЬНЫМИ СТИЛЯМИ ==========
+const HEROES_DATA = [
+    {name: "DROW RANGER", requiredStyles: ["crits", "freeze"]},
+    {name: "NYX", requiredStyles: ["vulnerability", "dodge"]},
+    {name: "TIMBERSAW", requiredStyles: ["health", "attack"]},
+    {name: "UNDDYING", requiredStyles: ["healing", "health"]},
+    {name: "PA", requiredStyles: ["attack", "crits"]},
+    {name: "PUGNA", requiredStyles: ["ultimate", "vulnerability"]},
+    {name: "MIRANA", requiredStyles: ["attack", "dodge"]},
+    {name: "LC", requiredStyles: ["attack", "health"]},
+    {name: "PANGO", requiredStyles: ["attack", "vulnerability"]},
+    {name: "LIFESTEALER", requiredStyles: ["attack", "healing", "health"]},
+    {name: "HUSKAR", requiredStyles: ["health", "attack"]},
+    {name: "MAGNUS", requiredStyles: ["ultimate", "attack"]},
+    {name: "ZEUS", requiredStyles: ["ultimate", "vulnerability"]},
+    {name: "JUGGER", requiredStyles: ["attack", "crits"]},
+    {name: "CK", requiredStyles: ["crits", "healing"]},
+    {name: "NECR", requiredStyles: ["healing", "poison"]},
+    {name: "TINY", requiredStyles: ["attack", "health"]},
+    {name: "YAMASHITA", requiredStyles: ["attack", "crits"]},
+    {name: "VOID", requiredStyles: ["attack", "ultimate"]},
+    {name: "AA", requiredStyles: ["health", "freeze"]},
+    {name: "DARK WILLOW", requiredStyles: ["guards", "poison"]},
+    {name: "MUERTA", requiredStyles: ["attack", "vulnerability"]},
+    {name: "HOODWINK", requiredStyles: ["attack", "dodge"]},
+    {name: "VIPER", requiredStyles: ["poison", "attack"]},
+    {name: "TINKER", requiredStyles: ["ultimate", "attack"]},
+    {name: "DOOM", requiredStyles: ["health", "attack"]},
+    {name: "GRIMSTROKE", requiredStyles: ["ultimate", "vulnerability"]},
+    {name: "AXE", requiredStyles: ["shields", "attack"]},
+    {name: "QOP", requiredStyles: ["attack", "ultimate"]},
+    {name: "MARCI", requiredStyles: ["attack", "health"]},
+    {name: "WINDRANDGER", requiredStyles: ["attack", "dodge"]},
+    {name: "TREANT", requiredStyles: ["healing", "health"]},
+    {name: "LICH", requiredStyles: ["freeze", "ultimate"]},
+    {name: "LYCAN", requiredStyles: ["guards", "ultimate"]},
+    {name: "OMNIK", requiredStyles: ["freeze", "shields"]},
+    {name: "URSA", requiredStyles: ["attack", "health"]},
+    {name: "SF", requiredStyles: ["attack", "crits"]},
+    {name: "SKY", requiredStyles: ["ultimate", "vulnerability"]},
+    {name: "ABADDON", requiredStyles: ["shields", "healing"]},
+    {name: "RAZOR", requiredStyles: ["attack", "vulnerability"]},
+    {name: "SPECTRE", requiredStyles: ["attack", "health"]},
+    {name: "SNIPER", requiredStyles: ["attack", "crits"]},
+    {name: "EMBER SPIRIT", requiredStyles: ["attack", "rage"]},
+    {name: "VOID SPIRIT", requiredStyles: ["shields", "vulnerability"]},
+    {name: "RIKI", requiredStyles: ["attack", "dodge"]},
+    {name: "LUNA", requiredStyles: ["attack", "ultimate"]},
+    {name: "OGRE MAGI", requiredStyles: ["healing", "shields"]},
+    {name: "CM", requiredStyles: ["freeze", "ultimate"]},
+    {name: "PUDGE", requiredStyles: ["health", "shields"]},
+    {name: "ASH", requiredStyles: ["attack", "freeze"]},
+    {name: "LINA", requiredStyles: ["ultimate", "vulnerability"]},
+    {name: "KUNKKA", requiredStyles: ["attack", "shields"]},
+    {name: "DAZZLE", requiredStyles: ["healing", "shields"]},
+    {name: "AWAKENED", requiredStyles: ["ultimate", "health"]},
+    {name: "WASTELAND GUARD", requiredStyles: ["guards", "shields"]},
+    {name: "TA", requiredStyles: ["attack", "crits"]},
+    {name: "RINGMASTER", requiredStyles: ["ultimate", "vulnerability"]},
+    {name: "MK", requiredStyles: ["attack", "dodge"]},
+    {name: "ES", requiredStyles: ["ultimate", "attack"]},
+    {name: "LION", requiredStyles: ["ultimate", "vulnerability"]},
+    {name: "GUITARIST", requiredStyles: ["ultimate", "attack"]},
+    {name: "KEZ", requiredStyles: ["attack", "dodge"]},
+    {name: "WITCH DOCTOR", requiredStyles: ["healing", "poison"]},
+    {name: "FLAMEBORN", requiredStyles: ["attack", "rage"]},
+    {name: "TROLL", requiredStyles: ["attack", "rage"]},
+    {name: "ALCHEMIST", requiredStyles: ["health", "poison"]},
+    {name: "CLINKZ", requiredStyles: ["attack", "crits"]},
+    {name: "LESHRAC", requiredStyles: ["ultimate", "vulnerability"]},
+    {name: "PL", requiredStyles: ["attack", "dodge"]},
+    {name: "BRIST", requiredStyles: ["poison", "health"]},
+    {name: "SILENCER", requiredStyles: ["ultimate", "vulnerability"]},
+    {name: "BROOD MOTHER", requiredStyles: ["poison", "attack"]},
+    {name: "DRAGON KNIGHT", requiredStyles: ["poison", "freeze"]},
 ];
+
+// ========== СПИСОК ГЕРОЕВ ДЛЯ ВЫПАДАЮЩЕГО СПИСКА ==========
+const HEROES_LIST = HEROES_DATA.map(hero => hero.name);
+
+// ========== ФУНКЦИЯ ДЛЯ ПОЛУЧЕНИЯ ОБЯЗАТЕЛЬНЫХ СТИЛЕЙ ГЕРОЯ ==========
+function getHeroRequiredStyles(heroName) {
+    const heroData = HEROES_DATA.find(hero => hero.name === heroName);
+    return heroData ? heroData.requiredStyles : [];
+}
+
+
+// ========== ФУНКЦИИ ДЛЯ РАБОТЫ С ОБЯЗАТЕЛЬНЫМИ СТИЛЯМИ ==========
+
+// Функция для автоматического выбора обязательных стилей героя
+function selectRequiredStyles(heroName) {
+    const requiredStyles = getHeroRequiredStyles(heroName);
+
+    // Найти все кнопки стилей в модальном окне
+    const styleButtons = document.querySelectorAll('.edit-style-btn');
+
+    styleButtons.forEach(btn => {
+        const styleId = btn.getAttribute('data-style-id');
+
+        if (requiredStyles.includes(styleId)) {
+            // Добавить стиль в обязательные
+            btn.classList.remove('forbidden', 'selected');
+            btn.classList.add('selected', 'required');
+            btn.setAttribute('data-required', 'true');
+            btn.dataset.requirement = 'must';
+            btn.style.background = '#27ae60';
+            btn.style.borderColor = '#27ae60';
+            btn.style.color = '#fff';
+        } else {
+            // Убрать пометку обязательного стиля если она была
+            if (btn.hasAttribute('data-required')) {
+                btn.classList.remove('required');
+                btn.removeAttribute('data-required');
+                // Сбросить стиль к обычному состоянию
+                btn.classList.remove('selected', 'forbidden');
+                delete btn.dataset.requirement;
+                btn.style.background = '';
+                btn.style.borderColor = '';
+                btn.style.color = '';
+            }
+        }
+    });
+}
+
+// Обновленный обработчик клика по кнопке стиля
+function handleStyleButtonClick(btn) {
+    const isRequired = btn.hasAttribute('data-required');
+
+    if (isRequired) {
+        // Обязательные стили нельзя изменять - они всегда должны быть 'must'
+        return;
+    }
+
+    // Используем существующую логику для обычных стилей
+    if (btn.classList.contains('selected')) {
+        if (btn.dataset.requirement === 'must') {
+            btn.dataset.requirement = 'not';
+            btn.style.background = '#e74c3c';
+            btn.style.borderColor = '#e74c3c';
+            btn.classList.remove('selected');
+            btn.classList.add('forbidden');
+        } else {
+            btn.classList.remove('selected', 'forbidden');
+            delete btn.dataset.requirement;
+            btn.style.background = '';
+            btn.style.borderColor = '';
+            btn.style.color = '';
+        }
+    } else {
+        btn.classList.add('selected');
+        btn.dataset.requirement = 'must';
+        btn.style.background = '#27ae60';
+        btn.style.borderColor = '#27ae60';
+        btn.style.color = '#fff';
+    }
+}
+
 
 // ========== ДАННЫЕ СТИЛЕЙ ==========
 const PLAYSTYLES_DATA = [
@@ -1459,27 +1608,20 @@ function showBuildFormModal(build, title) {
         
         modal.querySelectorAll('.edit-style-btn').forEach(btn => {
             btn.onclick = function() {
-                if (this.classList.contains('selected')) {
-                    if (this.dataset.requirement === 'must') {
-                        this.dataset.requirement = 'not';
-                        this.style.background = '#e74c3c';
-                        this.style.borderColor = '#e74c3c';
-                    } else {
-                        this.classList.remove('selected');
-                        delete this.dataset.requirement;
-                        this.style.background = '';
-                        this.style.borderColor = '';
-                        this.style.color = '';
-                    }
-                } else {
-                    this.classList.add('selected');
-                    this.dataset.requirement = 'must';
-                    this.style.background = '#27ae60';
-                    this.style.borderColor = '#27ae60';
-                    this.style.color = '#fff';
-                }
+                handleStyleButtonClick(this);
             };
         });
+
+        // Добавить обработчик изменения героя для автоматического выбора обязательных стилей
+        const heroSelect = modal.querySelector('#build-hero');
+        if (heroSelect) {
+            heroSelect.addEventListener('change', function() {
+                const selectedHero = this.value;
+                if (selectedHero) {
+                    selectRequiredStyles(selectedHero);
+                }
+            });
+        }
         
         modal.querySelector('#build-form').onsubmit = function(e) {
             e.preventDefault();
