@@ -11,7 +11,7 @@ const HEROES_LIST = [
 const HERO_REQUIRED_STYLES = {
     "AA": ["freeze"], "ABADDON": ["shields", "healing"], "ALCHEMIST": [], "ASH": ["rage"], "AWAKENED": ["attack"], "AXE": ["shields"], "BRIST": [], 
     "BROOD MOTHER": ["poison", "attack"], "CK": ["crits", "healing"], "CLINKZ": ["rage", "guards"], "CM": ["freeze"], "DARK WILLOW": ["guards"], 
-    "DAZZLE": ["vulnerability", "poison"], "DOOM": ["chaos"], "DRAGON KNIGHT(poison)": ["poison"], "DRAGON KNIGHT(freeze)": ["freeze"], "DRAGON KNIGHT(rage)": ["rage"],
+    "DAZZLE": ["vulnerability", "poison"], "DOOM": ["chaos"], "DK POISON": ["poison"], "DK FREEZE": ["freeze"], "DK RAGE": ["rage"],
     "DROW RANGER": ["freeze"], "EMBER SPIRIT": ["rage"], "ES": ["crits"], "FLAMEBORN": ["chaos"], "GRIMSTROKE": ["dodge"], "GUITARIST": [], "HOODWINK": [], 
     "HUSKAR": ["rage"], "JUGGER": ["attack", "crits"], "KEZ": ["attack"], "KUNKKA": ["health"], "LC": ["shields"], "LESHRAC": ["ultimate", "health"], "LICH": ["freeze"], 
     "LIFESTEALER": ["healing"], "LINA": ["rage"], "LION": ["chaos"], "LUNA": ["attack", "ultimate"], "LYCAN": ["guards"], "MAGNUS": ["health"], "MARCI": ["attack"], 
@@ -1342,6 +1342,7 @@ function setupEventListeners() {
         });
     }
 }
+
 
 
 
