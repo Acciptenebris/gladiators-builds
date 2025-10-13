@@ -338,26 +338,26 @@ function showBuildFormModal(build, title) {
         }
     });
     
-    (build.requiredMustNotHave || []).forEach(styleId => {
+    (build.desiredMustHave || []).forEach(styleId => {
         const btn = modal.querySelector(`.required-style-btn[data-style-id="${styleId}"]`);
+        if (btn) {
+            btn.classList.add('selected'); btn.dataset.requirement = 'desired';
+            btn.style.background = '#3498db'; btn.style.borderColor = '#3498db'; btn.style.color = '#fff';
+        }
+    });
+    
+    (build.requiredMustNotHave || []).forEach(styleId => {
+        const btn = modal.querySelector(`.desired-style-btn[data-style-id="${styleId}"]`);
         if (btn) {
             btn.classList.add('selected'); btn.dataset.requirement = 'not';
             btn.style.background = '#e74c3c'; btn.style.borderColor = '#e74c3c'; btn.style.color = '#fff';
         }
     });
     
-    (build.desiredMustHave || []).forEach(styleId => {
-        const btn = modal.querySelector(`.desired-style-btn[data-style-id="${styleId}"]`);
-        if (btn) {
-            btn.classList.add('selected'); btn.dataset.requirement = 'must';
-            btn.style.background = '#3498db'; btn.style.borderColor = '#3498db'; btn.style.color = '#fff';
-        }
-    });
-    
     (build.desiredMustNotHave || []).forEach(styleId => {
         const btn = modal.querySelector(`.desired-style-btn[data-style-id="${styleId}"]`);
         if (btn) {
-            btn.classList.add('selected'); btn.dataset.requirement = 'not';
+            btn.classList.add('selected'); btn.dataset.requirement = 'undesired';
             btn.style.background = '#e67e22'; btn.style.borderColor = '#e67e22'; btn.style.color = '#fff';
         }
     });
@@ -556,5 +556,6 @@ function setupEventListeners() {
         });
     }
 }
+
 
 
