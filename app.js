@@ -1233,92 +1233,12 @@ const STORAGE_KEY = "buildsDatabase";
 
 // Функция для загрузки билдов (базовые + пользовательские)
 function loadBuilds() {
-    console.log('🔍 Проверяем сохраненные данные...');
-
-    try {
-        const savedData = localStorage.getItem('builds');
-
-        if (!savedData) {
-            console.log('📦 Первый запуск - загружаем базовые билды');
-            return [...DEFAULT_BUILDS];
-        }
-
-        const savedBuilds = JSON.parse(savedData);
-
-        if (!Array.isArray(savedBuilds)) {
-            console.log('🔧 Данные не массив - сбрасываем');
-            localStorage.removeItem('builds');
-            return [...DEFAULT_BUILDS];
-        }
-
-        // Фильтруем и исправляем билды
-        const repairedBuilds = [];
-        let removedCount = 0;
-        let repairedCount = 0;
-
-        for (const build of savedBuilds) {
-            // Удаляем билды в новом формате (которые ломают сайт)
-            if (build && (
-                build.requiredMustHave !== undefined || 
-                build.desiredMustHave !== undefined ||
-                build.requiredMustNotHave !== undefined || 
-                build.desiredMustNotHave !== undefined
-            )) {
-                console.log('🗑️ Удален билд в новом формате:', build.hero || 'неизвестный');
-                removedCount++;
-                continue;
-            }
-
-            // Проверяем базовую структуру
-            if (!build || !build.hero || typeof build.hero !== 'string') {
-                console.log('🗑️ Удален некорректный билд');
-                removedCount++;
-                continue;
-            }
-
-            // Исправляем поля билда если нужно
-            const originalBuild = JSON.stringify(build);
-            const repairedBuild = {
-                hero: build.hero,
-                mustHave: Array.isArray(build.mustHave) ? build.mustHave : [],
-                mustNotHave: Array.isArray(build.mustNotHave) ? build.mustNotHave : [],
-                talents: typeof build.talents === 'string' ? build.talents : '',
-                comment: typeof build.comment === 'string' ? build.comment : '',
-                tier: typeof build.tier === 'number' ? build.tier : 4,
-                img: typeof build.img === 'string' ? build.img : ''
-            };
-
-            if (originalBuild !== JSON.stringify(repairedBuild)) {
-                repairedCount++;
-                console.log('🔧 Исправлен билд:', build.hero);
-            }
-
-            repairedBuilds.push(repairedBuild);
-        }
-
-        // Сохраняем исправленные данные если были изменения
-        if (removedCount > 0 || repairedCount > 0) {
-            localStorage.setItem('builds', JSON.stringify(repairedBuilds));
-            console.log(`✅ Автоисправление: удалено ${removedCount}, исправлено ${repairedCount}, сохранено ${repairedBuilds.length} билдов`);
-        }
-
-        // Если билдов не осталось - загружаем базовые
-        if (repairedBuilds.length === 0) {
-            console.log('📦 Все билды были проблемными - загружаем базовые');
-            return [...DEFAULT_BUILDS];
-        }
-
-        return repairedBuilds;
-
-    } catch (error) {
-        console.error('❌ Критическая ошибка данных:', error);
-        console.log('🔄 Полная очистка и перезагрузка...');
-        localStorage.removeItem('builds');
+    const savedBuilds = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+    if (savedBuilds.length === 0) {
         return [...DEFAULT_BUILDS];
     }
+    return savedBuilds;
 }
-
-
 
 let builds = loadBuilds();
 
@@ -1328,77 +1248,173 @@ let editingBuildIndex = null;
 let heroSearchFilter = '';
 
 // ========== UI ИНИЦИАЛИЗАЦИЯ ==========
-
-// ========== АВТОМАТИЧЕСКАЯ ОЧИСТКА ПРИ ЗАПУСКЕ ==========
-function performStartupCleanup() {
-    console.log('🚀 Запуск системы автоочистки...');
-
-    try {
-        // Проверяем все ключи localStorage на валидность
-        const keysToRemove = [];
-
-        for (let i = 0; i < localStorage.length; i++) {
-            const key = localStorage.key(i);
-
-            if (!key) continue;
-
-            try {
-                const value = localStorage.getItem(key);
-                if (value) {
-                    JSON.parse(value); // Проверяем валидность JSON
-                }
-            } catch (e) {
-                keysToRemove.push(key);
-            }
-        }
-
-        // Удаляем поврежденные ключи
-        keysToRemove.forEach(key => {
-            localStorage.removeItem(key);
-            console.log('🗑️ Удален поврежденный ключ:', key);
-        });
-
-        console.log('✅ Автоочистка завершена');
-
-    } catch (error) {
-        console.error('❌ Ошибка автоочистки:', error);
-        console.log('🔄 Экстренная полная очистка...');
-        localStorage.clear();
-    }
-}
-
 document.addEventListener("DOMContentLoaded", () => {
-    // Выполняем автоочистку перед загрузкой
-    performStartupCleanup();
-
-    // Обычная инициализация
     renderDisabledStylesPicker();
     renderBuildsList();
     setupEventListeners();
-
-    console.log('🎉 Сайт загружен! Все проблемы автоматически исправлены.');
 });
 
+
+// ========== ФУНКЦИИ ДЛЯ НОВОЙ СИСТЕМЫ СТИЛЕЙ ==========
+
+// Обработка кликов по кнопкам стилей (3 состояния)
+function handleNewStyleClick(btn) {
+    const isHeroRequired = btn.classList.contains('hero-required');
+
+    if (isHeroRequired) return; // Стили героя нельзя менять
+
+    // Цикл: нейтральный → должен быть → не должен быть → нейтральный
+    if (btn.classList.contains('new-must-have')) {
+        btn.classList.remove('new-must-have');
+        btn.classList.add('new-must-not-have');
+    } else if (btn.classList.contains('new-must-not-have')) {
+        btn.classList.remove('new-must-not-have');
+    } else {
+        btn.classList.add('new-must-have');
+    }
+}
+
+// Автоматический выбор стилей героя
+function applyHeroStyles(heroName) {
+    const requiredStyles = getHeroRequiredStyles(heroName);
+
+    document.querySelectorAll('.edit-style-btn').forEach(btn => {
+        btn.classList.remove('hero-required');
+    });
+
+    document.querySelectorAll('.required-style-btn').forEach(btn => {
+        const styleId = btn.getAttribute('data-style-id');
+        if (requiredStyles.includes(styleId)) {
+            btn.classList.add('new-must-have', 'hero-required');
+        }
+    });
+}
+
+// Сбор данных стилей для нового формата
+function gatherNewStylesData() {
+    const requiredMustHave = [];
+    const desiredMustHave = [];
+    const requiredMustNotHave = [];
+    const desiredMustNotHave = [];
+
+    document.querySelectorAll('.required-style-btn').forEach(btn => {
+        const styleId = btn.getAttribute('data-style-id');
+        if (btn.classList.contains('new-must-have')) {
+            requiredMustHave.push(styleId);
+        } else if (btn.classList.contains('new-must-not-have')) {
+            requiredMustNotHave.push(styleId);
+        }
+    });
+
+    document.querySelectorAll('.desired-style-btn').forEach(btn => {
+        const styleId = btn.getAttribute('data-style-id');
+        if (btn.classList.contains('new-must-have')) {
+            desiredMustHave.push(styleId);
+        } else if (btn.classList.contains('new-must-not-have')) {
+            desiredMustNotHave.push(styleId);
+        }
+    });
+
+    return { requiredMustHave, desiredMustHave, requiredMustNotHave, desiredMustNotHave };
+}
+
+// Новая функция сохранения
+function saveNewBuild() {
+    const hero = document.getElementById('build-hero').value.trim();
+    const talents = document.getElementById('build-talents').value.trim();
+    const comment = document.getElementById('build-comment').value.trim();
+    const img = document.getElementById('build-img').value.trim();
+    const tier = parseInt(document.getElementById('build-tier').value);
+
+    if (!hero || !talents || !tier) {
+        alert('Заполните все обязательные поля!');
+        return;
+    }
+
+    const stylesData = gatherNewStylesData();
+
+    const newBuild = {
+        hero,
+        requiredMustHave: stylesData.requiredMustHave,
+        desiredMustHave: stylesData.desiredMustHave,
+        requiredMustNotHave: stylesData.requiredMustNotHave,
+        desiredMustNotHave: stylesData.desiredMustNotHave,
+        talents,
+        comment,
+        tier,
+        img: img || ''
+    };
+
+    if (editingBuildIndex !== null) {
+        builds[editingBuildIndex] = newBuild;
+    } else {
+        builds.push(newBuild);
+    }
+
+    persist();
+    renderBuildsList();
+    renderSearchResults();
+    closeModal();
+    editingBuildIndex = null;
+}
 
 
 // ========== РАСЧЕТ ЭФФЕКТИВНОСТИ БИЛДА ==========
 function calculateBuildEfficiency(build, enabledStyles) {
-    const heroStyles = getHeroRequiredStyles(build.hero);
-    const allMustHave = [...new Set([...heroStyles, ...(build.mustHave || [])])];
+    // НОВАЯ СИСТЕМА: проверяем есть ли поля нового формата
+    if (build.requiredMustHave !== undefined || build.desiredMustHave !== undefined) {
+        // ========== НОВАЯ ЛОГИКА ==========
+        const requiredMustHave = build.requiredMustHave || [];
+        const desiredMustHave = build.desiredMustHave || [];
+        const requiredMustNotHave = build.requiredMustNotHave || [];
+        const desiredMustNotHave = build.desiredMustNotHave || [];
 
-    if (!allMustHave.every(s => enabledStyles.includes(s))) {
-        return 0;
+        // Обязательные стили "должны быть" - критично
+        if (!requiredMustHave.every(s => enabledStyles.includes(s))) {
+            return 0;
+        }
+
+        // Обязательные стили "не должны быть" - критично  
+        if (requiredMustNotHave.some(s => enabledStyles.includes(s))) {
+            return 0;
+        }
+
+        // Считаем несовпадения с желательными стилями
+        let mismatches = 0;
+        mismatches += desiredMustHave.filter(s => !enabledStyles.includes(s)).length;
+        mismatches += desiredMustNotHave.filter(s => enabledStyles.includes(s)).length;
+
+        // При 4+ несовпадениях = скрыть билд
+        if (mismatches >= 4) {
+            return 0;
+        }
+
+        // Каждое несовпадение = -30%
+        let efficiency = 100;
+        for (let i = 0; i < mismatches; i++) {
+            efficiency -= 30;
+        }
+
+        return Math.max(0, Math.round(efficiency));
+    } else {
+        // ========== СТАРАЯ ЛОГИКА (с учетом стилей героя) ==========
+        const heroStyles = getHeroRequiredStyles(build.hero);
+        const allMustHave = [...new Set([...heroStyles, ...(build.mustHave || [])])];
+
+        if (!allMustHave.every(s => enabledStyles.includes(s))) {
+            return 0;
+        }
+
+        const conflictsCount = (build.mustNotHave || []).filter(s => enabledStyles.includes(s)).length;
+        if (conflictsCount >= 3) return 0;
+
+        let efficiency = 100;
+        for (let i = 0; i < conflictsCount; i++) {
+            efficiency = efficiency / 2;
+        }
+
+        return Math.round(efficiency);
     }
-
-    const conflictsCount = (build.mustNotHave || []).filter(s => enabledStyles.includes(s)).length;
-    if (conflictsCount >= 3) return 0;
-
-    let efficiency = 100;
-    for (let i = 0; i < conflictsCount; i++) {
-        efficiency = efficiency / 2;
-    }
-
-    return Math.round(efficiency);
 }
 
 
@@ -1609,7 +1625,7 @@ function renderBuildsList() {
 // ========== МОДАЛЬНОЕ ОКНО ==========
 function showBuildFormModal(build, title) {
     console.log('Opening modal for:', build);
-    
+
     let modal = document.querySelector('.modal-overlay');
     if (!modal) {
         modal = document.createElement('div');
@@ -1617,7 +1633,7 @@ function showBuildFormModal(build, title) {
         modal.innerHTML = `
             <div class="modal-content">
                 <div class="modal-header">
-                    <h3>Создание билда</h3>
+                    <h3>${title || 'Создание билда'}</h3>
                     <button class="close-btn" onclick="closeModal()">&times;</button>
                 </div>
                 <form id="build-form">
@@ -1631,11 +1647,12 @@ function showBuildFormModal(build, title) {
                         </div>
                         <div class="form-field">
                             <label>Таланты:</label>
-                            <input type="text" id="build-talents" placeholder="1 2 1">
+                            <input type="text" id="build-talents" placeholder="1 2 2" required>
                         </div>
                         <div class="form-field">
                             <label>Тир:</label>
-                            <select id="build-tier">
+                            <select id="build-tier" required>
+                                <option value="">Выберите тир</option>
                                 <option value="1">1 - Имба</option>
                                 <option value="2">2 - Хорошо</option>
                                 <option value="3">3 - Норм</option>
@@ -1643,28 +1660,41 @@ function showBuildFormModal(build, title) {
                             </select>
                         </div>
                     </div>
-                    
+
                     <div class="form-field">
-                        <label>Стили (клик = обязательно, двойной клик = запрещено):</label>
-                        <div class="edit-styles-grid">
+                        <label>Обязательные стили:</label>
+                        <div class="styles-info">Критичны для работы билда. Если отсутствуют - билд не появится.</div>
+                        <div class="edit-styles-grid required-styles-section">
                             ${PLAYSTYLES_DATA.map(style => `
-                                <button type="button" class="edit-style-btn" data-style-id="${style.id}">
+                                <button type="button" class="edit-style-btn required-style-btn" data-style-id="${style.id}">
                                     ${style.name}
                                 </button>
                             `).join('')}
                         </div>
                     </div>
-                    
+
+                    <div class="form-field">
+                        <label>Желательные стили:</label>
+                        <div class="styles-info">За каждое несовпадение -30%. При 4+ несовпадениях билд не появится.</div>
+                        <div class="edit-styles-grid desired-styles-section">
+                            ${PLAYSTYLES_DATA.map(style => `
+                                <button type="button" class="edit-style-btn desired-style-btn" data-style-id="${style.id}">
+                                    ${style.name}
+                                </button>
+                            `).join('')}
+                        </div>
+                    </div>
+
                     <div class="form-field">
                         <label>Комментарий:</label>
                         <textarea id="build-comment" rows="3"></textarea>
                     </div>
-                    
+
                     <div class="form-field">
                         <label>Картинка (URL):</label>
                         <input type="url" id="build-img" placeholder="https://...">
                     </div>
-                    
+
                     <div class="modal-footer">
                         <button type="submit" class="save-btn">Сохранить</button>
                         <button type="button" class="cancel-btn" onclick="closeModal()">Отмена</button>
@@ -1673,73 +1703,43 @@ function showBuildFormModal(build, title) {
             </div>
         `;
         document.body.appendChild(modal);
-        
+
+        // Настройка обработчиков
         modal.querySelectorAll('.edit-style-btn').forEach(btn => {
-            btn.onclick = function() {
-                if (this.classList.contains('selected')) {
-                    if (this.dataset.requirement === 'must') {
-                        this.dataset.requirement = 'not';
-                        this.style.background = '#e74c3c';
-                        this.style.borderColor = '#e74c3c';
-                    } else {
-                        this.classList.remove('selected');
-                        delete this.dataset.requirement;
-                        this.style.background = '';
-                        this.style.borderColor = '';
-                        this.style.color = '';
-                    }
-                } else {
-                    this.classList.add('selected');
-                    this.dataset.requirement = 'must';
-                    this.style.background = '#27ae60';
-                    this.style.borderColor = '#27ae60';
-                    this.style.color = '#fff';
-                }
-            };
+            btn.onclick = () => handleNewStyleClick(btn);
         });
-        
-        modal.querySelector('#build-form').onsubmit = function(e) {
+
+        // Обработчик выбора героя
+        const heroSelect = modal.querySelector('#build-hero');
+        heroSelect.addEventListener('change', function() {
+            if (this.value) applyHeroStyles(this.value);
+        });
+
+        const form = modal.querySelector('#build-form');
+        form.onsubmit = function(e) {
             e.preventDefault();
-            saveBuild();
-        };
-        
-        modal.onclick = function(e) {
-            if (e.target === modal) closeModal();
+            saveNewBuild();
         };
     }
-    
-    modal.querySelector('.modal-header h3').textContent = title;
-    modal.querySelector('#build-hero').value = build.hero || '';
-    modal.querySelector('#build-talents').value = build.talents || '';
-    modal.querySelector('#build-comment').value = build.comment || '';
-    modal.querySelector('#build-tier').value = build.tier || 4;
-    modal.querySelector('#build-img').value = build.img || '';
-    
-    modal.querySelectorAll('.edit-style-btn').forEach(btn => {
-        btn.classList.remove('selected');
-        delete btn.dataset.requirement;
-        btn.style.background = '';
-        btn.style.borderColor = '';
-        btn.style.color = '';
-        
-        const styleId = btn.dataset.styleId;
-        if (build.mustHave && build.mustHave.includes(styleId)) {
-            btn.classList.add('selected');
-            btn.dataset.requirement = 'must';
-            btn.style.background = '#27ae60';
-            btn.style.borderColor = '#27ae60';
-            btn.style.color = '#fff';
-        } else if (build.mustNotHave && build.mustNotHave.includes(styleId)) {
-            btn.classList.add('selected');
-            btn.dataset.requirement = 'not';
-            btn.style.background = '#e74c3c';
-            btn.style.borderColor = '#e74c3c';
-            btn.style.color = '#fff';
-        }
-    });
-    
+
+    // Заполнение при редактировании
+    if (build && build.hero) {
+        modal.querySelector('#build-hero').value = build.hero;
+        modal.querySelector('#build-talents').value = build.talents || '';
+        modal.querySelector('#build-comment').value = build.comment || '';
+        modal.querySelector('#build-img').value = build.img || '';
+        modal.querySelector('#build-tier').value = build.tier || '';
+
+        setTimeout(() => {
+            if (build.hero) applyHeroStyles(build.hero);
+            // TODO: Заполнить существующие стили билда
+        }, 100);
+    }
+
     modal.style.display = 'flex';
 }
+
+
 
 function closeModal() {
     const modal = document.querySelector('.modal-overlay');
