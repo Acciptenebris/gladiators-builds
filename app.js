@@ -7,87 +7,86 @@ const HEROES_LIST = [
     "DRAGON KNIGHT"
 ];
 
-// ========== ДАННЫЕ ГЕРОЕВ С ОБЯЗАТЕЛЬНЫМИ СТИЛЯМИ ==========
-const HEROES_DATA = [
-    {name: "DROW RANGER", requiredStyles: ["crits", "freeze"]},
-    {name: "NYX", requiredStyles: ["vulnerability", "dodge"]},
-    {name: "TIMBERSAW", requiredStyles: ["health", "attack"]},
-    {name: "UNDDYING", requiredStyles: ["healing", "health"]},
-    {name: "PA", requiredStyles: ["attack", "crits"]},
-    {name: "PUGNA", requiredStyles: ["ultimate", "vulnerability"]},
-    {name: "MIRANA", requiredStyles: ["attack", "dodge"]},
-    {name: "LC", requiredStyles: ["attack", "health"]},
-    {name: "PANGO", requiredStyles: ["attack", "vulnerability"]},
-    {name: "LIFESTEALER", requiredStyles: ["attack", "healing"]},
-    {name: "HUSKAR", requiredStyles: ["health", "attack"]},
-    {name: "MAGNUS", requiredStyles: ["ultimate", "attack"]},
-    {name: "ZEUS", requiredStyles: ["ultimate", "vulnerability"]},
-    {name: "JUGGER", requiredStyles: ["attack", "crits"]},
-    {name: "CK", requiredStyles: ["crits", "healing"]},
-    {name: "NECR", requiredStyles: ["healing", "poison"]},
-    {name: "TINY", requiredStyles: ["attack", "health"]},
-    {name: "YAMASHITA", requiredStyles: ["attack", "crits"]},
-    {name: "VOID", requiredStyles: ["attack", "ultimate"]},
-    {name: "AA", requiredStyles: ["health", "freeze"]},
-    {name: "DARK WILLOW", requiredStyles: ["guards", "poison"]},
-    {name: "MUERTA", requiredStyles: ["attack", "vulnerability"]},
-    {name: "HOODWINK", requiredStyles: ["attack", "dodge"]},
-    {name: "VIPER", requiredStyles: ["poison", "attack"]},
-    {name: "TINKER", requiredStyles: ["ultimate", "attack"]},
-    {name: "DOOM", requiredStyles: ["health", "attack"]},
-    {name: "GRIMSTROKE", requiredStyles: ["ultimate", "vulnerability"]},
-    {name: "AXE", requiredStyles: ["shields", "attack"]},
-    {name: "QOP", requiredStyles: ["attack", "ultimate"]},
-    {name: "MARCI", requiredStyles: ["attack", "health"]},
-    {name: "WINDRANDGER", requiredStyles: ["attack", "dodge"]},
-    {name: "TREANT", requiredStyles: ["healing", "health"]},
-    {name: "LICH", requiredStyles: ["freeze", "ultimate"]},
-    {name: "LYCAN", requiredStyles: ["guards", "ultimate"]},
-    {name: "OMNIK", requiredStyles: ["freeze", "shields"]},
-    {name: "URSA", requiredStyles: ["attack", "health"]},
-    {name: "SF", requiredStyles: ["attack", "crits"]},
-    {name: "SKY", requiredStyles: ["ultimate", "vulnerability"]},
-    {name: "ABADDON", requiredStyles: ["shields", "healing"]},
-    {name: "RAZOR", requiredStyles: ["attack", "vulnerability"]},
-    {name: "SPECTRE", requiredStyles: ["attack", "health"]},
-    {name: "SNIPER", requiredStyles: ["attack", "crits"]},
-    {name: "EMBER SPIRIT", requiredStyles: ["attack", "rage"]},
-    {name: "VOID SPIRIT", requiredStyles: ["shields", "vulnerability"]},
-    {name: "RIKI", requiredStyles: ["attack", "dodge"]},
-    {name: "LUNA", requiredStyles: ["attack", "ultimate"]},
-    {name: "OGRE MAGI", requiredStyles: ["healing", "shields"]},
-    {name: "CM", requiredStyles: ["freeze", "ultimate"]},
-    {name: "PUDGE", requiredStyles: ["health", "shields"]},
-    {name: "ASH", requiredStyles: ["attack", "freeze"]},
-    {name: "LINA", requiredStyles: ["ultimate", "vulnerability"]},
-    {name: "KUNKKA", requiredStyles: ["attack", "shields"]},
-    {name: "DAZZLE", requiredStyles: ["healing", "shields"]},
-    {name: "AWAKENED", requiredStyles: ["ultimate", "health"]},
-    {name: "WASTELAND GUARD", requiredStyles: ["guards", "shields"]},
-    {name: "TA", requiredStyles: ["attack", "crits"]},
-    {name: "RINGMASTER", requiredStyles: ["ultimate", "vulnerability"]},
-    {name: "MK", requiredStyles: ["attack", "dodge"]},
-    {name: "ES", requiredStyles: ["ultimate", "attack"]},
-    {name: "LION", requiredStyles: ["ultimate", "vulnerability"]},
-    {name: "GUITARIST", requiredStyles: ["ultimate", "attack"]},
-    {name: "KEZ", requiredStyles: ["attack", "dodge"]},
-    {name: "WITCH DOCTOR", requiredStyles: ["healing", "poison"]},
-    {name: "FLAMEBORN", requiredStyles: ["attack", "rage"]},
-    {name: "TROLL", requiredStyles: ["attack", "rage"]},
-    {name: "ALCHEMIST", requiredStyles: ["health", "poison"]},
-    {name: "CLINKZ", requiredStyles: ["attack", "crits"]},
-    {name: "LESHRAC", requiredStyles: ["ultimate", "vulnerability"]},
-    {name: "PL", requiredStyles: ["attack", "dodge"]},
-    {name: "BRIST", requiredStyles: ["poison", "health"]},
-    {name: "SILENCER", requiredStyles: ["ultimate", "vulnerability"]},
-    {name: "BROOD MOTHER", requiredStyles: ["poison", "attack"]},
-    {name: "DRAGON KNIGHT", requiredStyles: ["poison", "freeze"]},
-];
+// ========== ДАННЫЕ ГЕРОЕВ (ДОБАВЛЕНО) ==========
+const HERO_REQUIRED_STYLES = {
+    "DROW RANGER": ["crits", "freeze"],
+    "NYX": ["vulnerability", "dodge"],
+    "TIMBERSAW": ["health", "attack"],
+    "UNDDYING": ["healing", "health"],
+    "PA": ["attack", "crits"],
+    "PUGNA": ["ultimate", "vulnerability"],
+    "MIRANA": ["attack", "dodge"],
+    "LC": ["attack", "health"],
+    "PANGO": ["attack", "vulnerability"],
+    "LIFESTEALER": ["attack", "healing"],
+    "HUSKAR": ["health", "attack"],
+    "MAGNUS": ["ultimate", "attack"],
+    "ZEUS": ["ultimate", "vulnerability"],
+    "JUGGER": ["attack", "crits"],
+    "CK": ["crits", "healing"],
+    "NECR": ["healing", "poison"],
+    "TINY": ["attack", "health"],
+    "YAMASHITA": ["attack", "crits"],
+    "VOID": ["attack", "ultimate"],
+    "AA": ["health", "freeze"],
+    "DARK WILLOW": ["guards", "poison"],
+    "MUERTA": ["attack", "vulnerability"],
+    "HOODWINK": ["attack", "dodge"],
+    "VIPER": ["poison", "attack"],
+    "TINKER": ["ultimate", "attack"],
+    "DOOM": ["health", "attack"],
+    "GRIMSTROKE": ["ultimate", "vulnerability"],
+    "AXE": ["shields", "attack"],
+    "QOP": ["attack", "ultimate"],
+    "MARCI": ["attack", "health"],
+    "WINDRANDGER": ["attack", "dodge"],
+    "TREANT": ["healing", "health"],
+    "LICH": ["freeze", "ultimate"],
+    "LYCAN": ["guards", "ultimate"],
+    "OMNIK": ["freeze", "shields"],
+    "URSA": ["attack", "health"],
+    "SF": ["attack", "crits"],
+    "SKY": ["ultimate", "vulnerability"],
+    "ABADDON": ["shields", "healing"],
+    "RAZOR": ["attack", "vulnerability"],
+    "SPECTRE": ["attack", "health"],
+    "SNIPER": ["attack", "crits"],
+    "EMBER SPIRIT": ["attack", "rage"],
+    "VOID SPIRIT": ["shields", "vulnerability"],
+    "RIKI": ["attack", "dodge"],
+    "LUNA": ["attack", "ultimate"],
+    "OGRE MAGI": ["healing", "shields"],
+    "CM": ["freeze", "ultimate"],
+    "PUDGE": ["health", "shields"],
+    "ASH": ["attack", "freeze"],
+    "LINA": ["ultimate", "vulnerability"],
+    "KUNKKA": ["attack", "shields"],
+    "DAZZLE": ["healing", "shields"],
+    "AWAKENED": ["ultimate", "health"],
+    "WASTELAND GUARD": ["guards", "shields"],
+    "TA": ["attack", "crits"],
+    "RINGMASTER": ["ultimate", "vulnerability"],
+    "MK": ["attack", "dodge"],
+    "ES": ["ultimate", "attack"],
+    "LION": ["ultimate", "vulnerability"],
+    "GUITARIST": ["ultimate", "attack"],
+    "KEZ": ["attack", "dodge"],
+    "WITCH DOCTOR": ["healing", "poison"],
+    "FLAMEBORN": ["attack", "rage"],
+    "TROLL": ["attack", "rage"],
+    "ALCHEMIST": ["health", "poison"],
+    "CLINKZ": ["attack", "crits"],
+    "LESHRAC": ["ultimate", "vulnerability"],
+    "PL": ["attack", "dodge"],
+    "BRIST": ["poison", "health"],
+    "SILENCER": ["ultimate", "vulnerability"],
+    "BROOD MOTHER": ["poison", "attack"],
+    "DRAGON KNIGHT": ["poison", "freeze"],
+};
 
-// ========== ФУНКЦИЯ ДЛЯ ПОЛУЧЕНИЯ ОБЯЗАТЕЛЬНЫХ СТИЛЕЙ ГЕРОЯ ==========
+// Функция для получения обязательных стилей героя
 function getHeroRequiredStyles(heroName) {
-    const heroData = HEROES_DATA.find(hero => hero.name === heroName);
-    return heroData ? heroData.requiredStyles : [];
+    return HERO_REQUIRED_STYLES[heroName] || [];
 }
 
 
@@ -1257,20 +1256,19 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 // ========== РАСЧЕТ ЭФФЕКТИВНОСТИ БИЛДА ==========
-// ========== РАСЧЕТ ЭФФЕКТИВНОСТИ БИЛДА ==========
 function calculateBuildEfficiency(build, enabledStyles) {
     // Получаем обязательные стили героя
-    const heroRequiredStyles = getHeroRequiredStyles(build.hero);
+    const heroStyles = getHeroRequiredStyles(build.hero);
 
-    // Объединяем стили героя с mustHave (без дублирования)
-    const allMustHave = [...new Set([...heroRequiredStyles, ...(build.mustHave || [])])];
+    // Объединяем стили героя с mustHave билда
+    const allMustHave = [...new Set([...heroStyles, ...(build.mustHave || [])])];
 
     // Если не выполнены все обязательные стили - билд не показывается
     if (!allMustHave.every(s => enabledStyles.includes(s))) {
         return 0;
     }
 
-    // Оригинальная логика для mustNotHave
+    // Оригинальная логика для mustNotHave - БЕЗ ИЗМЕНЕНИЙ
     const conflictsCount = (build.mustNotHave || []).filter(s => enabledStyles.includes(s)).length;
     if (conflictsCount >= 3) return 0;
 
