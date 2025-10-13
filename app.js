@@ -192,9 +192,9 @@ function buildCardView(build) {
 
     // Добавляем шард справа от аватарки
     if (build.shard) {
-        imgHtml += `<div class="shard-indicator active" title="Шард"><img src="icons/shard.png" alt="Shard"></div>`;
+        imgHtml += `<div class="shard-indicator active" title="Шард"><img src="aghanims_shard.png" alt="Shard"></div>`;
     } else {
-        imgHtml += `<div class="shard-indicator" title="Без шарда"><img src="icons/shard.png" alt="No Shard"></div>`;
+        imgHtml += `<div class="shard-indicator" title="Без шарда"><img src="aghanims_shard.png" alt="No Shard"></div>`;
     }
 
     let efficiencyClass = 'efficiency-100';
@@ -296,7 +296,7 @@ function showBuildFormModal(build, title) {
                 <div class="form-field">
                     <label>Шард:</label>
                     <button type="button" id="shard-toggle" class="shard-toggle-btn">
-                        <img src="icons/shard.png" alt="Shard">
+                        <img src="aghanims_shard.png" alt="Shard">
                         <span>ВЫКЛ</span>
                     </button>
                 </div>
@@ -631,3 +631,4 @@ function setupEventListeners() {
         });
     }
 }
+
