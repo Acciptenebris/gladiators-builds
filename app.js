@@ -316,6 +316,7 @@ function showBuildFormModal(build, title) {
     modal.querySelectorAll('.edit-style-btn').forEach(btn => {
         btn.classList.remove('selected'); delete btn.dataset.requirement;
         btn.style.background = ''; btn.style.borderColor = ''; btn.style.color = '';
+        btn.style.pointerEvents = ''; btn.style.opacity = ''; btn.style.fontWeight = '';
     });
     
     const heroStyles = getHeroRequiredStyles(build.hero || '');
@@ -556,6 +557,7 @@ function setupEventListeners() {
         });
     }
 }
+
 
 
 
