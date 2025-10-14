@@ -4,7 +4,7 @@ const HEROES_LIST = [
     "DOOM", "DROW RANGER", "EMBER SPIRIT", "ES", "FLAMEBORN", "GRIMSTROKE", "GUITARIST", "HOODWINK", "HUSKAR", "JUGGER", "KEZ", "KUNKKA", "LC", "LESHRAC", "LICH", 
     "LIFESTEALER", "LINA", "LION", "LUNA", "LYCAN", "MAGNUS", "MARCI", "MIRANA", "MK", "MUERTA", "NECR", "NYX", "OGRE MAGI", "OMNIK", "PA", "PANGO", "PL", "PUDGE", 
     "PUGNA", "QOP", "RAZOR", "RIKI", "RINGMASTER", "SF", "SILENCER", "SKY", "SNIPER", "SPECTRE", "TA", "TIMBERSAW", "TINKER", "TINY", "TREANT", "TROLL", "UNDDYING", 
-    "URSA", "VIPER", "VOID", "VOID SPIRIT", "WASTELAND GUARD", "WINDRANDGER", "WITCH DOCTOR", "YAMASHITA", "ZEUS"
+    "URSA", "VIPER", "VOID", "VOID SPIRIT", "WASTELAND GUARD", "WINDRANDGER", "WITCH DOCTOR", "YAMASHITA", "ZEUS", "MARS", 
 ];
 
 // ========== ДАННЫЕ ГЕРОЕВ (ОБЯЗАТЕЛЬНЫЕ СТИЛИ) ==========
@@ -21,7 +21,7 @@ const HERO_REQUIRED_STYLES = {
     "SNIPER": ["crits"], "SPECTRE": ["dodge"], "TA": ["attack", "shields"], "TIMBERSAW": ["healing", "chaos"], "TINKER": [], "TINY": ["health"], "TREANT": ["guards"], 
     "TROLL": ["rage", "freeze"], "UNDDYING": ["healing", "health"], "URSA": ["vulnerability"], "VIPER": ["poison"], "VOID": ["attack"], 
     "VOID SPIRIT": ["shields", "vulnerability"], "WASTELAND GUARD": ["shields"], "WINDRANDGER": ["dodge"], "WITCH DOCTOR": ["healing", "vulnerability"], "YAMASHITA": ["rage"], 
-    "ZEUS": ["ultimate"]
+    "ZEUS": ["ultimate"], "MARS": ["shields"]
 };
 
 function getHeroRequiredStyles(heroName) { return HERO_REQUIRED_STYLES[heroName] || []; }
@@ -2086,6 +2086,7 @@ function setupEventListeners() {
         });
     }
 }
+
 
 
 
