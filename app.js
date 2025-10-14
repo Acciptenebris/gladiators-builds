@@ -1,6 +1,6 @@
 // ========== ГЕРОИ ДЛЯ ВЫПАДАЮЩЕГО СПИСКА ==========
 const HEROES_LIST = [
-    "AA", "ABADDON", "ALCHEMIST", "ASH", "AWAKENED", "AXE", "BRIST", "BROOD MOTHER", "CK", "CLINKZ", "CM", "DARK WILLOW", "DAZZLE", "DK FREEZE", "DK POISON", "DK RAGE", 
+    "AA", "AM", "ABADDON", "ALCHEMIST", "ASH", "AWAKENED", "AXE", "BRIST", "BROOD MOTHER", "CK", "CLINKZ", "CM", "DARK WILLOW", "DAZZLE", "DK FREEZE", "DK POISON", "DK RAGE", 
     "DOOM", "DROW RANGER", "EMBER SPIRIT", "ES", "FLAMEBORN", "GRIMSTROKE", "GUITARIST", "HOODWINK", "HUSKAR", "JUGGER", "KEZ", "KUNKKA", "LC", "LESHRAC", "LICH", 
     "LIFESTEALER", "LINA", "LION", "LUNA", "LYCAN", "MAGNUS", "MARCI", "MIRANA", "MK", "MUERTA", "NECR", "NYX", "OGRE MAGI", "OMNIK", "PA", "PANGO", "PL", "PUDGE", 
     "PUGNA", "QOP", "RAZOR", "RIKI", "RINGMASTER", "SF", "SILENCER", "SKY", "SNIPER", "SPECTRE", "TA", "TIMBERSAW", "TINKER", "TINY", "TREANT", "TROLL", "UNDDYING", 
@@ -9,8 +9,8 @@ const HEROES_LIST = [
 
 // ========== ДАННЫЕ ГЕРОЕВ (ОБЯЗАТЕЛЬНЫЕ СТИЛИ) ==========
 const HERO_REQUIRED_STYLES = {
-    "AA": ["freeze"], "ABADDON": ["shields", "healing"], "ALCHEMIST": [], "ASH": ["rage"], "AWAKENED": ["attack"], "AXE": ["shields"], "BRIST": [], 
-    "BROOD MOTHER": ["poison", "attack"], "CK": ["crits", "healing"], "CLINKZ": ["rage", "guards"], "CM": ["freeze"], "DARK WILLOW": ["guards"], 
+    "AA": ["freeze"], "AM": ["attack", "ultimate"], "ABADDON": ["shields", "healing"], "ALCHEMIST": [], "ASH": ["rage"], "AWAKENED": ["attack"], "AXE": ["shields"], 
+    "BRIST": [], "BROOD MOTHER": ["poison", "attack"], "CK": ["crits", "healing"], "CLINKZ": ["rage", "guards"], "CM": ["freeze"], "DARK WILLOW": ["guards"], 
     "DAZZLE": ["vulnerability", "poison"], "DOOM": ["chaos"], "DK POISON": ["poison"], "DK FREEZE": ["freeze"], "DK RAGE": ["rage"],
     "DROW RANGER": ["freeze"], "EMBER SPIRIT": ["rage"], "ES": ["crits"], "FLAMEBORN": ["chaos"], "GRIMSTROKE": ["dodge"], "GUITARIST": [], "HOODWINK": [], 
     "HUSKAR": ["rage"], "JUGGER": ["attack", "crits"], "KEZ": ["attack"], "KUNKKA": ["health"], "LC": ["shields"], "LESHRAC": ["ultimate", "health"], "LICH": ["freeze"], 
@@ -2086,6 +2086,7 @@ function setupEventListeners() {
         });
     }
 }
+
 
 
 
