@@ -2075,7 +2075,15 @@ function calculateBuildEfficiency(build, enabledStyles) {
     const requiredConflicts = (build.requiredMustNotHave || []).filter(s => enabledStyles.includes(s));
     if (requiredConflicts.length > 0) return 0;
     
-    let efficiency = 100;
+    // Стартовая эффективность зависит от тира
+    const tierEfficiency = {
+        1: 100,
+        2: 80,
+        3: 70,
+        4: 60
+    };
+    let efficiency = tierEfficiency[build.tier || 4] || 60;
+    
     const desiredMustHaveCount = (build.desiredMustHave || []).filter(s => !enabledStyles.includes(s)).length;
     const desiredMustNotHaveCount = (build.desiredMustNotHave || []).filter(s => enabledStyles.includes(s)).length;
     const totalDesiredMismatches = desiredMustHaveCount + desiredMustNotHaveCount;
@@ -2601,6 +2609,7 @@ function setupEventListeners() {
         });
     }
 }
+
 
 
 
