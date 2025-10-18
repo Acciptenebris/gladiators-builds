@@ -2078,9 +2078,9 @@ function calculateBuildEfficiency(build, enabledStyles) {
     // Стартовая эффективность зависит от тира
     const tierEfficiency = {
         1: 100,
-        2: 80,
-        3: 70,
-        4: 60
+        2: 85,
+        3: 65,
+        4: 50
     };
     let efficiency = tierEfficiency[build.tier || 4] || 60;
     
@@ -2609,6 +2609,7 @@ function setupEventListeners() {
         });
     }
 }
+
 
 
 
