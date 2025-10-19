@@ -67,11 +67,45 @@
         <button class="export-btn" id="export-btn">📤 Экспорт</button>
         <button class="reset-db-btn" id="reset-db">🔄 Сброс</button>
         <button class="restore-btn" id="restore-defaults-btn">🔄 Загрузить базовые билды</button>
+        <button class="update-info-btn" id="update-info-btn">📅 Обновлено 19/10/2025</button>
+    </div>
+    <!-- Модальное окно с информацией об обновлении -->
+    <div class="modal-overlay" id="update-info-modal" style="display: none;">
+        <div class="modal-content update-modal">
+            <div class="modal-header">
+                <h3>Информация об обновлении</h3>
+                <button class="close-btn" id="close-update-modal">×</button>
+            </div>
+            <div class="update-modal-body">
+                <p>Чтобы обновить базовую базу билдов, сделайте сброс и заново загрузите базу</p>
+            </div>
+        </div>
     </div>
 
     <script src="app.js"></script>
+    <script>
+        // Обработка модального окна с информацией об обновлении
+        const updateInfoBtn = document.getElementById('update-info-btn');
+        const updateInfoModal = document.getElementById('update-info-modal');
+        const closeUpdateModal = document.getElementById('close-update-modal');
+
+        updateInfoBtn.addEventListener('click', () => {
+            updateInfoModal.style.display = 'flex';
+        });
+
+        closeUpdateModal.addEventListener('click', () => {
+            updateInfoModal.style.display = 'none';
+        });
+
+        updateInfoModal.addEventListener('click', (e) => {
+            if (e.target === updateInfoModal) {
+                updateInfoModal.style.display = 'none';
+            }
+        });
+    </script>
 </body>
 </html>
+
 
 
 
