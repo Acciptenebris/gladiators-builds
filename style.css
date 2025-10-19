@@ -897,3 +897,38 @@ body {
     border-color: #666;
 }
 
+/* ========== КНОПКА ИНФОРМАЦИИ ОБ ОБНОВЛЕНИИ ========== */
+.update-info-btn {
+    background: linear-gradient(145deg, #5f27cd, #341f97);
+    color: #fff;
+    font-weight: bold;
+    padding: 10px 15px;
+    font-size: 0.85rem;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.update-info-btn:hover {
+    background: linear-gradient(145deg, #7c3aed, #5f27cd);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(95, 39, 205, 0.4);
+}
+
+/* Модальное окно с информацией */
+.update-modal {
+    max-width: 500px;
+}
+
+.update-modal-body {
+    padding: 20px;
+    text-align: center;
+}
+
+.update-modal-body p {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    color: #ecf0f1;
+    margin: 0;
+}
