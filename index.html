@@ -85,26 +85,31 @@
     <script src="app.js"></script>
     <script>
         // Обработка модального окна с информацией об обновлении
-        const updateInfoBtn = document.getElementById('update-info-btn');
-        const updateInfoModal = document.getElementById('update-info-modal');
-        const closeUpdateModal = document.getElementById('close-update-modal');
-
-        updateInfoBtn.addEventListener('click', () => {
-            updateInfoModal.style.display = 'flex';
-        });
-
-        closeUpdateModal.addEventListener('click', () => {
-            updateInfoModal.style.display = 'none';
-        });
-
-        updateInfoModal.addEventListener('click', (e) => {
-            if (e.target === updateInfoModal) {
-                updateInfoModal.style.display = 'none';
+        document.addEventListener('DOMContentLoaded', function() {
+            const updateInfoBtn = document.getElementById('update-info-btn');
+            const updateInfoModal = document.getElementById('update-info-modal');
+            const closeUpdateModal = document.getElementById('close-update-modal');
+    
+            if (updateInfoBtn && updateInfoModal && closeUpdateModal) {
+                updateInfoBtn.addEventListener('click', () => {
+                    updateInfoModal.style.display = 'flex';
+                });
+    
+                closeUpdateModal.addEventListener('click', () => {
+                    updateInfoModal.style.display = 'none';
+                });
+    
+                updateInfoModal.addEventListener('click', (e) => {
+                    if (e.target === updateInfoModal) {
+                        updateInfoModal.style.display = 'none';
+                    }
+                });
             }
         });
     </script>
 </body>
 </html>
+
 
 
 
