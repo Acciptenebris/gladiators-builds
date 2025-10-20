@@ -2294,127 +2294,189 @@ function renderBuildsList() {
 }
 
 function showBuildFormModal(build, title) {
-    let modal = document.querySelector('.modal-overlay');
-    if (!modal) {
-        modal = document.createElement('div');
-        modal.className = 'modal-overlay';
-        modal.innerHTML = `<div class="modal-content"><div class="modal-header"><h3>Создание билда</h3>
-            <button class="close-btn" onclick="closeModal()">&times;</button></div><form id="build-form">
-            <div class="row-inputs">
-                <div class="form-field"><label>Герой:</label>
-                    <select id="build-hero" required><option value="">Выберите героя</option>
-                        ${HEROES_LIST.map(hero => `<option value="${hero}">${hero}</option>`).join('')}</select>
-                </div>
-                <div class="form-field"><label>Таланты:</label><input type="text" id="build-talents" placeholder="1 2 1"></div>
-                <div class="form-field"><label>Тир:</label><select id="build-tier">
-                    <option value="1">1 - Имба</option><option value="2">2 - Хорошо</option>
-                    <option value="3">3 - Норм</option><option value="4">4 - Так себе</option></select>
-                </div>
-                <div class="form-field">
-                    <label>Шард:</label>
-                    <button type="button" id="shard-toggle" class="shard-toggle-btn">
-                        <img src="aghanims_shard.png" alt="Shard">
-                        <span>ВЫКЛ</span>
-                    </button>
-                </div>
+    // Удаляем старое модальное окно, если есть
+    const oldModal = document.querySelector('.modal-overlay');
+    if (oldModal) oldModal.remove();
+    
+    // Создаём новое модальное окно
+    const modal = document.createElement('div');
+    modal.className = 'modal-overlay';
+    modal.style.display = 'flex';
+    modal.innerHTML = `
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>${title}</h3>
+                <button class="close-btn">&times;</button>
             </div>
-            <div class="hero-required-info" id="hero-required-info" style="display:none;margin-bottom:20px;padding:15px;background:rgba(212,175,55,0.1);border:2px solid #d4af37;border-radius:10px;">
-                <div style="color:#d4af37;font-weight:bold;margin-bottom:8px;">🔒 Обязательные стили героя:</div>
-                <div id="hero-required-list" style="color:#fff;font-size:1.1rem;"></div></div>
-            <div class="form-field"><label>Нужные стили:</label>
-                <div class="styles-instruction">Клик = обязательно(зеленый) ✓✓ | Двойной клик = желательно(синий) ✓ | Тройной клик = нейтрально</div>
-                <div class="edit-styles-grid" id="required-styles-grid">
-                    ${PLAYSTYLES_DATA.map(style => `<button type="button" class="edit-style-btn required-style-btn" data-style-id="${style.id}">${style.name}</button>`).join('')}
-                </div></div>
-            <div class="form-field"><label>Не нужные стили:</label>
-                <div class="styles-instruction">Клик = Запрещено(красный) ✗✗ | Двойной клик = нежелательно(оранжевый) ✗ | Тройной клик = нейтрально</div>
-                <div class="edit-styles-grid" id="desired-styles-grid">
-                    ${PLAYSTYLES_DATA.map(style => `<button type="button" class="edit-style-btn desired-style-btn" data-style-id="${style.id}">${style.name}</button>`).join('')}
-                </div></div>
-            <div class="form-field"><label>Комментарий:</label><textarea id="build-comment" rows="3"></textarea></div>
-            <div class="form-field"><label>Картинка (URL):</label><input type="url" id="build-img" placeholder="https://..."></div>
-            <div class="modal-footer"><button type="submit" class="save-btn">Сохранить</button>
-                <button type="button" class="cancel-btn" onclick="closeModal()">Отмена</button></div></form></div>`;
-        document.body.appendChild(modal);
-        
-        // Обработчик кнопки шарда
-        const shardToggle = modal.querySelector('#shard-toggle');
-        shardToggle.onclick = function() {
-            this.classList.toggle('active');
-            this.querySelector('span').textContent = this.classList.contains('active') ? 'ВКЛ' : 'ВЫКЛ';
-        };
-        
-        document.getElementById('build-hero').onchange = function() { updateHeroRequiredInfo(this.value); updateStyleButtons(); };
-        
-        modal.querySelectorAll('.required-style-btn').forEach(btn => {
-            btn.onclick = function() {
-                const heroStyles = getHeroRequiredStyles(document.getElementById('build-hero').value);
-                if (heroStyles.includes(this.dataset.styleId)) return;
+            <form id="build-form">
+                <div class="row-inputs">
+                    <div class="form-field">
+                        <label>Герой:</label>
+                        <select id="build-hero" required>
+                            <option value="">Выберите героя</option>
+                            ${HEROES_LIST.map(hero => `<option value="${hero}">${hero}</option>`).join('')}
+                        </select>
+                    </div>
+                    <div class="form-field">
+                        <label>Таланты:</label>
+                        <input type="text" id="build-talents" placeholder="1 2 1">
+                    </div>
+                    <div class="form-field">
+                        <label>Тир:</label>
+                        <select id="build-tier">
+                            <option value="1">1 - Имба</option>
+                            <option value="2">2 - Хорошо</option>
+                            <option value="3">3 - Норм</option>
+                            <option value="4">4 - Так себе</option>
+                        </select>
+                    </div>
+                    <div class="form-field">
+                        <label>Шард:</label>
+                        <button type="button" id="shard-toggle" class="shard-toggle-btn">
+                            <img src="aghanims_shard.png" alt="Shard">
+                            <span>ВЫКЛ</span>
+                        </button>
+                    </div>
+                </div>
                 
-                if (!this.classList.contains('selected')) {
-                    this.classList.add('selected'); this.dataset.requirement = 'must';
-                    this.style.background = '#27ae60'; this.style.borderColor = '#27ae60'; this.style.color = '#fff';
-                } else if (this.dataset.requirement === 'must') {
-                    this.dataset.requirement = 'desired';
-                    this.style.background = '#3498db'; this.style.borderColor = '#3498db';
-                } else {
-                    this.classList.remove('selected'); delete this.dataset.requirement;
-                    this.style.background = ''; this.style.borderColor = ''; this.style.color = '';
-                }
-            };
-        });
-        
-        modal.querySelectorAll('.desired-style-btn').forEach(btn => {
-            btn.onclick = function() {
-                if (!this.classList.contains('selected')) {
-                    this.classList.add('selected'); this.dataset.requirement = 'not';
-                    this.style.background = '#e74c3c'; this.style.borderColor = '#e74c3c'; this.style.color = '#fff';
-                } else if (this.dataset.requirement === 'not') {
-                    this.dataset.requirement = 'undesired';
-                    this.style.background = '#e67e22'; this.style.borderColor = '#e67e22';
-                } else {
-                    this.classList.remove('selected'); delete this.dataset.requirement;
-                    this.style.background = ''; this.style.borderColor = ''; this.style.color = '';
-                }
-            };
-        });
-        
-        modal.querySelector('#build-form').onsubmit = function(e) { e.preventDefault(); saveBuild(); };
-        modal.onclick = function(e) { if (e.target === modal) closeModal(); };
-    }
+                <div class="hero-required-info" id="hero-required-info" style="display:none;margin-bottom:20px;padding:15px;background:rgba(212,175,55,0.1);border:2px solid #d4af37;border-radius:10px;">
+                    <div style="color:#d4af37;font-weight:bold;margin-bottom:8px;">🔒 Обязательные стили героя:</div>
+                    <div id="hero-required-list" style="color:#fff;font-size:1.1rem;"></div>
+                </div>
+                
+                <div class="form-field">
+                    <label>Нужные стили:</label>
+                    <div class="styles-instruction">Клик = обязательно(зеленый) ✓✓ | Двойной клик = желательно(синий) ✓ | Тройной клик = нейтрально</div>
+                    <div class="edit-styles-grid" id="required-styles-grid">
+                        ${PLAYSTYLES_DATA.map(style => `<button type="button" class="edit-style-btn required-style-btn" data-style-id="${style.id}">${style.name}</button>`).join('')}
+                    </div>
+                </div>
+                
+                <div class="form-field">
+                    <label>Не нужные стили:</label>
+                    <div class="styles-instruction">Клик = Запрещено(красный) ✗✗ | Двойной клик = нежелательно(оранжевый) ✗ | Тройной клик = нейтрально</div>
+                    <div class="edit-styles-grid" id="desired-styles-grid">
+                        ${PLAYSTYLES_DATA.map(style => `<button type="button" class="edit-style-btn desired-style-btn" data-style-id="${style.id}">${style.name}</button>`).join('')}
+                    </div>
+                </div>
+                
+                <div class="form-field">
+                    <label>Комментарий:</label>
+                    <textarea id="build-comment" rows="3"></textarea>
+                </div>
+                
+                <div class="form-field">
+                    <label>Картинка (URL):</label>
+                    <input type="url" id="build-img" placeholder="https://...">
+                </div>
+                
+                <div class="modal-footer">
+                    <button type="submit" class="save-btn">Сохранить</button>
+                    <button type="button" class="cancel-btn">Отмена</button>
+                </div>
+            </form>
+        </div>
+    `;
     
-    modal.querySelector('.modal-header h3').textContent = title;
-    modal.querySelector('#build-hero').value = build.hero || '';
-    modal.querySelector('#build-talents').value = build.talents || '';
-    modal.querySelector('#build-comment').value = build.comment || '';
-    modal.querySelector('#build-tier').value = build.tier || 4;
-    modal.querySelector('#build-img').value = build.img || '';
+    document.body.appendChild(modal);
     
-    // Устанавливаем состояние шарда
-    const shardToggle = modal.querySelector('#shard-toggle');
+    // ТЕПЕРЬ заполняем поля (после добавления в DOM)
+    const heroSelect = document.getElementById('build-hero');
+    const talentsInput = document.getElementById('build-talents');
+    const commentTextarea = document.getElementById('build-comment');
+    const tierSelect = document.getElementById('build-tier');
+    const imgInput = document.getElementById('build-img');
+    const shardToggle = document.getElementById('shard-toggle');
+    
+    if (build.hero) heroSelect.value = build.hero;
+    if (build.talents) talentsInput.value = build.talents;
+    if (build.comment) commentTextarea.value = build.comment;
+    if (build.tier) tierSelect.value = build.tier;
+    if (build.img) imgInput.value = build.img;
+    
+    // Устанавливаем шард
     if (build.shard) {
         shardToggle.classList.add('active');
         shardToggle.querySelector('span').textContent = 'ВКЛ';
-    } else {
-        shardToggle.classList.remove('active');
-        shardToggle.querySelector('span').textContent = 'ВЫКЛ';
     }
     
-    updateHeroRequiredInfo(build.hero || '');
-    
-    modal.querySelectorAll('.edit-style-btn').forEach(btn => {
-        btn.classList.remove('selected'); delete btn.dataset.requirement;
-        btn.style.background = ''; btn.style.borderColor = ''; btn.style.color = '';
-        btn.style.pointerEvents = ''; btn.style.opacity = ''; btn.style.fontWeight = '';
+    // Обработчик шарда
+    shardToggle.addEventListener('click', function() {
+        this.classList.toggle('active');
+        this.querySelector('span').textContent = this.classList.contains('active') ? 'ВКЛ' : 'ВЫКЛ';
     });
     
+    // Обработчик выбора героя
+    heroSelect.addEventListener('change', function() {
+        updateHeroRequiredInfo(this.value);
+        updateStyleButtons();
+    });
+    
+    // Обработчики кнопок стилей
+    modal.querySelectorAll('.required-style-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const heroStyles = getHeroRequiredStyles(heroSelect.value);
+            if (heroStyles.includes(this.dataset.styleId)) return;
+            
+            if (!this.classList.contains('selected')) {
+                this.classList.add('selected');
+                this.dataset.requirement = 'must';
+                this.style.background = '#27ae60';
+                this.style.borderColor = '#27ae60';
+                this.style.color = '#fff';
+            } else if (this.dataset.requirement === 'must') {
+                this.dataset.requirement = 'desired';
+                this.style.background = '#3498db';
+                this.style.borderColor = '#3498db';
+            } else {
+                this.classList.remove('selected');
+                delete this.dataset.requirement;
+                this.style.background = '';
+                this.style.borderColor = '';
+                this.style.color = '';
+            }
+        });
+    });
+    
+    modal.querySelectorAll('.desired-style-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            if (!this.classList.contains('selected')) {
+                this.classList.add('selected');
+                this.dataset.requirement = 'not';
+                this.style.background = '#e74c3c';
+                this.style.borderColor = '#e74c3c';
+                this.style.color = '#fff';
+            } else if (this.dataset.requirement === 'not') {
+                this.dataset.requirement = 'undesired';
+                this.style.background = '#e67e22';
+                this.style.borderColor = '#e67e22';
+            } else {
+                this.classList.remove('selected');
+                delete this.dataset.requirement;
+                this.style.background = '';
+                this.style.borderColor = '';
+                this.style.color = '';
+            }
+        });
+    });
+    
+    // Инициализация информации о герое
+    updateHeroRequiredInfo(build.hero || '');
+    
+    // Устанавливаем стили
     const heroStyles = getHeroRequiredStyles(build.hero || '');
+    
     heroStyles.forEach(styleId => {
         const btn = modal.querySelector(`.required-style-btn[data-style-id="${styleId}"]`);
         if (btn) {
-            btn.classList.add('selected'); btn.dataset.requirement = 'must';
-            btn.style.background = '#d4af37'; btn.style.borderColor = '#d4af37'; btn.style.color = '#000';
-            btn.style.fontWeight = 'bold'; btn.style.pointerEvents = 'none'; btn.style.opacity = '0.8';
+            btn.classList.add('selected');
+            btn.dataset.requirement = 'must';
+            btn.style.background = '#d4af37';
+            btn.style.borderColor = '#d4af37';
+            btn.style.color = '#000';
+            btn.style.fontWeight = 'bold';
+            btn.style.pointerEvents = 'none';
+            btn.style.opacity = '0.8';
         }
     });
     
@@ -2422,8 +2484,11 @@ function showBuildFormModal(build, title) {
         if (!heroStyles.includes(styleId)) {
             const btn = modal.querySelector(`.required-style-btn[data-style-id="${styleId}"]`);
             if (btn) {
-                btn.classList.add('selected'); btn.dataset.requirement = 'must';
-                btn.style.background = '#27ae60'; btn.style.borderColor = '#27ae60'; btn.style.color = '#fff';
+                btn.classList.add('selected');
+                btn.dataset.requirement = 'must';
+                btn.style.background = '#27ae60';
+                btn.style.borderColor = '#27ae60';
+                btn.style.color = '#fff';
             }
         }
     });
@@ -2431,28 +2496,48 @@ function showBuildFormModal(build, title) {
     (build.desiredMustHave || []).forEach(styleId => {
         const btn = modal.querySelector(`.required-style-btn[data-style-id="${styleId}"]`);
         if (btn) {
-            btn.classList.add('selected'); btn.dataset.requirement = 'desired';
-            btn.style.background = '#3498db'; btn.style.borderColor = '#3498db'; btn.style.color = '#fff';
+            btn.classList.add('selected');
+            btn.dataset.requirement = 'desired';
+            btn.style.background = '#3498db';
+            btn.style.borderColor = '#3498db';
+            btn.style.color = '#fff';
         }
     });
     
     (build.requiredMustNotHave || []).forEach(styleId => {
         const btn = modal.querySelector(`.desired-style-btn[data-style-id="${styleId}"]`);
         if (btn) {
-            btn.classList.add('selected'); btn.dataset.requirement = 'not';
-            btn.style.background = '#e74c3c'; btn.style.borderColor = '#e74c3c'; btn.style.color = '#fff';
+            btn.classList.add('selected');
+            btn.dataset.requirement = 'not';
+            btn.style.background = '#e74c3c';
+            btn.style.borderColor = '#e74c3c';
+            btn.style.color = '#fff';
         }
     });
     
     (build.desiredMustNotHave || []).forEach(styleId => {
         const btn = modal.querySelector(`.desired-style-btn[data-style-id="${styleId}"]`);
         if (btn) {
-            btn.classList.add('selected'); btn.dataset.requirement = 'undesired';
-            btn.style.background = '#e67e22'; btn.style.borderColor = '#e67e22'; btn.style.color = '#fff';
+            btn.classList.add('selected');
+            btn.dataset.requirement = 'undesired';
+            btn.style.background = '#e67e22';
+            btn.style.borderColor = '#e67e22';
+            btn.style.color = '#fff';
         }
     });
     
-    modal.style.display = 'flex';
+    // Обработчик формы
+    modal.querySelector('#build-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        saveBuild();
+    });
+    
+    // Обработчик закрытия
+    modal.querySelector('.close-btn').addEventListener('click', closeModal);
+    modal.querySelector('.cancel-btn').addEventListener('click', closeModal);
+    modal.addEventListener('click', function(e) {
+        if (e.target === modal) closeModal();
+    });
 }
 
 function updateHeroRequiredInfo(heroName) {
@@ -2651,6 +2736,7 @@ function setupEventListeners() {
         });
     }
 }
+
 
 
 
