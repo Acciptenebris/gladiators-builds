@@ -2188,7 +2188,6 @@ function buildCardView(build) {
 
     let imgHtml = build.img ? `<div class="build-img"><img src="${build.img}" alt="${build.hero}" loading="lazy"></div>` : `<div class="build-img build-img-empty"><span>Нет фото</span></div>`;
 
-    // Добавляем шард справа от аватарки
     if (build.shard) {
         imgHtml += `<div class="shard-indicator active" title="Шард"><img src="aghanims_shard.png" alt="Shard"></div>`;
     } else {
@@ -2221,11 +2220,21 @@ function buildCardView(build) {
             <div class="style-row"><span style="color:#f55;">– </span>${allMustNotHave.map(st => styleName(st)).join(', ') || '-'}</div>
             <div class="build-comment">${build.comment || ''}</div>
             <div class="build-actions">
-                <button class="copy-btn" onclick="copyBuild(${realIndex})" title="Копировать билд">📋</button>
-                <button class="edit-btn" onclick="editBuild(${realIndex})">✏️ Редактировать</button>
-                <button class="delete-btn" onclick="deleteBuild(${realIndex})">🗑️ Удалить</button>
+                <button class="copy-btn" data-index="${realIndex}" title="Копировать билд">📋</button>
+                <button class="edit-btn" data-index="${realIndex}">✏️ Редактировать</button>
+                <button class="delete-btn" data-index="${realIndex}">🗑️ Удалить</button>
             </div>
         </div>`;
+    
+    // ДОБАВЛЯЕМ ОБРАБОТЧИКИ НАПРЯМУЮ
+    const copyBtn = el.querySelector('.copy-btn');
+    const editBtn = el.querySelector('.edit-btn');
+    const deleteBtn = el.querySelector('.delete-btn');
+    
+    copyBtn.addEventListener('click', () => copyBuild(realIndex));
+    editBtn.addEventListener('click', () => editBuild(realIndex));
+    deleteBtn.addEventListener('click', () => deleteBuild(realIndex));
+    
     return el;
 }
 
@@ -2266,10 +2275,20 @@ function renderBuildsList() {
           <div class="styles-must-not">– ${allMustNotHave.map(styleName).join(', ') || 'нет'}</div></div>
           <div class="build-comment">${build.comment || ''}</div>
           <div class="build-actions">
-              <button class="copy-btn" onclick="copyBuild(${originalIndex})" title="Копировать билд">📋</button>
-              <button class="edit-btn" onclick="editBuild(${originalIndex})" title="Редактировать">✏️</button>
-              <button class="delete-btn" onclick="deleteBuild(${originalIndex})" title="Удалить">🗑️</button>
+              <button class="copy-btn" data-index="${originalIndex}" title="Копировать билд">📋</button>
+              <button class="edit-btn" data-index="${originalIndex}" title="Редактировать">✏️</button>
+              <button class="delete-btn" data-index="${originalIndex}" title="Удалить">🗑️</button>
           </div>`;
+        
+        // ДОБАВЛЯЕМ ОБРАБОТЧИКИ
+        const copyBtn = el.querySelector('.copy-btn');
+        const editBtn = el.querySelector('.edit-btn');
+        const deleteBtn = el.querySelector('.delete-btn');
+        
+        copyBtn.addEventListener('click', () => copyBuild(originalIndex));
+        editBtn.addEventListener('click', () => editBuild(originalIndex));
+        deleteBtn.addEventListener('click', () => deleteBuild(originalIndex));
+        
         buildsList.appendChild(el);
     });
 }
@@ -2510,7 +2529,7 @@ function showAddBuildModal() {
     showBuildFormModal({ hero: '', requiredMustHave: [], desiredMustHave: [], requiredMustNotHave: [], desiredMustNotHave: [], talents: '', comment: '', tier: 4, img: '', shard: false }, 'Создание нового билда');
 }
 
-window.copyBuild = function(idx) {
+function copyBuild(idx) {
     if (!builds[idx]) { alert('Билд не найден!'); return; }
     const originalBuild = builds[idx];
     const copiedBuild = {
@@ -2529,16 +2548,19 @@ window.copyBuild = function(idx) {
     showBuildFormModal(copiedBuild, `Копирование билда: ${originalBuild.hero}`);
 }
 
-window.editBuild = function(idx) {
+function editBuild(idx) {
     if (!builds[idx]) return;
     editingBuildIndex = idx;
     showBuildFormModal(builds[idx], `Редактирование билда: ${builds[idx].hero}`);
 }
 
-window.deleteBuild = function(idx) {
+function deleteBuild(idx) {
     if (!builds[idx]) return;
     if (confirm(`Удалить билд для ${builds[idx].hero}?`)) {
-        builds.splice(idx, 1); persist(); renderBuildsList(); renderSearchResults();
+        builds.splice(idx, 1); 
+        persist(); 
+        renderBuildsList(); 
+        renderSearchResults();
     }
 }
 
@@ -2629,6 +2651,7 @@ function setupEventListeners() {
         });
     }
 }
+
 
 
 
