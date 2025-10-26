@@ -2102,7 +2102,7 @@ function calculateBuildEfficiency(build, enabledStyles) {
     const desiredMustNotHaveCount = (build.desiredMustNotHave || []).filter(s => enabledStyles.includes(s)).length;
     const totalDesiredMismatches = desiredMustHaveCount + desiredMustNotHaveCount;
     
-    efficiency = efficiency - (totalDesiredMismatches * 20);
+    efficiency = efficiency - (totalDesiredMismatches * 10);
     if (efficiency <= 0) return 0;
     
     return Math.round(efficiency);
@@ -2730,6 +2730,7 @@ function setupEventListeners() {
         });
     }
 }
+
 
 
 
