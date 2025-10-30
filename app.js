@@ -14,7 +14,7 @@ const HERO_REQUIRED_STYLES = {
     "DAZZLE": ["vulnerability", "poison"], "DOOM": ["chaos"], "DK POISON": ["poison"], "DK FREEZE": ["freeze"], "DK RAGE": ["rage"],
     "DROW RANGER": ["freeze"], "EMBER SPIRIT": ["rage"], "ES": ["crits"], "FLAMEBORN": ["chaos"], "GRIMSTROKE": ["dodge"], "GUITARIST": [], "HOODWINK": [], 
     "HUSKAR": ["rage"], "JUGGER": ["attack", "crits"], "KEZ": ["attack"], "KUNKKA": ["health"], "LC": ["shields"], "LESHRAC": ["ultimate", "health"], "LICH": ["freeze"], 
-    "LIFESTEALER": ["healing"], "LINA": ["rage"], "LION": ["chaos"], "LUNA": ["attack", "ultimate"], "LYCAN": ["guards"], "MAGNUS": ["health"], "MARCI": ["attack"], 
+    "LIFESTEALER": ["healing"], "LINA": ["rage"], "LION": ["chaos"], "LUNA": ["attack"], "LYCAN": ["guards"], "MAGNUS": ["health"], "MARCI": ["attack"], 
     "MIRANA": ["guards"], "MK": [], "MUERTA": ["attack", "ultimate"], "NECR": ["healing"], "NYX": ["vulnerability"], "OGRE MAGI": ["crits", "ultimate"], "OMNIK": ["healing"], 
     "PA": ["attack", "crits"], "PANGO": ["attack", "vulnerability"], "PL": ["attack"], "PUDGE": ["health", "poison"], "PUGNA": ["guards", "healing"], "QOP": ["poison"], 
     "RAZOR": ["vulnerability"], "RIKI": ["vulnerability", "dodge"], "RINGMASTER": ["poison"], "SF": ["attack", "ultimate"], "SILENCER": ["ultimate"], "SKY": ["healing"],
@@ -2977,6 +2977,7 @@ function setupEventListeners() {
         });
     }
 }
+
 
 
 
